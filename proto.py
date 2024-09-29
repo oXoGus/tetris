@@ -14,6 +14,15 @@ def main():
 
     cree_fenetre(largeurFenetre, hauteurFenetre)
 
+    # on definit les variables pour les differentes pièce 
+    a = 1
+    b = 2
+    c = 3
+    d = 4
+    e = 5
+    f = 6
+    g = 7
+    
     #cadrillage
 
     yGrid = 0
@@ -38,9 +47,13 @@ def main():
     #ligne droit
     ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", 4)
     
+    # structure de donnée pour représenter la grille de jeu
+    # la grille de jeu fait du 10 par 20 
+    # mais comme les pièces apparaissent au dessus des 20 de hauteur 
+    # on doit rajouter 4 cases sur les y
     grid = []
 
-    for y in range(numYSquare):
+    for y in range(numYSquare + 4):
         grid.append([])
         for x in range(numXSquare):
             grid[y].append(0)
