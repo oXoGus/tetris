@@ -127,7 +127,7 @@ class CustomCanvas:
         self.first_resize = True
 
         # binding events
-        self.ev_queue: Deque[FltkEvent] = deque()
+        self.ev_queue: Deque[FltkEvent] = deque(maxlen=1)
         self.pressed_keys: Set[str] = set()
         self.events = CustomCanvas._default_ev if events is None else events
         self.bind_events()
