@@ -1,4 +1,4 @@
-## découper le projet en plusieurs parties : {#découper-le-projet-en-plusieurs-parties}
+## découper le projet en plusieurs parties : 
 
 Nous avons découpé le projet selon les parties suivantes :
 
@@ -10,15 +10,13 @@ Nous avons découpé le projet selon les parties suivantes :
 6.  Création et ajout des bonus et amélioration
 7.  Finalisations globales
 
-## choisir les structures de données que vous allez utiliser : {#choisir-les-structures-de-données-que-vous-allez-utiliser}
+## choisir les structures de données que vous allez utiliser : 
 
 Une matrice qui représente la grille
 
 La grille de jeu fait du 10 par 20, mais comme les pièces apparaissent
 au dessus des 20 de hauteur, on doit rajouter 4 cases sur les y.
 
-![](Pictures/10000000000003980000011E3701CBF1.png){width="6.6929in"
-height="2.0807in"}
 
 On représentera les différentes pièces sur cette matrice.
 
@@ -47,9 +45,9 @@ squareColors = \[\"white\", \"red\", \"blue\", \"yellow\", \"green\",
 
 \]
 
-## Faire pour chaque partie une esquisse des principales fonctions dont vous aurez besoin : {#faire-pour-chaque-partie-une-esquisse-des-principales-fonctions-dont-vous-aurez-besoin}
+## Faire pour chaque partie une esquisse des principales fonctions dont vous aurez besoin : 
 
-## Création des éléments graphiques du jeu (grille, formes ...) {#création-des-éléments-graphiques-du-jeu-grille-formes}
+## Création des éléments graphiques du jeu (grille, formes ...) 
 
 la fonction drawGrid() qui dessine sur la fenêtre ce qu'il y a dans le
 tableau
@@ -94,7 +92,7 @@ case
 La fonction dropPiece() qui dessine la pièce active au coordonnées de la
 pièce de preview
 
-## Ajout de la variable difficulté, vitesse ... {#ajout-de-la-variable-difficulté-vitesse}
+## Ajout de la variable difficulté, vitesse ... 
 
 La fonction vitesse() permet de contrôler et d'adapter le vitesse de
 descente des pièces
@@ -185,8 +183,7 @@ le restant des fonctions pour implémenter l'IA ne conseptualisé
 
 ## Finalisations globales
 
-## l'organisation du travail en équipe, ainsi que la répartition prévisionnelle des tâches. {#lorganisation-du-travail-en-équipe-ainsi-que-la-répartition-prévisionnelle-des-tâches.}
-
+## l'organisation du travail en équipe, ainsi que la répartition prévisionnelle des tâches. 
 Plateformes utilisées pour permettre le travail d'équipe : Notion,
 notamment pour les parties textuelles de ce projet, Github, pour le
 code. Nous avons décidé pour ce projet de nous répartir les tâches par
@@ -196,7 +193,7 @@ Organisation et répartition des tâches :
 
 Prévision détaillée du jeu de base :
 
-|                          |     |     |     |
+| fonction                 | Giglioni Maëllys | Dintrat Mathis | Non individuel |
 |--------------------------|-----|-----|-----|
 | main()                   |     |     | X   |
 | keypressed()             |     | x   |     |
