@@ -223,7 +223,7 @@ Prévision détaillée du jeu de base :
 Prévision globale des ajouts aux jeux : (cette liste n'est ni exhaustive
 ni définitive)
 
-| fonction                 | Giglioni Maëllys | Dintrat Mathis | Non individuel |    |
+|            fonction                                                                        |  Giglioni Maëllys   |  Dintrat Mathis   |  Non individuel   |
 |------------------------------------------------------------------------------------|-----|-----|-----|
 | Variable difficulté                                                                |     | X   |     |
 | Variable vitesse                                                                   | X   |     |     |
