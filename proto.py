@@ -1,6 +1,7 @@
 from fltk import *
 import time
 from random import randrange
+from copy import copy
 
 
 #### constantes et variables globales ####
@@ -81,6 +82,10 @@ def main():
     ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", 4)
 
     
+    # au début du jeu on génére dans une liste toutes les polyomino de taille n 
+    # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
+
+
     # TODO : menu
     while True:
 
@@ -175,7 +180,7 @@ def drawGrid(grid):
 
 
 def genPolyominoLst(n):
-    """génère des polyomino unique et unilatérale de taille n """
+    """génère une liste de tous les polyomino unique et unilatérale de taille n """
 
     lstPolyomino = []
 
@@ -210,6 +215,8 @@ def genPolyominoLst(n):
     return lstPolyomino
     
 def genPolyomino(n):
+    """génere aléatoirement un polyomino de taille n"""
+
     # on créer le matrice n par n 
     pGrid = [[0] * n for i in range(n)]
 
@@ -304,6 +311,92 @@ def genPolyomino(n):
     return pGrid
         
 
+def genPolyRoationLst(n):
+    """génère une liste contenant toutes les rotation un polyomino de taille n"""
+    
+    # on génère un polyomino de taille n aléatoire
+    poly = genPolyomino(n)
+
+    printPgrid(poly)
+
+    polyRoationLst = []
+
+    # on tourne la piece 4 fois
+    for i in range(4):
+
+        # on tourne la pièce
+        poly = rotatePoly(poly)
+
+        print()
+        printPgrid(poly)
+
+        cleanPoly = polyCleanUp(poly)
+
+        print()
+        printPgrid(cleanPoly)
+
+        polyRoationLst.append(cleanPoly)
+
+    return polyRoationLst
+
+
+
+    
+
+        
+def rotatePoly(poly):
+    """tourne d'un quart vers la droite"""
+
+    nPoly = []
+
+    for i in range(len(poly)):
+
+        nPoly.append([])
+        for j in range(len(poly)):
+            nPoly[i].append(poly[len(poly) - 1 - j][i])
+
+    return nPoly
+
+
+def polyCleanUp(poly : list):
+    """renvoie la plus petite matrice pouvant contenir le polyomino pour pouvoir comparer les polyomino
+    
+    """
+
+    # il ne faut pas modifier la liste de base donc on en fait la copie
+    nPoly = []
+
+    for i in range(len(poly)):
+        nPoly.append([])
+        for j in range(len(poly)):
+            nPoly[i].append(poly[i][j])
+    
+    # pour la hauteur 
+    # si a que des 0 on la supprime 
+
+    for i in range(len(nPoly) - 1, -1, -1):
+        if nPoly[i] == [0]*len(nPoly[0]):
+            nPoly.pop(i)
+
+    # pour la largeur 
+    # si dans une colone on a que des 0 on la supprime
+
+    for j in range(len(nPoly[0]) - 1, -1, -1):
+        colCount = 0
+
+        for i in range(len(nPoly)):
+
+            # on compte le nombre de 0 dans la colone 
+            if nPoly[i][j] == 0:
+                colCount += 1
+        
+        # si le nombre de 0 est égale a len(poly) on supprime la colone
+        if colCount == len(nPoly):
+            for i in range(len(nPoly)):
+                nPoly[i].pop(j)
+        
+    return nPoly
+
 
 
 def printGrid(grid):
@@ -393,8 +486,9 @@ def keyPressed(key, xPGrid, yPGrid, oriPiece, change):
 
 
 if __name__ == "__main__":
-    lstPoly = genPolyominoLst(4)
-    for poly in lstPoly:
-        printPgrid(poly)
+    polyLst = genPolyRoationLst(n=4)
+    for i in range(len(polyLst)):
         print()
+        printPgrid(polyLst[i])
+
     #main()
