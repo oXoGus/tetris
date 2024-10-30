@@ -80,7 +80,7 @@ def main():
 
             # on fait apparaitre un pièce aléatoirement 
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
-            grid, poly, prevX, prevY, x, y, ori, change = spawnPiece(grid, poly, ori, change)
+            grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
 
             # prevX et prevY = None
             # x, y = 4, 0
@@ -103,7 +103,7 @@ def main():
 
             # gestion du délais pour desactiver la piece
 
-            if polyMaxY(grid, poly, x, y, ori) == True:
+            if isPolyMaxY(grid, poly, x, y, ori) == True:
                 desactivateCounter += 1
             
             # on reinitialise la compteur dès qu'il y a de l'espace sous la pièce active
@@ -115,11 +115,11 @@ def main():
                 # on desactive la pièce pour en faire spawn une autre
                 pieceActivated = 0
                 
-                
+            print(desactivateCounter)
 
             y += 1
             
-            grid, poly, prevX, prevY, x, y, ori, change = drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
+            grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
 
             #print(y)
             
@@ -130,6 +130,7 @@ def main():
 
 
         
+
         # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change'
         if change == 1:
             drawGrid(grid)
@@ -159,7 +160,7 @@ def main():
 
                 # si la touche est utile pour le jeu
                 if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
-                    grid, poly, prevX, prevY, x, y, ori, change = keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change)
+                    grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated)
             else:
                 print(key)
 
@@ -172,6 +173,7 @@ def genColorRGBLst(len):
     for i in range(len):
         lst.append(genColorRGB())
     
+    lst.append("#b2b7bf")
     return lst
 
 def genColorRGB():
@@ -211,6 +213,8 @@ def drawGrid(grid):
             else:
                 if n == 0:
                     rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "gray", "white")
+                elif n == -1:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "gray", squareColors[n])
                 else:
                     rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, squareColors[n], squareColors[n])
 
@@ -447,22 +451,35 @@ def printPgrid(pGrid):
         print(pGrid[i])
 
 
-def polyMaxY(grid, poly, x, y, ori):
+def isPolyMaxY(grid, poly, x, y, ori):
     """revoie True si le poly ne peut pas aller plus bas"""
 
 
     # bloqué par le limite de la grille 
     if y + len(poly[ori]) >= len(grid):
-        print("bloqué par le limite de la grille")
+        print("bloqué par la limite de la grille")
         return True
     
     # si la ligne la plus basse du poly peut aller une case plus bas
-    for j in range(len(poly[ori][0])):
-        # pour chaque case non vide du poly
-        if poly[ori][len(poly[ori]) - 1][j] != 0:
-            if grid[y + len(poly[ori])][j] != 0:
-                print("bloqué par un autre poly")
-                return True
+
+    
+    # pour chaque case pleinne du poly
+    # si la case du dessou est un 0 sur le poly 
+    # si la case en dessou est pleinne alors True 
+    for i in range(len(poly[ori])):
+        for j in range(len(poly[ori][0])):
+            if poly[ori][i][j] != 0:
+                # pour ne pas détécter la piece elle meme
+                if i + 1 < len(poly[ori]) and poly[ori][i + 1][j] == 0:
+                    if grid[y + i + 1][x + j] != 0:
+                        print("poly posé")
+                        return True
+                    
+                # les case en dessous du poly
+                elif i + 1 == len(poly[ori]):
+                    if grid[y + i + 1][x + j] != 0:
+                        print("poly posé")
+                        return True
     return False
 
 
@@ -470,7 +487,7 @@ def polyMaxY(grid, poly, x, y, ori):
         
 
 
-def drawPiece(grid, poly, prevX, prevY, x, y, ori, change):
+def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY):
     """dessine sur la grille la pièce active et gestion des colision"""
     
     # si le poly sort de la griille de jeu
@@ -498,34 +515,53 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change):
 
 
     # debug
-    print(f"y = {y}")
+    """print(f"y = {y}")
     print(f"prevY = {prevY}")
     print(f"x = {x}")
-    print(f"prevX = {prevX}")
+    print(f"prevX = {prevX}")"""
 
     # si il existe une piece précédente pour que la pièce n'ait pas de colisions avec elle meme
-    if prevX != None and prevY != None:
+    if prevX != None and prevY != None and maxY != None:
         erasePiece(grid, poly, prevX, prevY, ori)
-        prevX = x
-        prevY = y
-        print("piece supp")
 
-    # gestion des colisions entre les pièces
-    if isColision(grid, poly, x, y, ori) == True:
-        change = 0
-        # on remet les ancienne bonne coordonnées
-        x = prevX
-        y = prevY
+        print("max Y =", maxY)
+        # on efface aussi l'ombre
+        erasePiece(grid, poly, prevX, maxY, ori)
 
-        print("colision")
+        #print("piece supp")
+
+    # gestion des colisions sur la partie basse entre les pièces
+
+    # gesion des colision entre les pièces
+    if y != 0 and isColision(grid, poly, x, y, ori) == True:
+        grid, poly, x, y, ori = colisionResolve(grid, poly, prevX, prevY, x, y, ori)
 
     
+    # on dessine l'ombre de la pièce active, la piece a sa position la plus basse
+    
+
+    # on prend les coordonnées du poly
+    # on augmente y tant que c'set possible
+    maxY = y
+    while isPolyMaxY(grid, poly, x, maxY, ori) == False:
+        maxY += 1
+
+    
+    # on dessine le poly avec ces coords
+    for i in range(len(poly[ori])):
+        for j in range(len(poly[ori][0])):
+
+            # pour ne pas mettre de 0 sur des cases deja remplis
+            if poly[ori][i][j] != 0:
+
+                # -1 est l'index de la couleur gris 
+                grid[maxY + i][x + j] = -1
+
+
     # si on peut bien poser la pièce 
     # on efface l'ancienne piece
     # et on dessine la nouvelle
     
-    
-
     for i in range(len(poly[ori])):
         for j in range(len(poly[ori][0])):
 
@@ -539,7 +575,15 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change):
     prevX = x
     prevY = y
 
-    return grid, poly, prevX, prevY, x, y, ori, change
+
+    
+
+
+    
+
+
+
+    return grid, poly, prevX, prevY, x, y, ori, change, maxY
 
 
 
@@ -559,8 +603,100 @@ def isColision(grid, poly, x, y, ori):
                 if grid[y + i][x + j] != 0:
                     return True  
     return False
+
+
+
+def colisionResolve(grid, poly, prevX, prevY, x, y, ori):
+    """change x et y pour que la pièce ne se supperpose plus a une autre pièce"""
     
 
+    # si la pièce viens d'etre tounée
+    if prevY == None and prevX == None and y != 0: 
+
+        while isColision(grid, poly, x, y, ori) == True:
+
+            # si des case a gauche se supperpose et si on peu bien déplacer la pièce vers la droite
+            if colisionLeft(grid, poly, x, y, ori) == True and x + 1 + len(poly[ori][0]) <= len(grid[0]) and colisionRight(grid, poly, x + 1, y, ori) == False: 
+                x += 1 
+                # on refait le test du while
+                continue
+            
+            # meme chose pour la droite
+            if colisionRight(grid, poly, x, y, ori) == True and x - 1 >= 0 and colisionLeft(grid, poly, x - 1, y, ori) == False:
+
+                x -= 1
+
+                continue
+
+            # meme chose pour le bas
+            if colisionBottom(grid, poly, x, y, ori) == True and y - 1 + len(poly[ori]) > len(grid):
+                y -= 1
+
+                continue
+
+            # si la piece ne peut pas etre posé avec cette orientation on refait les test de colisions avec l'ancienne orientation
+            
+            # on cherche l'ancienne ori
+            if ori == 0:
+                ori = 3
+            else:
+                ori -= 1
+
+            
+        
+        return grid, poly, x, y, ori
+
+
+
+    else:
+
+        # colision classique 
+        if isColision(grid, poly, x, y, ori) == True:
+
+            print("colisions classique")
+            return grid, poly, prevX, prevY, ori
+        
+        print("pas de colision")
+        return grid, poly, x, y, ori
+            
+def colisionLeft(grid, poly, x, y, ori):
+    """gère les colision sur la gauche de la piece"""
+    # pour chaque case a gauche de la pièce 
+    for i in range(len(poly[ori])):
+           
+        # si case est remplit
+        if poly[ori][i][0] != 0:
+            
+            # si la case est deja pris sur la grille
+            if grid[y + i][x] != 0:
+                return True
+    return False
+    
+def colisionRight(grid, poly, x, y, ori):
+    """gère les colision sur la droite de la piece"""
+    # pour chaque case a gauche de la pièce 
+    for i in range(len(poly[ori])):
+           
+        # si case est remplit
+        if poly[ori][i][len(poly[ori][0]) - 1] != 0:
+            
+            # si la case est deja pris sur la grille
+            if grid[y + i][x + len(poly[ori][0]) - 1] != 0:
+                return True
+    return False
+                
+
+def colisionBottom(grid, poly, x, y, ori):
+    for j in range(len(poly[ori][0])):
+           
+        # si la case est remplit
+        if poly[ori][len(poly[ori]) - 1][j] != 0:
+            
+            # si la case est deja pris sur la grille
+            if grid[y + len(poly[ori]) - 1][x + j] != 0:
+                return True
+    return False
+    
 
 def erasePiece(grid, poly, x, y, ori):
     """efface la prièce active""" 
@@ -575,14 +711,17 @@ def erasePiece(grid, poly, x, y, ori):
 
 def spawnPiece(grid, poly, ori, change):
     """on dessine une piece n aux coordonnées par défaut (x = 4 et y = 0)"""
-    return drawPiece(grid, poly, None, None, 4, 0, ori, change)
+    return drawPiece(grid, poly, None, None, 4, 0, ori, change, None)
         
                 
-def rotatePiece(grid, poly, prevX, prevY, x, y, ori, change):
+def rotatePiece(grid, poly, prevX, prevY, x, y, ori, change, maxY):
     """tourne la pièce active de 90° puis la dessine"""
 
-    # on efface l'ancienne piece 
+    # on efface l'ancienne piece et son ombre 
     erasePiece(grid, poly, x, y, ori)
+    erasePiece(grid, poly, x, maxY, ori)
+
+ 
 
     if ori == 3:
         ori = 0
@@ -590,11 +729,11 @@ def rotatePiece(grid, poly, prevX, prevY, x, y, ori, change):
         ori += 1
 
     # on redessine la pièce avec sa nouvelle orientation 
-    return drawPiece(grid, poly, None, None, x, y, ori, change)
+    return drawPiece(grid, poly, None, None, x, y, ori, change, maxY)
 
 
 
-def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change):
+def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated):
     """prends en argument la touche pressée et appelle differentes fonction selon la touche pressée"""
     
     #debug 
@@ -602,29 +741,39 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change):
 
     # pour touner la pièce d'1/4 vers la droite
     if key == 'Up':
-        return rotatePiece(grid, poly, prevX, prevY, x, y, ori, change)
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = rotatePiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+        return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
     # pour déplacer la pièce de une case vers la gauche
     if key == 'Left':
         x -= 1
-        return drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
+
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+        return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
 
     # pour déplacer la pièce de une case vers la gauche
     elif key == 'Right':
         x += 1
-        return drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
+
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+        return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
     
     # pour placer intantanément la pièce 
     elif key == 'space':
-        return x, y, ori, change
+        # on pose la pièce définitivement
+        pieceActivated = 0
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, maxY, ori, change, maxY)
+        return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
 
     # 'down' pour baisser la pièce plus rapidement 
     else:
         y += 1
-        return drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
+        
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+        return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
 
 if __name__ == "__main__":
