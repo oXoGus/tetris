@@ -17,32 +17,7 @@ def main():
 
     ### création de la fenêtre ###
     cree_fenetre(largeurFenetre, hauteurFenetre)
-
-
-    ### création du cadrillage ###
-    yGrid = 0
-    xGrid = 0
-    for i in range(numYSquare):
-
-        yGrid = hauteurFenetre - yMargin - i* sizeSquareGrid
-        for j in range(numXSquare):
-                
-            xGrid = largeurFenetre/2 - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
-            rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid - sizeSquareGrid, "gray",)
-                
-
-    # grille dynamique en fonction de la taille de la fenêtre 
-
-    # ligne basse de la grille
-    ligne(largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, "black", 4)
-
-    #ligne de gauche
-    ligne(largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", 4)
-
-    #ligne de droite
-    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", 4)
-
-
+    
     # grille du haut contenant les id des carrées pour pouvoir les supprimer 
 
     # structure de donnée pour représenter la grille de jeu
@@ -66,8 +41,10 @@ def main():
 
     timer = 0
 
+    lose = 0
+
     # TODO : menu
-    while True:
+    while lose == False:
 
         # si la dernière piece a été déposé 
         if pieceActivated == 0:
@@ -82,8 +59,8 @@ def main():
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
             grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
 
-            # prevX et prevY = None
-            # x, y = 4, 0
+            if maxY < 4:
+                lose = True
 
             printGrid(grid)
 
@@ -164,6 +141,8 @@ def main():
             else:
                 print(key)
 
+    time.sleep(1)
+
 
 def genColorRGBLst(len):
     """génére une liste de couleurs RGB contenant une couleur par pièces avec 0 a l'index 0 une case vide"""
@@ -191,6 +170,17 @@ def drawGrid(grid):
 
     yGrid = 0
     xGrid = 0
+
+    thickness = 8
+
+    # ligne basse de la grille
+    ligne(largeurFenetre/2 - sizeSquareGrid*numXSquare/2 - thickness//2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + thickness//2, hauteurFenetre - yMargin, "black", thickness)
+
+    #ligne de gauche
+    ligne(largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
+
+    #ligne de droite
+    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
 
     for i in range(len(grid)):
 
@@ -764,6 +754,7 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
     elif key == 'space':
         # on pose la pièce définitivement
         pieceActivated = 0
+        
         grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, maxY, ori, change, maxY)
         return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
@@ -771,7 +762,7 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
     # 'down' pour baisser la pièce plus rapidement 
     else:
         y += 1
-        
+
         grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
         return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
