@@ -118,12 +118,10 @@ def main():
                 
 
             y += 1
-
-            print(desactivateCounter)
             
             grid, poly, prevX, prevY, x, y, ori, change = drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
 
-            print(y)
+            #print(y)
             
             # on reset le timer pour déclancher le if dans la prochaine itération
             timer = 0
@@ -477,22 +475,40 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change):
     
     # si le poly sort de la griille de jeu
 
-    # depasse a droite / depasse a gauche / depasse en bas
-    if x + len(poly[ori][0]) > len(grid[0]) or x < 0 or y + len(poly[ori]) > len(grid):
+    # depasse a droite 
+    
+    while x + len(poly[ori][0]) > len(grid[0]): 
         change = 0
 
         print("depasse grille")
 
         # on remet les ancienne bonne coordonnées
-        x = prevX
+        x -= 1 
+        y = y
+
+
+    if  x < 0:
+        x += 1
         y = prevY
 
-        # on renvoie les anciennes coordoné
-        return grid, poly, prevX, prevY, x, y, ori, change
-    
-    # si il existe une piece précédente
+
+    while y + len(poly[ori]) > len(grid):
+        print("depasse en bas")
+        y -= 1
+
+
+    # debug
+    print(f"y = {y}")
+    print(f"prevY = {prevY}")
+    print(f"x = {x}")
+    print(f"prevX = {prevX}")
+
+    # si il existe une piece précédente pour que la pièce n'ait pas de colisions avec elle meme
     if prevX != None and prevY != None:
         erasePiece(grid, poly, prevX, prevY, ori)
+        prevX = x
+        prevY = y
+        print("piece supp")
 
     # gestion des colisions entre les pièces
     if isColision(grid, poly, x, y, ori) == True:
@@ -503,8 +519,6 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change):
 
         print("colision")
 
-        # on renvoie les anciennes coordoné
-        return grid, poly, prevX, prevY, x, y, ori, change
     
     # si on peut bien poser la pièce 
     # on efface l'ancienne piece
@@ -576,7 +590,7 @@ def rotatePiece(grid, poly, prevX, prevY, x, y, ori, change):
         ori += 1
 
     # on redessine la pièce avec sa nouvelle orientation 
-    return drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
+    return drawPiece(grid, poly, None, None, x, y, ori, change)
 
 
 
