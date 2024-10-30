@@ -4,54 +4,15 @@ from random import randrange
 from copy import copy
 
 
-#### constantes et variables globales ####
-
-largeurFenetre = 1000
-hauteurFenetre = largeurFenetre
-yMargin = int(0.15*hauteurFenetre)
-
-# constante
-numYSquare = 20
-numXSquare = 10
-sizeSquareGrid = int(0.65*hauteurFenetre/numYSquare)
-
-# on definit les variables pour les differentes pièce 
-a = 1
-b = 2
-c = 3
-d = 4
-e = 5
-f = 6
-g = 7
-
-squareColors = ["white", "red", "blue", "yellow", "green", "orange", "pink"]
-
-# structure de donnée pour représenter la grille de jeu
-# la grille de jeu fait du 10 par 20 
-# mais comme les pièces apparaissent au dessus des 20 de hauteur 
-# on doit rajouter 4 cases sur les y
-grid = []
-
-for i in range(numYSquare + 4):
-    grid.append([])
-    for j in range(numXSquare):
-        grid[i].append(0)
-
-# on génére les polyomino pour la partie
-
-
 
 
 
 
 
 def main():
+    
+    
 
-    # les variables locales, on ne peut pas utiliser de variables globales en les définissant hors de la fonction son accessible qu'en lecture exeption faite au liste 
-
-    pieceActivated = 0
-
-    change = 1
 
 
     ### création de la fenêtre ###
@@ -81,10 +42,29 @@ def main():
     #ligne de droite
     ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", 4)
 
-    
-    # au début du jeu on génére dans une liste toutes les polyomino de taille n 
-    # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
 
+    # grille du haut contenant les id des carrées pour pouvoir les supprimer 
+
+    # structure de donnée pour représenter la grille de jeu
+    # la grille de jeu fait du 10 par 20 
+    # mais comme les pièces apparaissent au dessus des 20 de hauteur 
+    # on doit rajouter 4 cases sur les y
+    grid = []
+
+    for i in range(numYSquare + 4):
+        grid.append([])
+        for j in range(numXSquare):
+            grid[i].append(0)
+
+    
+    
+
+    # les variables locales, on ne peut pas utiliser de variables globales en les définissant hors de la fonction son accessible qu'en lecture exeption faite au liste 
+    pieceActivated = 0
+
+    change = 1
+
+    timer = 0
 
     # TODO : menu
     while True:
@@ -92,23 +72,65 @@ def main():
         # si la dernière piece a été déposé 
         if pieceActivated == 0:
 
-            # on génère aléatoirement numéro de la nouvelle pièce 
-            n=randrange(a, g+1)
+            # on choisit aléatoirement la nouvelle pièce 
+            poly = polyLst[randrange(0, len(polyLst))]
+
+            # on initialise l'oriantation de la pièce a 0
+            ori = 0
 
             # on fait apparaitre un pièce aléatoirement 
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
-            spawnPiece(grid, n=n) 
+            grid, poly, prevX, prevY, x, y, ori, change = spawnPiece(grid, poly, ori, change)
 
-            # on initialise les coordonnées par défaut de la prièce 
-            xPGrid = 3
-            yPGrid = 4
-            
-            # orientation par défaut de la pièce en degré
-            oriPiece = 0
+            # prevX et prevY = None
+            # x, y = 4, 0
+
+            printGrid(grid)
 
             pieceActivated = 1
-        else:
-            pass
+
+            desactivateCounter = 0
+
+
+        # timer pour descendre la pièce de une case toute les une secondes
+        if timer == 0:
+            timer = time.perf_counter()
+        #print(time.perf_counter() - timer)
+        # 1000 ms 
+        if time.perf_counter() - timer > 1:
+
+            
+
+            # gestion du délais pour desactiver la piece
+
+            if polyMaxY(grid, poly, x, y, ori) == True:
+                desactivateCounter += 1
+            
+            # on reinitialise la compteur dès qu'il y a de l'espace sous la pièce active
+            else:
+                desactivateCounter = 0
+
+            if desactivateCounter > 3:
+
+                # on desactive la pièce pour en faire spawn une autre
+                pieceActivated = 0
+                
+                
+
+            y += 1
+
+            print(desactivateCounter)
+            
+            grid, poly, prevX, prevY, x, y, ori, change = drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
+
+            print(y)
+            
+            # on reset le timer pour déclancher le if dans la prochaine itération
+            timer = 0
+
+            #printGrid(grid)
+
+
         
         # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change'
         if change == 1:
@@ -123,7 +145,7 @@ def main():
         #### on gère les touches ####
         
         # on enregiste l'évenement en attente le plus ancien
-        ev = attend_ev()
+        ev = donne_ev()
         
         # si une touche  bien été pressé 
         if ev is not None:
@@ -139,16 +161,37 @@ def main():
 
                 # si la touche est utile pour le jeu
                 if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
-                    xPGrid, yPGrid, oriPiece, change = keyPressed(key, xPGrid, yPGrid, oriPiece, change)
+                    grid, poly, prevX, prevY, x, y, ori, change = keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change)
             else:
                 print(key)
-            
 
 
+def genColorRGBLst(len):
+    """génére une liste de couleurs RGB contenant une couleur par pièces avec 0 a l'index 0 une case vide"""
+
+    lst = [0]
+
+    for i in range(len):
+        lst.append(genColorRGB())
+    
+    return lst
+
+def genColorRGB():
+    # composante rouge verte et bleu aléatoire
+    return '#' + toHex(randrange(0, 256)) + toHex(randrange(0, 256)) + toHex(randrange(0, 256))
+
+def toHex(n):
+    if n < 16:
+        return "0" + hex(n)[2:]
+    return hex(n)[2:]    
 
 def drawGrid(grid):
+
+    efface_tout()
+
     yGrid = 0
     xGrid = 0
+
     for i in range(len(grid)):
 
         yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
@@ -173,11 +216,6 @@ def drawGrid(grid):
                 else:
                     rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, squareColors[n], squareColors[n])
 
- 
-
-
-
-
 
 def genPolyominoLst(n):
     """génère une liste de tous les polyomino unique et unilatérale de taille n """
@@ -186,34 +224,46 @@ def genPolyominoLst(n):
 
     # selon la page wikipedia des polyomino il existe 7 polyomino de forme unilatérale de taille 4
     
-    lenLstMaxPolyomino = [1, 1, 2, 7, 18, 60, 196, 704, 2500]
+    lenLstMaxPolyomino = [1, 1, 2, 7, 17, 57, 184, 500, 500]
+
+    polyIn = False
 
     # tant qu'on a pas dans cette liste tout les polyomino de forme unilatératle de taille n 
     while len(lstPolyomino) < lenLstMaxPolyomino[n-1]:
         
-        polyomino = genPolyomino(n)
+        polyRotationLst = genPolyRoationLst(n)
 
-        # TODO : faire une comparaison plus poussé a l'aide des différentes rotations d'une même pièce 
+        print(len(lstPolyomino))
+        # on met la liste des rotation du polyomino si ce polyomino n'y est pas deja
+        k = 0
+        while k < len(lstPolyomino):
+            if polyRotationLst[0] in lstPolyomino[k]:
+                # ce polyomino est deja dans la liste
+                polyIn = True
+                break
+            polyIn = False
+            k += 1
 
-        # si le polyomino généré n'est pas déja dans la liste on l'ajoute
-        if polyomino in lstPolyomino:
-            pass
-        else:
-            lstPolyomino.append(polyomino)
+        if polyIn == False:
+            lstPolyomino.append(polyRotationLst)
 
-    # on identifi chaque pièce par son index
+    # on identifie chaque pièce par son index
+    # pour chaque liste contenant toute les rotation d'un meme polyomino
     for k in range(len(lstPolyomino)):
         
         # on remplace le n par i
 
-        polyomino = lstPolyomino[k]
-        for i in range(len(polyomino)):
-            for j in range(len(polyomino)):
-                if polyomino[i][j] == n:
-                    polyomino[i][j] = k + 1
+        polyominoRotaLst = lstPolyomino[k]
+
+        for polyomino in polyominoRotaLst:
+            for i in range(len(polyomino)):
+                for j in range(len(polyomino[0])):
+                    if polyomino[i][j] == n:
+                        polyomino[i][j] = k + 1
 
     return lstPolyomino
-    
+
+
 def genPolyomino(n):
     """génere aléatoirement un polyomino de taille n"""
 
@@ -309,15 +359,13 @@ def genPolyomino(n):
                 numSquare += 1
     
     return pGrid
-        
+
 
 def genPolyRoationLst(n):
     """génère une liste contenant toutes les rotation un polyomino de taille n"""
     
     # on génère un polyomino de taille n aléatoire
     poly = genPolyomino(n)
-
-    printPgrid(poly)
 
     polyRoationLst = []
 
@@ -327,23 +375,13 @@ def genPolyRoationLst(n):
         # on tourne la pièce
         poly = rotatePoly(poly)
 
-        print()
-        printPgrid(poly)
-
         cleanPoly = polyCleanUp(poly)
-
-        print()
-        printPgrid(cleanPoly)
 
         polyRoationLst.append(cleanPoly)
 
     return polyRoationLst
 
 
-
-    
-
-        
 def rotatePoly(poly):
     """tourne d'un quart vers la droite"""
 
@@ -398,7 +436,6 @@ def polyCleanUp(poly : list):
     return nPoly
 
 
-
 def printGrid(grid):
     """affiche la grille de jeu pour débuggé"""
     for y in range(len(grid)):
@@ -412,45 +449,138 @@ def printPgrid(pGrid):
         print(pGrid[i])
 
 
+def polyMaxY(grid, poly, x, y, ori):
+    """revoie True si le poly ne peut pas aller plus bas"""
+
+
+    # bloqué par le limite de la grille 
+    if y + len(poly[ori]) >= len(grid):
+        print("bloqué par le limite de la grille")
+        return True
+    
+    # si la ligne la plus basse du poly peut aller une case plus bas
+    for j in range(len(poly[ori][0])):
+        # pour chaque case non vide du poly
+        if poly[ori][len(poly[ori]) - 1][j] != 0:
+            if grid[y + len(poly[ori])][j] != 0:
+                print("bloqué par un autre poly")
+                return True
+    return False
+
+
 
         
 
 
-def drawPiece(grid, n, x, y, ori):
-    """dessine sur la grille la pièce active, gestion des colision"""
+def drawPiece(grid, poly, prevX, prevY, x, y, ori, change):
+    """dessine sur la grille la pièce active et gestion des colision"""
+    
+    # si le poly sort de la griille de jeu
+
+    # depasse a droite / depasse a gauche / depasse en bas
+    if x + len(poly[ori][0]) > len(grid[0]) or x < 0 or y + len(poly[ori]) > len(grid):
+        change = 0
+
+        print("depasse grille")
+
+        # on remet les ancienne bonne coordonnées
+        x = prevX
+        y = prevY
+
+        # on renvoie les anciennes coordoné
+        return grid, poly, prevX, prevY, x, y, ori, change
+    
+    # si il existe une piece précédente
+    if prevX != None and prevY != None:
+        erasePiece(grid, poly, prevX, prevY, ori)
+
+    # gestion des colisions entre les pièces
+    if isColision(grid, poly, x, y, ori) == True:
+        change = 0
+        # on remet les ancienne bonne coordonnées
+        x = prevX
+        y = prevY
+
+        print("colision")
+
+        # on renvoie les anciennes coordoné
+        return grid, poly, prevX, prevY, x, y, ori, change
+    
+    # si on peut bien poser la pièce 
+    # on efface l'ancienne piece
+    # et on dessine la nouvelle
     
     
 
-        
+    for i in range(len(poly[ori])):
+        for j in range(len(poly[ori][0])):
 
-def erasePiece(grid, n, x, y, ori):
+            # pour ne pas mettre de 0 sur des cases deja remplis
+            if poly[ori][i][j] != 0:
+                grid[y + i][x + j] = poly[ori][i][j]
+
+    change = 1
+
+    # on update le coordonnés de la pièce précédante
+    prevX = x
+    prevY = y
+
+    return grid, poly, prevX, prevY, x, y, ori, change
+
+
+
+
+
+def isColision(grid, poly, x, y, ori):
+    """renvoie True si la piece actice se supperpose a une case deja remplis"""
+
+    # pour chaque case du poly
+    for i in range(len(poly[ori])):
+        for j in range(len(poly[ori][0])):
+
+            # pour chaque case non vide
+            if poly[ori][i][j] != 0:
+
+                # si la case sur la grille de jeu n'est pas vide 
+                if grid[y + i][x + j] != 0:
+                    return True  
+    return False
+    
+
+
+def erasePiece(grid, poly, x, y, ori):
     """efface la prièce active""" 
 
+    for i in range(len(poly[ori])):
+        for j in range(len(poly[ori][0])):
+            if poly[ori][i][j] != 0:
+                grid[y + i][x + j] = 0
+
+
     
 
-def spawnPiece(grid, n):
-    """on dessine une piece n aux coordonnées par défaut (x = 4 et y = 3)"""
-    drawPiece(grid, n=n, x=4, y=3, ori = 0)
+def spawnPiece(grid, poly, ori, change):
+    """on dessine une piece n aux coordonnées par défaut (x = 4 et y = 0)"""
+    return drawPiece(grid, poly, None, None, 4, 0, ori, change)
         
                 
-def rotatePiece(grid, n, x, y, ori):
+def rotatePiece(grid, poly, prevX, prevY, x, y, ori, change):
     """tourne la pièce active de 90° puis la dessine"""
 
     # on efface l'ancienne piece 
-    erasePiece(grid, n, x, y, ori)
+    erasePiece(grid, poly, x, y, ori)
 
-    # on tourne la pièce 
-    ori += 90
-    if ori == 360:
+    if ori == 3:
         ori = 0
+    else:
+        ori += 1
 
     # on redessine la pièce avec sa nouvelle orientation 
-    drawPiece(grid, n, x, y, ori)
-
-    return x, y, ori
+    return drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
 
 
-def keyPressed(key, xPGrid, yPGrid, oriPiece, change):
+
+def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change):
     """prends en argument la touche pressée et appelle differentes fonction selon la touche pressée"""
     
     #debug 
@@ -458,37 +588,49 @@ def keyPressed(key, xPGrid, yPGrid, oriPiece, change):
 
     # pour touner la pièce d'1/4 vers la droite
     if key == 'Up':
-        x, y, ori = rotatePiece(grid, n, pGrid, x, y, ori)
-
-        change = 1
-        return x, y, ori, change, pGrid
+        return rotatePiece(grid, poly, prevX, prevY, x, y, ori, change)
 
     # pour déplacer la pièce de une case vers la gauche
     if key == 'Left':
-        return x, y, ori, change, pGrid
+        x -= 1
+        return drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
 
 
     # pour déplacer la pièce de une case vers la gauche
     elif key == 'Right':
-
-        return x, y, ori, change, pGrid
+        x += 1
+        return drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
 
     
     # pour placer intantanément la pièce 
     elif key == 'space':
-        return x, y, ori, change, pGrid
+        return x, y, ori, change
 
 
     # 'down' pour baisser la pièce plus rapidement 
     else:
-
-        return x, y, ori, change, pGrid
+        y += 1
+        return drawPiece(grid, poly, prevX, prevY, x, y, ori, change)
 
 
 if __name__ == "__main__":
-    polyLst = genPolyRoationLst(n=4)
-    for i in range(len(polyLst)):
-        print()
-        printPgrid(polyLst[i])
+    #### constantes et variables globales ####
 
-    #main()
+    largeurFenetre = 1000
+    hauteurFenetre = largeurFenetre
+    yMargin = int(0.15*hauteurFenetre)
+
+    # constante
+    numYSquare = 20
+    numXSquare = 10
+    sizeSquareGrid = int(0.65*hauteurFenetre/numYSquare)
+
+    # au début du jeu on génére dans une liste toutes les polyomino de taille n 
+    # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
+    # n =  4 pour le mode de jeu classique 
+    polyLst = genPolyominoLst(n=4)
+
+    squareColors = genColorRGBLst(len(polyLst))
+
+
+    main()
