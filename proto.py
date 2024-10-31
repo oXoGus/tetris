@@ -41,10 +41,15 @@ def main():
 
     timer = 0
 
-    lose = 0
+    maxY = len(grid)
 
     # TODO : menu
-    while lose == False:
+    while True:
+
+
+        # il faut mettre à jour pour pouvoir afficher le cadrillage et mettre les touches en attente 
+        mise_a_jour()
+
 
         # si la dernière piece a été déposé 
         if pieceActivated == 0:
@@ -55,12 +60,16 @@ def main():
             # on initialise l'oriantation de la pièce a 0
             ori = 0
 
+            # condition de défaite
+            # si le maxY de la dernière pièce qui vient d'être posé va se supperposer avec le nouveau poly généré
+            if len(polyLst[ori]) - 1 >= maxY:
+                break
+
+            
+
             # on fait apparaitre un pièce aléatoirement 
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
             grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
-
-            if maxY < 4:
-                lose = True
 
             printGrid(grid)
 
@@ -114,9 +123,7 @@ def main():
 
             change = 0
 
-        # il faut mettre à jour pour pouvoir afficher le cadrillage et mettre les touches en attente 
-        mise_a_jour()
-
+        
 
         #### on gère les touches ####
         
@@ -752,10 +759,14 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
     
     # pour placer intantanément la pièce 
     elif key == 'space':
-        # on pose la pièce définitivement
-        pieceActivated = 0
+        
         
         grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, maxY, ori, change, maxY)
+
+        # on pose la pièce définitivement
+        pieceActivated = 0
+        mise_a_jour()
+
         return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
 
