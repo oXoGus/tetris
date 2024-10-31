@@ -532,7 +532,8 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY, rotated = 0):
 
     # gesion des colision entre les pièces
     if y != 0 and isColision(grid, poly, x, y, ori) == True:
-        grid, poly, x, y, ori = colisionResolve(grid, poly, prevX, prevY, x, y, ori)
+        print("colision")
+        grid, poly, x, y, ori = colisionResolve(grid, poly, prevX, prevY, x, y, ori, rotated)
 
     
     # on dessine l'ombre de la pièce active, la piece a sa position la plus basse
@@ -596,12 +597,12 @@ def isColision(grid, poly, x, y, ori):
 
 
 
-def colisionResolve(grid, poly, prevX, prevY, x, y, ori):
+def colisionResolve(grid, poly, prevX, prevY, x, y, ori, rotated):
     """change x et y pour que la pièce ne se supperpose plus a une autre pièce"""
     
 
     # si la pièce viens d'etre tounée
-    if prevY == None and prevX == None and y != 0: 
+    if rotated == 1: 
 
         while isColision(grid, poly, x, y, ori) == True:
 
@@ -609,19 +610,22 @@ def colisionResolve(grid, poly, prevX, prevY, x, y, ori):
             if colisionLeft(grid, poly, x, y, ori) == True and x + 1 + len(poly[ori][0]) <= len(grid[0]) and colisionRight(grid, poly, x + 1, y, ori) == False: 
                 x += 1 
                 # on refait le test du while
+
+                print("col left")
                 continue
             
             # meme chose pour la droite
             if colisionRight(grid, poly, x, y, ori) == True and x - 1 >= 0 and colisionLeft(grid, poly, x - 1, y, ori) == False:
 
                 x -= 1
-
+                print("col right")
                 continue
 
             # meme chose pour le bas
             if colisionBottom(grid, poly, x, y, ori) == True and y - 1 + len(poly[ori]) > len(grid):
                 y -= 1
 
+                print("col bot")
                 continue
             
 
