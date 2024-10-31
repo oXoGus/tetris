@@ -10,6 +10,8 @@ def supplignes (grid) :
           grid[i][j]=0
         nb_lignes_supp+=1
   return nb_lignes_supp ; 
+  
+compteur = 0 
 
 def points (compteur, nb_lignes_supp) : 
   #fonction qui va ajouter les points selon le nombre de lignes supprimées 
@@ -23,7 +25,5 @@ def points (compteur, nb_lignes_supp) :
     compteur += 500 
   return compteur ; 
 
-compteur = 0 
-
-
-  
+def draw_compteur (compteur) : 
+  pass 
