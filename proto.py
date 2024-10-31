@@ -765,7 +765,6 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
 
         # on pose la pièce définitivement
         pieceActivated = 0
-        mise_a_jour()
 
         return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
