@@ -484,7 +484,7 @@ def isPolyMaxY(grid, poly, x, y, ori):
         
 
 
-def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY):
+def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY, rotated = 0):
     """dessine sur la grille la pièce active et gestion des colision"""
     
     # si le poly sort de la griille de jeu
@@ -517,11 +517,12 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY):
     print(f"x = {x}")
     print(f"prevX = {prevX}")"""
 
-    # si il existe une piece précédente pour que la pièce n'ait pas de colisions avec elle meme
-    if prevX != None and prevY != None and maxY != None:
+    # si il existe une piece précédente pour que la pièce n'ait pas de colisions avec elle meme 
+    # et que la pièce ne vien pas d'etre tourné car la piece précédanta déja été effacé
+    if prevX != None and prevY != None and maxY != None and rotated == 0:
         erasePiece(grid, poly, prevX, prevY, ori)
 
-        print("max Y =", maxY)
+        #print("max Y =", maxY)
         # on efface aussi l'ombre
         erasePiece(grid, poly, prevX, maxY, ori)
 
@@ -571,14 +572,6 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY):
     # on update le coordonnés de la pièce précédante
     prevX = x
     prevY = y
-
-
-    
-
-
-    
-
-
 
     return grid, poly, prevX, prevY, x, y, ori, change, maxY
 
@@ -630,14 +623,30 @@ def colisionResolve(grid, poly, prevX, prevY, x, y, ori):
                 y -= 1
 
                 continue
+            
 
-            # si la piece ne peut pas etre posé avec cette orientation on refait les test de colisions avec l'ancienne orientation
+            # si la piece ne peut pas etre posé avec cette orientation 
+            # on refait les test de colisions avec l'ancienne orientation
+            
             
             # on cherche l'ancienne ori
             if ori == 0:
                 ori = 3
             else:
                 ori -= 1
+
+
+            print("x =", prevX)
+            print("y =", y)
+            
+
+
+            # et on renvoie directement les anciennes coordonées avec l'ancienne ori
+            return grid, poly, prevX, y, ori
+
+            
+
+            
 
             
         
@@ -726,7 +735,7 @@ def rotatePiece(grid, poly, prevX, prevY, x, y, ori, change, maxY):
         ori += 1
 
     # on redessine la pièce avec sa nouvelle orientation 
-    return drawPiece(grid, poly, None, None, x, y, ori, change, maxY)
+    return drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY, 1)
 
 
 
