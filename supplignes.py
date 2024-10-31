@@ -8,8 +8,7 @@ def supplignes (grid) :
         nb_lignes_supp+=1
   return nb_lignes_supp ; 
 
-def points (nb_lignes_supp) : 
-  compteur = 0 
+def points (compteur, nb_lignes_supp) : 
   if nb_lignes_supp==1 : 
     compteur += 40
   elif nb_lignes_supp ==2 : 
