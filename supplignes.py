@@ -21,7 +21,7 @@ def points (compteur, nb_lignes_supp) :
     compteur += 300
   elif nb_lignes_supp == 4 : 
     compteur += 500 
-return compteur ; 
+  return compteur ; 
 
 compteur = 0 
 
