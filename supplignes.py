@@ -27,4 +27,5 @@ def points (compteur, nb_lignes_supp) :
 
 def draw_compteur (compteur) : 
   rectangle(largeurFenetre, 0, largeurFenetre - 100, 100) 
+  texte(largeurFenetre - 100, 10,str(compteur), "black", "nw", "Helveltica", 24)
   
