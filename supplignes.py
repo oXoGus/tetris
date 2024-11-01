@@ -26,4 +26,5 @@ def points (compteur, nb_lignes_supp) :
   return compteur ; 
 
 def draw_compteur (compteur) : 
-  pass 
+  rectangle(largeurFenetre, 0, largeurFenetre - 100, 100) 
+  
