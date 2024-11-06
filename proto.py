@@ -916,7 +916,14 @@ def temps(nbLignesSuppTotale):
 
     # la difficulté de base est a une seconde
     # on abaisse la difficulté de 0.1 seconde toutes les 10 lignes supprimés
-    return 1 - 0.1*nbLignesSuppTotale 
+
+    # on empêche que on renvoie un temps négatif
+    if 1 - 0.1*nbLignesSuppTotale > 0:
+        return 1 - 0.1*nbLignesSuppTotale 
+    else:
+
+        # on renvoie le temps minimum
+        return 0.1
 
 if __name__ == "__main__":
     #### constantes et variables globales ####
