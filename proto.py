@@ -5,11 +5,6 @@ from random import randrange
 
 
 def main():
-    
-    
-
-
-
     ### création de la fenêtre ###
     cree_fenetre(largeurFenetre, hauteurFenetre)
     
@@ -35,10 +30,19 @@ def main():
     # on initialise la variable qui va contenir le poly que le joueur va jouer, celui qui apparaitera a la droite de la grille
     nextPoly = None
 
+    # Initialisation du score à 0
+    score = 0
+
+    # intialisation du nombre totale de ligne supprimer pour calculer le niveau de difficulté 
+    nbLignesSuppTotale = 0
+
+    # on initialise le flag pour détecter si il y a eu une modification sur la grille pour la redessiner qu'une fois
     change = 1
 
+    # on intitialise le score pour svoir si le temps de dessendre la pièce est passé 
     timer = 0
 
+    # on initialise la variable pour la condition de défaite
     maxY = len(grid)
 
     # TODO : menu
@@ -52,6 +56,8 @@ def main():
         # si la dernière piece a été déposé 
         if pieceActivated == 0:
 
+            score, nbLignesSuppTotale = suppLignes(grid, score)
+
 
             # si c'est la première pièce de la partie 
             if nextPoly == None:
@@ -63,8 +69,6 @@ def main():
 
                 # on choisit aléatoirement le prochaine pièce
                 nextPoly = polyLst[randrange(0, len(polyLst))]
-
-            # sinon
             else : 
                 
                 # la pièce suivante devient la pièce active et on génère la pièce suivante 
@@ -97,9 +101,9 @@ def main():
         # timer pour descendre la pièce de une case toute les une secondes
         if timer == 0:
             timer = time.perf_counter()
-        #print(time.perf_counter() - timer)
-        # 1000 ms 
-        if time.perf_counter() - timer > 1:
+        
+        # variable de difficulté avec la fonction temps()
+        if time.perf_counter() - timer > temps(nbLignesSuppTotale):
 
             
 
@@ -108,7 +112,7 @@ def main():
             if isPolyMaxY(grid, poly, x, y, ori) == True:
                 desactivateCounter += 1
             
-            # on reinitialise la compteur dès qu'il y a de l'espace sous la pièce active
+            # on reinitialise la score dès qu'il y a de l'espace sous la pièce active
             else:
                 desactivateCounter = 0
 
@@ -133,9 +137,9 @@ def main():
 
         
 
-        # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change'
+        # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
         if change == 1:
-            drawGrid(grid, nextPoly)
+            drawGrid(grid, nextPoly, score)
 
             change = 0
 
@@ -176,6 +180,7 @@ def genColorRGBLst(len):
     for i in range(len):
         lst.append(genColorRGB())
     
+    # couleur grise pour l'ombre de la pièce active
     lst.append("#b2b7bf")
     return lst
 
@@ -188,11 +193,15 @@ def toHex(n):
         return "0" + hex(n)[2:]
     return hex(n)[2:]    
 
-def drawGrid(grid, nextPoly):
+def drawGrid(grid, nextPoly, score):
 
     efface_tout()
 
+    # affichage du poly suivant
     drawNextPoly(nextPoly)
+
+    # affichage du score
+    drawScore(score)
 
     yGrid = 0
     xGrid = 0
@@ -824,7 +833,90 @@ def drawNextPoly(nextPoly):
             else:
                 rectangle(x+j*sizeSquareGrid, y+i*sizeSquareGrid, x+j*sizeSquareGrid + sizeSquareGrid, y+i*sizeSquareGrid + sizeSquareGrid, squareColors[nextPoly[0][i][j]], squareColors[nextPoly[0][i][j]])
 
+def suppLignes (grid, score) : 
+    """Supprimer les lignes lorsque toutes les valeurs sont diférentes de 0 et appelle la fonction qui descend les lignes au dessus de celle supprimée"""
+    
+    #fonction qui va supprimer les lignes remplies dans la grille 
+    # et qui va renvoyer le nombre de lignes supprimées 
+    nbLignesSupp = 0
+    
+    # boucle while qui va parcourir les sous listes, 
+    # soit les lignes de la grille
+    i = 0
+    while i < len(grid) :
+        
+        # boucle for qui va parcourir les diverses éléments de la lignes 
+        # et les passer à vide si il n'y a pas de zéro, c'est à dire qu'elle est remplie 
+        if 0 not in grid[i] : 
+            for j in range(len(grid[i])) : 
+                grid[i][j] = 0
 
+            nbLignesSupp += 1
+            downLignes(grid, i)
+            
+        i+=1
+    return points(score, nbLignesSupp), nbLignesSupp; 
+
+def downLignes(grid, i) :
+    """ Parcourt les lignes supérieures à la ligne supprimée pour les descendre """
+    
+    # pour toutes les lignes au dessus de celle qui vient d'être supprimé
+    while i>0: 
+
+        # on abaisse la ligne du dessus
+        for j in range(len(grid[i])) : 
+            grid[i][j]=grid[i-1][j]
+        i-=1 
+    return grid  
+
+
+def points (score, nbLignesSupp) : 
+    """Lorsque le nombre de lignes supprimées est égal à une valeur, un certain nombre de points est ajouté"""
+    
+    #fonction qui va ajouter les points selon le nombre de lignes supprimées 
+    if nbLignesSupp==1 : 
+        score += 40
+    
+    elif nbLignesSupp ==2 : 
+        score += 100 
+    
+    elif nbLignesSupp == 3 : 
+        score += 300
+    
+    elif nbLignesSupp == 4 : 
+        score += 500 
+    
+    return score 
+
+def drawScore(score) : 
+    """dessine a droite de la grille le score"""
+    
+    # le décalage de chaque coté pour que la ligne du dessous soit un peut plus grande que la taille du texte
+    xOffset = sizeSquareGrid/4
+    yOffset = sizeSquareGrid/8
+
+    # ligne du dessous a droite de la grille a la 2eme case
+    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 2*sizeSquareGrid , largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + taille_texte(str(score))[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 2*sizeSquareGrid, "black", 4) 
+    
+    # possition du texte 
+    xPose = largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + xOffset
+    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + sizeSquareGrid  - yOffset
+    
+    # TODO : taille de police en fonction de la taille de la fenêtre
+    texte(xPose, yPose ,str(score), "black", "nw", "Helveltica", 24)
+
+
+def temps(nbLignesSuppTotale):
+    """renvoie le temps d'attente avant que la pièce tombe toute seule"""
+    
+    # courbe de difficulté linéaire
+
+    # on augmente la difficulté toute les 10 lignes supprimé
+    nbLignesSuppTotale = nbLignesSuppTotale // 10
+
+    # la difficulté de base est a une seconde
+    # on abaisse la difficulté de 0.1 seconde toutes les 10 lignes supprimés
+    return 1 - 0.1*nbLignesSuppTotale 
 
 if __name__ == "__main__":
     #### constantes et variables globales ####
