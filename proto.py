@@ -1,11 +1,6 @@
 from fltk import *
 import time
 from random import randrange
-from copy import copy
-
-
-
-
 
 
 
@@ -37,6 +32,9 @@ def main():
     # les variables locales, on ne peut pas utiliser de variables globales en les définissant hors de la fonction son accessible qu'en lecture exeption faite au liste 
     pieceActivated = 0
 
+    # on initialise la variable qui va contenir le poly que le joueur va jouer, celui qui apparaitera a la droite de la grille
+    nextPoly = None
+
     change = 1
 
     timer = 0
@@ -54,15 +52,33 @@ def main():
         # si la dernière piece a été déposé 
         if pieceActivated == 0:
 
-            # on choisit aléatoirement la nouvelle pièce 
-            poly = polyLst[randrange(0, len(polyLst))]
+
+            # si c'est la première pièce de la partie 
+            if nextPoly == None:
+                
+                # on génère les deux poly
+
+                # on choisit aléatoirement la nouvelle pièce 
+                poly = polyLst[randrange(0, len(polyLst))]
+
+                # on choisit aléatoirement le prochaine pièce
+                nextPoly = polyLst[randrange(0, len(polyLst))]
+
+            # sinon
+            else : 
+                
+                # la pièce suivante devient la pièce active et on génère la pièce suivante 
+                poly = nextPoly
+
+                # on choisit aléatoirement la nouvelle pièce 
+                nextPoly = polyLst[randrange(0, len(polyLst))]
 
             # on initialise l'oriantation de la pièce a 0
             ori = 0
 
             # condition de défaite
             # si le maxY de la dernière pièce qui vient d'être posé va se supperposer avec le nouveau poly généré
-            if len(polyLst[ori]) - 1 >= maxY:
+            if len(poly[ori]) - 1 >= maxY:
                 break
 
             
@@ -101,7 +117,7 @@ def main():
                 # on desactive la pièce pour en faire spawn une autre
                 pieceActivated = 0
                 
-            print(desactivateCounter)
+            # print(desactivateCounter)
 
             y += 1
             
@@ -119,7 +135,7 @@ def main():
 
         # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change'
         if change == 1:
-            drawGrid(grid)
+            drawGrid(grid, nextPoly)
 
             change = 0
 
@@ -148,6 +164,7 @@ def main():
             else:
                 print(key)
 
+    # TODO : délais pour afficher le texte de défaite
     time.sleep(1)
 
 
@@ -171,9 +188,11 @@ def toHex(n):
         return "0" + hex(n)[2:]
     return hex(n)[2:]    
 
-def drawGrid(grid):
+def drawGrid(grid, nextPoly):
 
     efface_tout()
+
+    drawNextPoly(nextPoly)
 
     yGrid = 0
     xGrid = 0
@@ -469,13 +488,13 @@ def isPolyMaxY(grid, poly, x, y, ori):
                 # pour ne pas détécter la piece elle meme
                 if i + 1 < len(poly[ori]) and poly[ori][i + 1][j] == 0:
                     if grid[y + i + 1][x + j] != 0:
-                        print("poly posé")
+                        #print("poly posé")
                         return True
                     
                 # les case en dessous du poly
                 elif i + 1 == len(poly[ori]):
                     if grid[y + i + 1][x + j] != 0:
-                        print("poly posé")
+                        #print("poly posé")
                         return True
     return False
 
@@ -510,12 +529,6 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY, rotated = 0):
         print("depasse en bas")
         y -= 1
 
-
-    # debug
-    """print(f"y = {y}")
-    print(f"prevY = {prevY}")
-    print(f"x = {x}")
-    print(f"prevX = {prevX}")"""
 
     # si il existe une piece précédente pour que la pièce n'ait pas de colisions avec elle meme 
     # et que la pièce ne vien pas d'etre tourné car la piece précédanta déja été effacé
@@ -732,7 +745,6 @@ def rotatePiece(grid, poly, prevX, prevY, x, y, ori, change, maxY):
     erasePiece(grid, poly, x, maxY, ori)
 
  
-
     if ori == 3:
         ori = 0
     else:
@@ -790,10 +802,34 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
         return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
 
+def drawNextPoly(nextPoly):
+    """dsesine a droite de la grille le poly suivant"""
+    
+    # ligne du dessus a droite de la grille a la 4eme case et 
+    # de logueur la longueur de next poly + une 1 case pour le padding 
+    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid, largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + sizeSquareGrid*len(nextPoly[0][0]) + 1*sizeSquareGrid, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid, "black", 4)
+
+    # on dessine le poly avec sont orientation de base a une case en dessous de la ligne
+    # et 1/2 case horizontalement
+
+    y = hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid + 0.5*sizeSquareGrid
+    x = largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + 0.5*sizeSquareGrid
+
+    for i in range(len(nextPoly[0])):
+        for j in range(len(nextPoly[0][0])):
+            
+            # on affiche que les case remplit pour ne pas avoir de cases blanches
+            if nextPoly[0][i][j] == 0:
+                pass
+            else:
+                rectangle(x+j*sizeSquareGrid, y+i*sizeSquareGrid, x+j*sizeSquareGrid + sizeSquareGrid, y+i*sizeSquareGrid + sizeSquareGrid, squareColors[nextPoly[0][i][j]], squareColors[nextPoly[0][i][j]])
+
+
+
 if __name__ == "__main__":
     #### constantes et variables globales ####
 
-    largeurFenetre = 1000
+    largeurFenetre = 1200
     hauteurFenetre = largeurFenetre
     yMargin = int(0.15*hauteurFenetre)
 
