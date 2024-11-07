@@ -22,7 +22,24 @@ def main():
             grid[i].append(0)
 
     
+    # initialisation des flag de selection des variante 
     
+    # variante points lié au niveau
+    varPtsDiffSelect = True
+
+    # variante polyominos arbitraires
+    varPolyArbitraires = False
+
+    # variante mode pourrisement
+    varModePourrisement = False
+
+    # variante Mode 2 joueurs 
+    varMode2joueurs = False
+
+    # variante pause et sauvegarde
+    varPauseEtSave = False
+    
+
 
     # les variables locales, on ne peut pas utiliser de variables globales en les définissant hors de la fonction son accessible qu'en lecture exeption faite au liste 
     pieceActivated = 0
@@ -56,7 +73,7 @@ def main():
         # si la dernière piece a été déposé 
         if pieceActivated == 0:
 
-            score, nbLignesSuppTotale = suppLignes(grid, score)
+            score, nbLignesSuppTotale = suppLignes(grid, score, nbLignesSuppTotale, varPtsDiffSelect)
 
 
             # si c'est la première pièce de la partie 
@@ -833,7 +850,7 @@ def drawNextPoly(nextPoly):
             else:
                 rectangle(x+j*sizeSquareGrid, y+i*sizeSquareGrid, x+j*sizeSquareGrid + sizeSquareGrid, y+i*sizeSquareGrid + sizeSquareGrid, squareColors[nextPoly[0][i][j]], squareColors[nextPoly[0][i][j]])
 
-def suppLignes (grid, score) : 
+def suppLignes (grid, score, nbLignesSuppTotale, varPtsDiffSelect) : 
     """Supprimer les lignes lorsque toutes les valeurs sont diférentes de 0 et appelle la fonction qui descend les lignes au dessus de celle supprimée"""
     
     #fonction qui va supprimer les lignes remplies dans la grille 
@@ -855,7 +872,12 @@ def suppLignes (grid, score) :
             downLignes(grid, i)
             
         i+=1
-    return points(score, nbLignesSupp), nbLignesSupp; 
+
+    # choix de la fonction a utiliser si la variante est selectionner
+    if varPtsDiffSelect == True:
+        return pointsEnFonctionDifficulte(score, nbLignesSupp, nbLignesSuppTotale), nbLignesSupp
+    else:
+        return points(score, nbLignesSupp), nbLignesSupp
 
 def downLignes(grid, i) :
     """ Parcourt les lignes supérieures à la ligne supprimée pour les descendre """
@@ -885,6 +907,28 @@ def points (score, nbLignesSupp) :
     
     elif nbLignesSupp == 4 : 
         score += 500 
+    
+    return score 
+
+def pointsEnFonctionDifficulte(score, nbLignesSupp, nbLignesSuppTotale) : 
+    """fonction a utiliser quand la variante des points en fonction du niveau est sélectionner"""
+    
+    # fonction qui va ajouter les points selon le nombre de lignes supprimées 
+    # nbLignesSuppTotale//10 représente la difficulté
+
+    # on commence avec une difficulté de 1 pour ne pas avoir de score = 0
+    difficulty = 1 + int(nbLignesSuppTotale//10/2)
+    if nbLignesSupp==1 : 
+        score += 40*difficulty
+    
+    elif nbLignesSupp ==2 : 
+        score += 100*difficulty
+    
+    elif nbLignesSupp == 3 : 
+        score += 300*difficulty
+    
+    elif nbLignesSupp == 4 : 
+        score += 500 *difficulty
     
     return score 
 
