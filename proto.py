@@ -256,9 +256,9 @@ def drawGrid(grid, nextPoly, score):
                 if n == 0:
                     rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "gray", "white")
                 elif n == -1:
-                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "gray", squareColors[n])
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "light gray", squareColors[n])
                 else:
-                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, squareColors[n], squareColors[n])
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n])
 
 
 def genPolyominoLst(n):
@@ -968,6 +968,36 @@ def temps(nbLignesSuppTotale):
 
         # on renvoie le temps minimum
         return 0.1
+
+
+def poseTextCentered(texte, taille):
+    """renvoie a partir d'un texte et d'une taille de police 
+    la position x et y pour que ce texte soit centré"""
+    
+    # centrage du texte
+    xOffsetText, yOffsetText = taille_texte(str(texte), taille=taille)
+
+    x = largeurFenetre / 2 - xOffsetText / 2
+
+    y = hauteurFenetre / 2 - yOffsetText / 2
+
+    return x, y
+
+
+def endScreen(score):
+    """dessine l'écran de fin de partie 
+    affiche le score avec en dessous 2 boutton rejouer et revenir au menu  
+    revoie une chaine de caractère 'menu' ou 'retry'"""
+
+    # la sélection est déja sur l'option retry
+    state = 'retry'
+    
+    # affichage du score
+
+    
+
+    return state
+
 
 if __name__ == "__main__":
     #### constantes et variables globales ####
