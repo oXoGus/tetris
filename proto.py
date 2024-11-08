@@ -5,6 +5,298 @@ from random import randrange
 
 
 def main():
+
+
+    # initialisation des varible pour le menu
+    fermer = 0
+    jouer=["Jouer", "Quitter"]
+
+    # initialisation des flag de selection des variante 
+    
+    # variante points lié au niveau
+    varPtsDiffSelect = True
+
+    # variante polyominos arbitraires
+    varPolyArbitraires = False
+
+    # variante mode pourrisement
+    varModePourrisement = False
+
+    # variante Mode 2 joueurs 
+    varMode2joueurs = False
+
+    # variante pause et sauvegarde
+    varPauseEtSave = False
+    
+
+
+    # création de la fenêtre
+    cree_fenetre(largeurFenetre, hauteurFenetre)
+
+
+    # 1er menu (jouer ou quitrer)
+
+    # Jouer 
+
+    # pour centrer le texte
+    xOffset, yOffset = taille_texte(jouer[0], "Helvetica", 30)
+    texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 'nw', 'Helvetica', 30)
+
+    # Quitter
+    xOffset, yOffset = taille_texte(jouer[1], "Helvetica", 20)
+    texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 + 50, jouer[1], 'black', 'nw', 'Helvetica', 20)
+
+
+    # choix par défaut est jouer c'es pour cela qu'il est plus gros, pour indiquer qu'il est selectionner
+    choix = 0
+
+    # boucle de jeu
+    while True: 
+
+        # on met a jour le fenêtre pour récuperer les touches pressées
+        mise_a_jour()
+        
+        # recuperation de la touche 
+        ev=donne_ev() 
+
+        # si une touche a été pressé 
+        if ev is not None : 
+
+            # on enregistre son type
+            key = type_ev(ev)
+
+            # si l'utilisateur veut fermer la fenêtre
+            if key == 'Quitte':
+
+                # on ferme la fenre et on sort de la boucle de jeu ce qui revien a arrêter le programme
+                ferme_fenetre()
+                break
+            
+            # si la touche est une touche de clavier
+            elif key == 'Touche':
+                
+                # on enregistre la touche
+                key = touche(ev)
+
+                # flèche du bas
+                if key=='Down':
+
+                    # on inverse l'état de choix
+                    if choix == 1: 
+                        choix = 0
+                    else : 
+                        choix += 1
+
+                # flêche du haut
+                elif key=='Up':
+                    # on inverse l'état de choix
+                    if choix == 0: 
+                        choix = 1
+                    else : 
+                        choix -= 1
+
+                # affichage du text selection en plus gros dynamiquement
+
+                # on supprime tout 
+                efface_tout()
+
+
+                # on calcule la taille de la police
+                # la taille du texte 1 est de 30 quand choix est 0 
+                # et 20 quand choix est 1
+                tailleTxt1 = 30 - choix*10
+
+                # pour centrer le texte
+                xOffset, yOffset = taille_texte(jouer[0], "Helvetica", tailleTxt1)
+                texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 'nw', 'Helvetica', tailleTxt1)
+            
+
+                # on calcule la taille de la police 
+                # la taille du texte 2 est de 20 quand choix est 0
+                # et 30 quand choix est 1
+                tailleTxt2 = 20 + choix*10
+
+                # Quitter
+                xOffset, yOffset = taille_texte(jouer[1], "Helvetica", tailleTxt2)
+                texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 + 50, jouer[1], 'black', 'nw', 'Helvetica', tailleTxt2)
+                
+                # si l'utilisateur appuis sur la touche entrer
+                if key == 'Return' : 
+                    
+                    # si le joueur a selectionné 'jouer'
+                    if choix==0 :
+
+                        # liste contentant les textes pour les variantes
+                        variantes = ["Score en fonction \nde la difficulté", "Polynomios Arbitraires", "Mode 2 joueurs", "Mode pourrissement"]
+                        descriptionVar = ["Score en fonction de la difficulté", "comming soon", "comming soon", "comming soon"]
+                        
+                        saisie = 0 
+                        
+                        # on efface tout l'ancien menu
+                        efface_tout()
+                        
+                        
+                        
+                        suivant=0 
+                        saisie = 0 
+                        tailleTxtVar0 = 16
+                        tailleTxtVar1 = 12
+                        tailleTxtVar2 = 12
+                        tailleTxtVar3 = 12
+                        
+                        while suivant != 1 : 
+
+
+                            # affichage de la selection des variantes
+                            efface_tout()
+
+
+                            # texte explicatif
+                            texte(largeurFenetre*0.25, hauteurFenetre*0.1, "Parcourt des variantes avec Haut et Bas, \nEntrer pour sélectionner, \nEspace pour passer à la suite ", 'black', 'nw', 'Helvetica', 20)
+                            
+                            
+                            #Pour ne pas conserver chaque croix précédente et savoir ou on est, on efface tout et on réimprime tout ... 
+                            rectangle(largeurFenetre*1/4, hauteurFenetre/4 , largeurFenetre*0.8,  hauteurFenetre/2 + hauteurFenetre*0.25, "black", "", 5)
+                                            
+                            rectangle(largeurFenetre*1.2/4, hauteurFenetre/2 - hauteurFenetre*0.1, largeurFenetre*1.2/4+largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1 +hauteurFenetre*0.02, "black", "", 3)
+                            rectangle(largeurFenetre*1.2/4, hauteurFenetre/2 + hauteurFenetre*0.1, largeurFenetre*1.2/4+largeurFenetre*0.02, hauteurFenetre/2 + hauteurFenetre*0.1+hauteurFenetre*0.02, "black", "", 3)
+                            rectangle(largeurFenetre*2.2/4, hauteurFenetre/2 - hauteurFenetre*0.1, largeurFenetre*2.2/4+largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1+hauteurFenetre*0.02, "black", "", 3)
+                            rectangle(largeurFenetre*2.2/4, hauteurFenetre/2 + hauteurFenetre*0.1, largeurFenetre*2.2/4+largeurFenetre*0.02, hauteurFenetre/2 + hauteurFenetre*0.1+hauteurFenetre*0.02, "black", "", 3)
+                                            
+                            #texte 
+                            
+                            # si cette variante est selectionné
+                            if saisie == 0:
+                                tailleTxtVar0 = 20
+                                tailleTxtVar1 = 16
+                                tailleTxtVar2 = 16
+                                tailleTxtVar3 = 16
+
+                            elif saisie == 1:
+                                tailleTxtVar0 = 16
+                                tailleTxtVar1 = 20
+                                tailleTxtVar2 = 16
+                                tailleTxtVar3 = 16
+
+                            elif saisie == 2:
+                                tailleTxtVar0 = 16
+                                tailleTxtVar1 = 16
+                                tailleTxtVar2 = 20
+                                tailleTxtVar3 = 16
+
+                            elif saisie == 3:
+                                tailleTxtVar0 = 16
+                                tailleTxtVar1 = 16
+                                tailleTxtVar2 = 16
+                                tailleTxtVar3 = 20
+                            
+                                
+                            # textes des variantes a droite de chaque cases
+                            texte(largeurFenetre*1.2/4+largeurFenetre*0.03, hauteurFenetre/2 - hauteurFenetre*0.1, variantes[0], 'black', 'nw', 'Helvetica', tailleTxtVar0)
+                            texte(largeurFenetre*1.2/4+largeurFenetre*0.03, hauteurFenetre/2 + hauteurFenetre*0.1, variantes[1], 'black', 'nw', 'Helvetica', tailleTxtVar1)
+                            texte(largeurFenetre*2.2/4+largeurFenetre*0.03, hauteurFenetre/2 - hauteurFenetre*0.1, variantes[2], 'black', 'nw', 'Helvetica', tailleTxtVar2)
+                            texte(largeurFenetre*2.2/4+largeurFenetre*0.03, hauteurFenetre/2 + hauteurFenetre*0.1, variantes[3], 'black', 'nw', 'Helvetica', tailleTxtVar3)
+                            
+
+                            # texte de description de la variante
+                            texte(largeurFenetre*0.23, hauteurFenetre*0.80, descriptionVar[saisie])
+                            
+
+                            # cases cochés 
+                            if varPtsDiffSelect == True : 
+
+                                # on coche la première case
+                                ligne(largeurFenetre*1.2/4,hauteurFenetre/2 - hauteurFenetre*0.1 +hauteurFenetre*0.02, largeurFenetre*1.2/4+largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1, "black", 3)
+                                ligne(largeurFenetre*1.2/4+largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1 +hauteurFenetre*0.02, largeurFenetre*1.2/4,hauteurFenetre/2 - hauteurFenetre*0.1, "black", 3)
+                            
+                            if varPolyArbitraires==True : 
+                                ligne(largeurFenetre*2.2/4,hauteurFenetre/2 + hauteurFenetre*0.1+hauteurFenetre*0.02,  largeurFenetre*2.2/4+largeurFenetre*0.02, hauteurFenetre/2 + hauteurFenetre*0.1, "black", 3)
+                                ligne(largeurFenetre*2.2/4+largeurFenetre*0.02, hauteurFenetre/2 + hauteurFenetre*0.1+hauteurFenetre*0.02 , largeurFenetre*2.2/4, hauteurFenetre/2 + hauteurFenetre*0.1, "black", 3)
+                            
+                            if varModePourrisement==True : 
+                                ligne(largeurFenetre*1.2/4, hauteurFenetre/2 + hauteurFenetre*0.1 +hauteurFenetre*0.02, largeurFenetre*1.2/4+largeurFenetre*0.02, hauteurFenetre/2 + hauteurFenetre*0.1, "black", 3)
+                                ligne(largeurFenetre*1.2/4+largeurFenetre*0.02,hauteurFenetre/2 + hauteurFenetre*0.1 + hauteurFenetre*0.02, largeurFenetre*1.2/4, hauteurFenetre/2 + hauteurFenetre*0.1, "black", 3)
+                                        
+                            if varMode2joueurs==True :
+                                ligne(largeurFenetre*2.2/4,hauteurFenetre/2 - hauteurFenetre*0.1 + hauteurFenetre*0.02, largeurFenetre*2.2/4 + largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1, "black", 3)
+                                ligne( largeurFenetre*2.2/4+largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1+hauteurFenetre*0.02 , largeurFenetre*2.2/4, hauteurFenetre/2 - hauteurFenetre*0.1, "black", 3)
+                                    
+
+
+                            # gestion des touches
+                            
+                            # on récupère la dernière touche  
+                            mise_a_jour()
+                            ev=donne_ev()
+
+                            # si une touche a bien été pressé
+                            if ev is not None : 
+                                
+                                # on store son type
+                                key = type_ev(ev)
+                                
+                                # si l'utilisateur veut fermer la fenêtre
+                                if key == 'Quitte':
+                                    ferme_fenetre()
+                                    fermer = True
+                                    break
+
+                                elif key=='Touche' : 
+                                    
+                                    # on enregistre la touche
+                                    key=touche(ev)
+                                    print(key)
+                                    
+
+                                    if key=='Up' : 
+
+                                        # on change saisie
+                                        if saisie==3 : 
+                                            saisie=0
+                                        else : 
+                                            saisie+=1
+                                        
+        
+                                    elif key=='Down':
+
+                                        # on change la saisie
+                                        if saisie==0 : 
+                                            saisie=3 
+                                        else : 
+                                            saisie-=1
+                                        
+                                           
+                                    elif key=='Return' : 
+
+                                        # gestions des cases cochées, on inverse leurs états si la variante est implémanté  
+                                        if saisie == 0 :    
+                                            if varPtsDiffSelect == True:
+                                                varPtsDiffSelect = False
+                                            else:
+                                                varPtsDiffSelect = True 
+                                    
+                                    elif key=='space' :
+                                        ferme_fenetre()
+                                        suivant=1
+                    
+                        if fermer ==  True:
+                            break
+                    
+                    elif choix==1 : 
+
+                        # on ferme la fenêtre puis arrête le programme
+                        ferme_fenetre() 
+                        break
+ 
+                        
+
+# Dans la boucle ci dessus, il faut rajouter le texte description de ce que l'utilisateur doit faire, ainsi que lde la description des modes 
+#Activer en fonction les modes 
+
+
+
+
+def game():
     ### création de la fenêtre ###
     cree_fenetre(largeurFenetre, hauteurFenetre)
     
@@ -234,6 +526,33 @@ def drawGrid(grid, nextPoly, score):
     #ligne de droite
     ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
 
+
+
+    # on dessine les case vide pour que les épaisseurs des case des case pleines ne soit 'écrasé' par l'épaisseur de la case vide
+    for i in range(len(grid)):
+
+        yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
+        for j in range(len(grid[0])):
+
+             # on enregistre la couleur de la case
+            n = grid[i][j]
+
+            xGrid = largeurFenetre/2 - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+
+            # si on est dans les 4 première ligne
+            if i < 4:
+                # on affiche que les pièce, pas la grille
+                if n == 0:
+                    pass
+            
+            else:
+
+                # on affiche bien que les case vide
+                if n == 0:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "light gray", "white")
+    
+    
+    # on dessine que les cases pleines
     for i in range(len(grid)):
 
         yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
@@ -250,15 +569,15 @@ def drawGrid(grid, nextPoly, score):
                 if n == 0:
                     pass
                 else:
-                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, squareColors[n], squareColors[n])
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
             
             else:
                 if n == 0:
-                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "gray", "white")
+                    pass
                 elif n == -1:
-                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "light gray", squareColors[n])
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
                 else:
-                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n])
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
 
 
 def genPolyominoLst(n):
@@ -277,7 +596,7 @@ def genPolyominoLst(n):
         
         polyRotationLst = genPolyRoationLst(n)
 
-        print(len(lstPolyomino))
+        
         # on met la liste des rotation du polyomino si ce polyomino n'y est pas deja
         k = 0
         while k < len(lstPolyomino):
@@ -290,6 +609,8 @@ def genPolyominoLst(n):
 
         if polyIn == False:
             lstPolyomino.append(polyRotationLst)
+
+        print(len(lstPolyomino))
 
     # on identifie chaque pièce par son index
     # pour chaque liste contenant toute les rotation d'un meme polyomino
@@ -848,7 +1169,7 @@ def drawNextPoly(nextPoly):
             if nextPoly[0][i][j] == 0:
                 pass
             else:
-                rectangle(x+j*sizeSquareGrid, y+i*sizeSquareGrid, x+j*sizeSquareGrid + sizeSquareGrid, y+i*sizeSquareGrid + sizeSquareGrid, squareColors[nextPoly[0][i][j]], squareColors[nextPoly[0][i][j]])
+                rectangle(x+j*sizeSquareGrid, y+i*sizeSquareGrid, x+j*sizeSquareGrid + sizeSquareGrid, y+i*sizeSquareGrid + sizeSquareGrid, "black", squareColors[nextPoly[0][i][j]], 3)
 
 def suppLignes (grid, score, nbLignesSuppTotale, varPtsDiffSelect) : 
     """Supprimer les lignes lorsque toutes les valeurs sont diférentes de 0 et appelle la fonction qui descend les lignes au dessus de celle supprimée"""
@@ -1015,7 +1336,7 @@ if __name__ == "__main__":
     # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
     # n =  4 pour le mode de jeu classique 
     polyLst = genPolyominoLst(n=4)
-
+    
     squareColors = genColorRGBLst(len(polyLst))
 
 
