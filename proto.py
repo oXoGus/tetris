@@ -10,6 +10,7 @@ def main():
     # initialisation des varible pour le menu
     fermer = 0
     jouer=["Jouer", "Quitter"]
+    flag = None
 
     # initialisation des flag de selection des variante 
     
@@ -33,18 +34,7 @@ def main():
     # création de la fenêtre
     cree_fenetre(largeurFenetre, hauteurFenetre)
 
-
-    # 1er menu (jouer ou quitrer)
-
-    # Jouer 
-
-    # pour centrer le texte
-    xOffset, yOffset = taille_texte(jouer[0], "Helvetica", 30)
-    texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 'nw', 'Helvetica', 30)
-
-    # Quitter
-    xOffset, yOffset = taille_texte(jouer[1], "Helvetica", 20)
-    texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 + 50, jouer[1], 'black', 'nw', 'Helvetica', 20)
+    
 
 
     # choix par défaut est jouer c'es pour cela qu'il est plus gros, pour indiquer qu'il est selectionner
@@ -52,6 +42,45 @@ def main():
 
     # boucle de jeu
     while True: 
+
+        print(flag)
+        # si le jouer a appuier sur réessayer 
+        if flag == 'retry':
+            flag = game(varPtsDiffSelect)
+
+        # pour le menu
+        elif flag == 'menu':
+            flag = None
+
+            # il ne faut pas détecter les touches trop tot 
+
+        # affichage du text selection en plus gros dynamiquement
+
+        # on supprime tout 
+        efface_tout()
+
+        # le titre
+        xOffset, yOffset = taille_texte("TETRIS", "Helvetica", 100)
+        texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/4 - yOffset/2 , "TETRIS", 'black', 'nw', 'Helvetica', 100) 
+
+        # on calcule la taille de la police
+        # la taille du texte 1 est de 30 quand choix est 0 
+        # et 20 quand choix est 1
+        tailleTxt1 = 30 - choix*10
+
+        # pour centrer le texte
+        xOffset, yOffset = taille_texte(jouer[0], "Helvetica", tailleTxt1)
+        texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 'nw', 'Helvetica', tailleTxt1)
+            
+
+        # on calcule la taille de la police 
+        # la taille du texte 2 est de 20 quand choix est 0
+        # et 30 quand choix est 1
+        tailleTxt2 = 20 + choix*10
+
+        # Quitter
+        xOffset, yOffset = taille_texte(jouer[1], "Helvetica", tailleTxt2)
+        texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 + 50, jouer[1], 'black', 'nw', 'Helvetica', tailleTxt2)
 
         # on met a jour le fenêtre pour récuperer les touches pressées
         mise_a_jour()
@@ -95,30 +124,7 @@ def main():
                     else : 
                         choix -= 1
 
-                # affichage du text selection en plus gros dynamiquement
-
-                # on supprime tout 
-                efface_tout()
-
-
-                # on calcule la taille de la police
-                # la taille du texte 1 est de 30 quand choix est 0 
-                # et 20 quand choix est 1
-                tailleTxt1 = 30 - choix*10
-
-                # pour centrer le texte
-                xOffset, yOffset = taille_texte(jouer[0], "Helvetica", tailleTxt1)
-                texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 'nw', 'Helvetica', tailleTxt1)
-            
-
-                # on calcule la taille de la police 
-                # la taille du texte 2 est de 20 quand choix est 0
-                # et 30 quand choix est 1
-                tailleTxt2 = 20 + choix*10
-
-                # Quitter
-                xOffset, yOffset = taille_texte(jouer[1], "Helvetica", tailleTxt2)
-                texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 + 50, jouer[1], 'black', 'nw', 'Helvetica', tailleTxt2)
+                
                 
                 # si l'utilisateur appuis sur la touche entrer
                 if key == 'Return' : 
@@ -127,8 +133,8 @@ def main():
                     if choix==0 :
 
                         # liste contentant les textes pour les variantes
-                        variantes = ["Score en fonction \nde la difficulté", "Polynomios Arbitraires", "Mode 2 joueurs", "Mode pourrissement"]
-                        descriptionVar = ["Score en fonction de la difficulté", "comming soon", "comming soon", "comming soon"]
+                        variantes = ["Score en fonction \nde la difficulté", "Polynomios \nArbitraires", "Mode 2 joueurs", "Mode pourrissement"]
+                        descriptionVar = ["desciption : Score en fonction de la difficulté", "comming soon", "comming soon", "comming soon"]
                         
                         saisie = 0 
                         
@@ -139,10 +145,6 @@ def main():
                         
                         suivant=0 
                         saisie = 0 
-                        tailleTxtVar0 = 16
-                        tailleTxtVar1 = 12
-                        tailleTxtVar2 = 12
-                        tailleTxtVar3 = 12
                         
                         while suivant != 1 : 
 
@@ -151,18 +153,37 @@ def main():
                             efface_tout()
 
 
+                            
+                            
+                            # rectangle encatrant tout les choix
+                            rectangleOmbre(largeurFenetre*1/5, hauteurFenetre*1/5 , largeurFenetre*4/5,  hauteurFenetre*4/5, 1*sizeSquareGrid, "white", "black", "gray", 5)
+
+
                             # texte explicatif
-                            texte(largeurFenetre*0.25, hauteurFenetre*0.1, "Parcourt des variantes avec Haut et Bas, \nEntrer pour sélectionner, \nEspace pour passer à la suite ", 'black', 'nw', 'Helvetica', 20)
+                            texteCentre(largeurFenetre/2, hauteurFenetre*0.3, "choisisez les variantes avec les flèches", 'black','Helvetica', 28)
+
+                            # case 1
+                            xCase1 = largeurFenetre*1/5 + 1*sizeSquareGrid
+                            yCase1 = hauteurFenetre/2 - 2*sizeSquareGrid
+                            rectangleOmbre(xCase1, yCase1, xCase1 + sizeSquareGrid, yCase1 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)
+                            
+                            #case 2
+                            xCase2 = largeurFenetre*1/5 + 1*sizeSquareGrid
+                            yCase2 = hauteurFenetre/2 + 2*sizeSquareGrid
+                            rectangleOmbre(xCase2, yCase2, xCase2 + sizeSquareGrid, yCase2 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)
+
+                            # case 3
+                            xCase3 = largeurFenetre/2 
+                            yCase3 = hauteurFenetre/2 - 2*sizeSquareGrid
+                            rectangleOmbre(xCase3, yCase3, xCase3 + sizeSquareGrid, yCase3 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)                            
                             
                             
-                            #Pour ne pas conserver chaque croix précédente et savoir ou on est, on efface tout et on réimprime tout ... 
-                            rectangle(largeurFenetre*1/4, hauteurFenetre/4 , largeurFenetre*0.8,  hauteurFenetre/2 + hauteurFenetre*0.25, "black", "", 5)
-                                            
-                            rectangle(largeurFenetre*1.2/4, hauteurFenetre/2 - hauteurFenetre*0.1, largeurFenetre*1.2/4+largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1 +hauteurFenetre*0.02, "black", "", 3)
-                            rectangle(largeurFenetre*1.2/4, hauteurFenetre/2 + hauteurFenetre*0.1, largeurFenetre*1.2/4+largeurFenetre*0.02, hauteurFenetre/2 + hauteurFenetre*0.1+hauteurFenetre*0.02, "black", "", 3)
-                            rectangle(largeurFenetre*2.2/4, hauteurFenetre/2 - hauteurFenetre*0.1, largeurFenetre*2.2/4+largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1+hauteurFenetre*0.02, "black", "", 3)
-                            rectangle(largeurFenetre*2.2/4, hauteurFenetre/2 + hauteurFenetre*0.1, largeurFenetre*2.2/4+largeurFenetre*0.02, hauteurFenetre/2 + hauteurFenetre*0.1+hauteurFenetre*0.02, "black", "", 3)
-                                            
+                            # case 3
+                            xCase4 = largeurFenetre/2 
+                            yCase4 = hauteurFenetre/2 + 2*sizeSquareGrid
+                            rectangleOmbre(xCase4, yCase4, xCase4 + sizeSquareGrid, yCase4 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)                                                 
+                            
+                            
                             #texte 
                             
                             # si cette variante est selectionné
@@ -192,34 +213,44 @@ def main():
                             
                                 
                             # textes des variantes a droite de chaque cases
-                            texte(largeurFenetre*1.2/4+largeurFenetre*0.03, hauteurFenetre/2 - hauteurFenetre*0.1, variantes[0], 'black', 'nw', 'Helvetica', tailleTxtVar0)
-                            texte(largeurFenetre*1.2/4+largeurFenetre*0.03, hauteurFenetre/2 + hauteurFenetre*0.1, variantes[1], 'black', 'nw', 'Helvetica', tailleTxtVar1)
-                            texte(largeurFenetre*2.2/4+largeurFenetre*0.03, hauteurFenetre/2 - hauteurFenetre*0.1, variantes[2], 'black', 'nw', 'Helvetica', tailleTxtVar2)
-                            texte(largeurFenetre*2.2/4+largeurFenetre*0.03, hauteurFenetre/2 + hauteurFenetre*0.1, variantes[3], 'black', 'nw', 'Helvetica', tailleTxtVar3)
+                            
+                            textMarginLeft = sizeSquareGrid + 1/3*sizeSquareGrid
+
+                            # case 1
+                            texte(xCase1 + textMarginLeft, yCase1, variantes[0], 'black', 'nw', 'Helvetica', 20)
+                            
+                            # case 2
+                            texte(xCase2 + textMarginLeft, yCase2, variantes[1], 'black', 'nw', 'Helvetica', 20)
+                            
+                            # case 3
+                            texte(xCase3 + textMarginLeft, yCase3, variantes[2], 'black', 'nw', 'Helvetica', 20)
+                            
+                            # case 4
+                            texte(xCase4 + textMarginLeft, yCase4, variantes[3], 'black', 'nw', 'Helvetica', 20)
                             
 
                             # texte de description de la variante
-                            texte(largeurFenetre*0.23, hauteurFenetre*0.80, descriptionVar[saisie])
+                            texteCentre(largeurFenetre*1/2, hauteurFenetre*0.7, descriptionVar[saisie])
                             
 
                             # cases cochés 
                             if varPtsDiffSelect == True : 
 
                                 # on coche la première case
-                                ligne(largeurFenetre*1.2/4,hauteurFenetre/2 - hauteurFenetre*0.1 +hauteurFenetre*0.02, largeurFenetre*1.2/4+largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1, "black", 3)
-                                ligne(largeurFenetre*1.2/4+largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1 +hauteurFenetre*0.02, largeurFenetre*1.2/4,hauteurFenetre/2 - hauteurFenetre*0.1, "black", 3)
+                                ligne(xCase1, yCase1, xCase1 + sizeSquareGrid, yCase1 + sizeSquareGrid, "black", 5)
+                                ligne(xCase1 + sizeSquareGrid, yCase1, xCase1, yCase1 + sizeSquareGrid, "black", 5)
                             
                             if varPolyArbitraires==True : 
-                                ligne(largeurFenetre*2.2/4,hauteurFenetre/2 + hauteurFenetre*0.1+hauteurFenetre*0.02,  largeurFenetre*2.2/4+largeurFenetre*0.02, hauteurFenetre/2 + hauteurFenetre*0.1, "black", 3)
-                                ligne(largeurFenetre*2.2/4+largeurFenetre*0.02, hauteurFenetre/2 + hauteurFenetre*0.1+hauteurFenetre*0.02 , largeurFenetre*2.2/4, hauteurFenetre/2 + hauteurFenetre*0.1, "black", 3)
+                                ligne(xCase2, yCase2, xCase2 + sizeSquareGrid, yCase2 + sizeSquareGrid, "black", 5)
+                                ligne(xCase2 + sizeSquareGrid, yCase2, xCase2, yCase2 + sizeSquareGrid, "black", 5)
                             
                             if varModePourrisement==True : 
-                                ligne(largeurFenetre*1.2/4, hauteurFenetre/2 + hauteurFenetre*0.1 +hauteurFenetre*0.02, largeurFenetre*1.2/4+largeurFenetre*0.02, hauteurFenetre/2 + hauteurFenetre*0.1, "black", 3)
-                                ligne(largeurFenetre*1.2/4+largeurFenetre*0.02,hauteurFenetre/2 + hauteurFenetre*0.1 + hauteurFenetre*0.02, largeurFenetre*1.2/4, hauteurFenetre/2 + hauteurFenetre*0.1, "black", 3)
+                                ligne(xCase3, yCase3, xCase3 + sizeSquareGrid, yCase3 + sizeSquareGrid, "black", 5)
+                                ligne(xCase3 + sizeSquareGrid, yCase3, xCase3, yCase3 + sizeSquareGrid, "black", 5)
                                         
                             if varMode2joueurs==True :
-                                ligne(largeurFenetre*2.2/4,hauteurFenetre/2 - hauteurFenetre*0.1 + hauteurFenetre*0.02, largeurFenetre*2.2/4 + largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1, "black", 3)
-                                ligne( largeurFenetre*2.2/4+largeurFenetre*0.02, hauteurFenetre/2 - hauteurFenetre*0.1+hauteurFenetre*0.02 , largeurFenetre*2.2/4, hauteurFenetre/2 - hauteurFenetre*0.1, "black", 3)
+                                ligne(xCase4, yCase4, xCase4 + sizeSquareGrid, yCase4 + sizeSquareGrid, "black", 5)
+                                ligne(xCase4 + sizeSquareGrid, yCase4, xCase4, yCase4 + sizeSquareGrid, "black", 5)
                                     
 
 
@@ -276,8 +307,19 @@ def main():
                                                 varPtsDiffSelect = True 
                                     
                                     elif key=='space' :
-                                        ferme_fenetre()
-                                        suivant=1
+                                        
+                                        #  on démare la partie avec les variantes
+                                        flag = game(varPtsDiffSelect)
+
+                                        # la fenêtre est deja fermer on ferme le programme
+                                        if flag == 'Quitte':
+                                            return None
+                                        
+                                        # pour ne pas refaire la boucle et afficher la selection des variantes
+                                        if flag == 'retry' or flag == 'menu':
+                                            break
+                                        
+                                        
                     
                         if fermer ==  True:
                             break
@@ -296,9 +338,11 @@ def main():
 
 
 
-def game():
+def game(varPtsDiffSelect):
     ### création de la fenêtre ###
-    cree_fenetre(largeurFenetre, hauteurFenetre)
+    
+    # on efface le menu
+    efface_tout()
     
     # grille du haut contenant les id des carrées pour pouvoir les supprimer 
 
@@ -313,24 +357,7 @@ def game():
         for j in range(numXSquare):
             grid[i].append(0)
 
-    
-    # initialisation des flag de selection des variante 
-    
-    # variante points lié au niveau
-    varPtsDiffSelect = True
-
-    # variante polyominos arbitraires
-    varPolyArbitraires = False
-
-    # variante mode pourrisement
-    varModePourrisement = False
-
-    # variante Mode 2 joueurs 
-    varMode2joueurs = False
-
-    # variante pause et sauvegarde
-    varPauseEtSave = False
-    
+    flag = None
 
 
     # les variables locales, on ne peut pas utiliser de variables globales en les définissant hors de la fonction son accessible qu'en lecture exeption faite au liste 
@@ -400,7 +427,7 @@ def game():
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
             grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
 
-            printGrid(grid)
+            #printGrid(grid)
 
             pieceActivated = 1
 
@@ -413,7 +440,7 @@ def game():
         
         # variable de difficulté avec la fonction temps()
         if time.perf_counter() - timer > temps(nbLignesSuppTotale):
-
+            #print(nbLignesSuppTotale, temps(nbLignesSuppTotale))
             
 
             # gestion du délais pour desactiver la piece
@@ -467,7 +494,11 @@ def game():
             # si l'utilisateur appuis pour sur la croix ou alt + f4 pour fermer la fenêtre
             if key == 'Quitte':
                 ferme_fenetre()
-                break
+
+                # on met le flag a 'Quitte' pour ne pas refaire le menu
+                flag = 'Quitte'
+                return flag
+                
             elif key == 'Touche':
                 key = touche(ev)
 
@@ -475,10 +506,11 @@ def game():
                 if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
                     grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated)
             else:
-                print(key)
+                pass
+                #print(key)
 
-    # TODO : délais pour afficher le texte de défaite
-    time.sleep(1)
+    # ecran de fin revoie un flag
+    return endScreen(score)
 
 
 def genColorRGBLst(len):
@@ -820,7 +852,7 @@ def isPolyMaxY(grid, poly, x, y, ori):
 
     # bloqué par le limite de la grille 
     if y + len(poly[ori]) >= len(grid):
-        print("bloqué par la limite de la grille")
+        #print("bloqué par la limite de la grille")
         return True
     
     # si la ligne la plus basse du poly peut aller une case plus bas
@@ -860,7 +892,7 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY, rotated = 0):
     while x + len(poly[ori][0]) > len(grid[0]): 
         change = 0
 
-        print("depasse grille")
+        #print("depasse grille")
 
         # on remet les ancienne bonne coordonnées
         x -= 1 
@@ -873,7 +905,7 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY, rotated = 0):
 
 
     while y + len(poly[ori]) > len(grid):
-        print("depasse en bas")
+        #print("depasse en bas")
         y -= 1
 
 
@@ -892,7 +924,7 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY, rotated = 0):
 
     # gesion des colision entre les pièces
     if y != 0 and isColision(grid, poly, x, y, ori) == True:
-        print("colision")
+        #print("colision")
         grid, poly, x, y, ori = colisionResolve(grid, poly, prevX, prevY, x, y, ori, rotated)
 
     
@@ -971,21 +1003,21 @@ def colisionResolve(grid, poly, prevX, prevY, x, y, ori, rotated):
                 x += 1 
                 # on refait le test du while
 
-                print("col left")
+                #print("col left")
                 continue
             
             # meme chose pour la droite
             if colisionRight(grid, poly, x, y, ori) == True and x - 1 >= 0 and colisionLeft(grid, poly, x - 1, y, ori) == False:
 
                 x -= 1
-                print("col right")
+                #print("col right")
                 continue
 
             # meme chose pour le bas
             if colisionBottom(grid, poly, x, y, ori) == True and y - 1 + len(poly[ori]) > len(grid):
                 y -= 1
 
-                print("col bot")
+                #print("col bot")
                 continue
             
 
@@ -1000,8 +1032,8 @@ def colisionResolve(grid, poly, prevX, prevY, x, y, ori, rotated):
                 ori -= 1
 
 
-            print("x =", prevX)
-            print("y =", y)
+            #print("x =", prevX)
+            #print("y =", y)
             
 
 
@@ -1023,10 +1055,10 @@ def colisionResolve(grid, poly, prevX, prevY, x, y, ori, rotated):
         # colision classique 
         if isColision(grid, poly, x, y, ori) == True:
 
-            print("colisions classique")
+            #print("colisions classique")
             return grid, poly, prevX, prevY, ori
         
-        print("pas de colision")
+        #print("pas de colision")
         return grid, poly, x, y, ori
             
 def colisionLeft(grid, poly, x, y, ori):
@@ -1106,7 +1138,7 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
     """prends en argument la touche pressée et appelle differentes fonction selon la touche pressée"""
     
     #debug 
-    print(key)
+    #print(key)
 
     # pour touner la pièce d'1/4 vers la droite
     if key == 'Up':
@@ -1190,15 +1222,20 @@ def suppLignes (grid, score, nbLignesSuppTotale, varPtsDiffSelect) :
                 grid[i][j] = 0
 
             nbLignesSupp += 1
+
+            
             downLignes(grid, i)
             
         i+=1
 
+    # on augmente le nb de lignes supprimé toltale par le nb de lignes suppp
+    nbLignesSuppTotale += nbLignesSupp
+
     # choix de la fonction a utiliser si la variante est selectionner
     if varPtsDiffSelect == True:
-        return pointsEnFonctionDifficulte(score, nbLignesSupp, nbLignesSuppTotale), nbLignesSupp
+        return pointsEnFonctionDifficulte(score, nbLignesSupp, nbLignesSuppTotale), nbLignesSuppTotale
     else:
-        return points(score, nbLignesSupp), nbLignesSupp
+        return points(score, nbLignesSupp), nbLignesSuppTotale
 
 def downLignes(grid, i) :
     """ Parcourt les lignes supérieures à la ligne supprimée pour les descendre """
@@ -1291,18 +1328,6 @@ def temps(nbLignesSuppTotale):
         return 0.1
 
 
-def poseTextCentered(texte, taille):
-    """renvoie a partir d'un texte et d'une taille de police 
-    la position x et y pour que ce texte soit centré"""
-    
-    # centrage du texte
-    xOffsetText, yOffsetText = taille_texte(str(texte), taille=taille)
-
-    x = largeurFenetre / 2 - xOffsetText / 2
-
-    y = hauteurFenetre / 2 - yOffsetText / 2
-
-    return x, y
 
 
 def endScreen(score):
@@ -1311,16 +1336,199 @@ def endScreen(score):
     revoie une chaine de caractère 'menu' ou 'retry'"""
 
     # la sélection est déja sur l'option retry
-    state = 'retry'
+    select = 0
+
+
+    # les deux options qu'a l'utilisateur
+    option = ['retry', 'menu']
+
+    offset = 0.5*sizeSquareGrid
+
+
+
+
+    # on affiche le score dans un rectangle puis deux boutons pour réessayer 
+    # et pour revenir au menu
     
-    # affichage du score
+    # dans un rectangle 
 
     
+    # affichage des éléments fixe une seul fois ici
 
-    return state
+
+    # décalage du rectange pour que cela créer du relief avec le deuxieme rectengle qui le superpose
+
+
+    rectangleOmbre(ax = largeurFenetre/2 - 4*sizeSquareGrid, 
+                    ay = hauteurFenetre/2 - 4*sizeSquareGrid, 
+                   bx = largeurFenetre/2 + 4*sizeSquareGrid, 
+                   by = hauteurFenetre/2 + 4*sizeSquareGrid, 
+                   offsetOmbre = offset, 
+                   colBordure = "black", 
+                   colRemplissage = "white",
+                    colOmbre = "gray",
+                   epaisseur = 4)
+       
+    # texte du game over
+    xOffset, yOffset = taille_texte('GAME OVER', "Helvetica", 30)
+    texte(x = largeurFenetre/2 - xOffset/2, 
+          y = hauteurFenetre/2 - 3*sizeSquareGrid - yOffset/2, 
+          chaine =  "GAME OVER", 
+          taille =  30)
+
+    # score
+    texteCentre(x = largeurFenetre/2, 
+                y = hauteurFenetre/2 - 1*sizeSquareGrid,
+                chaine="Score : " + str(score),
+                taille=27
+                )
+    
+    # on recupere la hauteure et la largeurs du texte pour les caluls de position du cuseur 
+
+    # retry
+    xRetryLen, yRetryHight = texteCentre(x = largeurFenetre/2, 
+                        y = hauteurFenetre/2 + 1*sizeSquareGrid, 
+                        chaine =  option[0], 
+                        taille =  25,)
+
+    # menu
+    xMenuLen, yMenuHight = texteCentre(x = largeurFenetre/2, 
+                        y = hauteurFenetre/2 + 2.5*sizeSquareGrid, 
+                        chaine =  option[1], 
+                        taille =  25)
+
+    # on enregistre toutes les posistions possible du curseur
+    # ici 2 (retry et menu) dans une liste
+    
+    cursorPoseLst = [
+        # tuple contenant ax, ay, bx, by pour le retry
+        (
+            largeurFenetre/2 - xRetryLen/2, 
+            hauteurFenetre/2 + 1*sizeSquareGrid + yRetryHight/2, 
+            largeurFenetre/2 - xRetryLen/2 + xRetryLen, 
+            hauteurFenetre/2 + 1*sizeSquareGrid + yRetryHight/2
+         ), 
+         # meme chose pour le menu
+         (
+            largeurFenetre/2 - xMenuLen/2, 
+            hauteurFenetre/2 + 2.5*sizeSquareGrid + yMenuHight/2, 
+            largeurFenetre/2 - xMenuLen/2 + xMenuLen, 
+            hauteurFenetre/2 + 2.5*sizeSquareGrid + yMenuHight/2
+        )
+        ]
+
+    # on dessine le curseur a la posision par défaut
+    cursorIconeId = ligne(cursorPoseLst[select][0], cursorPoseLst[select][1], cursorPoseLst[select][2], cursorPoseLst[select][3], "black", 4)
+
+    
+    while True:
+
+        # partie gestions des input 
+       
+        # on met a jour le fenêtre pour récuperer les touches pressées
+        mise_a_jour()
+        
+        # recuperation de la touche 
+        ev=donne_ev() 
+
+        # si une touche a été pressé 
+        if ev is not None : 
+
+            # on enregistre son type
+            key = type_ev(ev)
+
+            # si l'utilisateur veut fermer la fenêtre
+            if key == 'Quitte':
+
+                # on ferme la fenre et on sort de la boucle de jeu ce qui revien a arrêter le programme
+                ferme_fenetre()                
+                return 'Quitte'
+            
+            # si la touche est une touche de clavier
+            elif key == 'Touche':
+                
+                # on enregistre la touche
+                key = touche(ev)
+
+                # touche du bas 
+                if key == 'Down':
+
+                    # on efface l'ancien curseur
+                    efface(cursorIconeId)
+
+                    if select == 1:
+                        select = 0
+                    else:
+                        select += 1
+
+                    
+                    cursorIconeId = ligne(cursorPoseLst[select][0], cursorPoseLst[select][1], cursorPoseLst[select][2], cursorPoseLst[select][3], "black", 4)
+
+                    
+                
+                # touche du haut 
+                elif key == 'Up':
+
+                    # on efface l'ancien curseur
+                    efface(cursorIconeId)
+
+                    if select == 0:
+                        select = 1
+                    else:
+                        select -= 1
+
+
+                    cursorIconeId = ligne(cursorPoseLst[select][0], cursorPoseLst[select][1], cursorPoseLst[select][2], cursorPoseLst[select][3], "black", 4)
+                
+                
+
+                # touche entrer
+                elif key == 'Return':
+                    return option[select]
+                
+
+
+
+
+
+def rectangleOmbre(ax, ay, bx, by, offsetOmbre, colRemplissage, colBordure = "", colOmbre = "gray",epaisseur = 1):
+    """dessine 2 rectangle de façon a voire l'ombre du rectangle"""
+    
+    # ombre
+    rectangle(ax - offsetOmbre, ay + offsetOmbre, bx - offsetOmbre, by + offsetOmbre, colOmbre , colOmbre)
+    
+    # le rectangle par dessus
+    rectangle(ax, ay, bx, by, colBordure, colRemplissage, epaisseur)
+
+
+def texteOmbre(x, y, chaine, taille, couleur = "black", police = "Helvetica", colOmbre = "black", epaisseurOmbre = 4):
+    """dessine un texte centré sur x et y avec son ombre"""
+
+    # on centre le texte sur x et y
+    textId = texteCentre(x, y, chaine, couleur, police, taille)
+
+    # l'ombre du texte 
+    xOffset, yOffset = taille_texte(texte, police=police, taille=taille)
+    ligneId = ligne(x - xOffset/2, y + yOffset/2, x + xOffset/2, y + yOffset/2, colOmbre, epaisseurOmbre)
+
+    return textId, ligneId
+
+def texteCentre(x, y, chaine, couleur = "black", police = "Helvetica", taille = 24):
+    """dessine un texte centré sur x et y"""
+
+    # on centre le texte sur x et y
+    xOffset, yOffset = taille_texte(chaine=chaine, police=police, taille=taille)
+    texte(x = x - xOffset/2, y = y - yOffset/2, chaine = chaine, couleur = couleur, police = police, taille = taille)
+
+    return xOffset, yOffset
+
+def pixelTexte():
+    pass
 
 
 if __name__ == "__main__":
+    ## on charge la police d'écriture style rétro
+
     #### constantes et variables globales ####
 
     largeurFenetre = 1200
