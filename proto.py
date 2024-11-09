@@ -15,7 +15,7 @@ def main():
     # initialisation des flag de selection des variante 
     
     # variante points lié au niveau
-    varPtsDiffSelect = True
+    varPtsDiffSelect = False
 
     # variante polyominos arbitraires
     varPolyArbitraires = False
@@ -43,10 +43,14 @@ def main():
     # boucle de jeu
     while True: 
 
-        print(flag)
-        # si le jouer a appuier sur réessayer 
+        # si le joueur a appuié sur réessayer 
         if flag == 'retry':
+
+            # on relance une partie avec les memes variantes activés
             flag = game(varPtsDiffSelect)
+            
+            # on ne refait pas une boucle sinon le menu sera affiché 
+            continue
 
         # pour le menu
         elif flag == 'menu':
@@ -184,33 +188,6 @@ def main():
                             rectangleOmbre(xCase4, yCase4, xCase4 + sizeSquareGrid, yCase4 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)                                                 
                             
                             
-                            #texte 
-                            
-                            # si cette variante est selectionné
-                            if saisie == 0:
-                                tailleTxtVar0 = 20
-                                tailleTxtVar1 = 16
-                                tailleTxtVar2 = 16
-                                tailleTxtVar3 = 16
-
-                            elif saisie == 1:
-                                tailleTxtVar0 = 16
-                                tailleTxtVar1 = 20
-                                tailleTxtVar2 = 16
-                                tailleTxtVar3 = 16
-
-                            elif saisie == 2:
-                                tailleTxtVar0 = 16
-                                tailleTxtVar1 = 16
-                                tailleTxtVar2 = 20
-                                tailleTxtVar3 = 16
-
-                            elif saisie == 3:
-                                tailleTxtVar0 = 16
-                                tailleTxtVar1 = 16
-                                tailleTxtVar2 = 16
-                                tailleTxtVar3 = 20
-                            
                                 
                             # textes des variantes a droite de chaque cases
                             
@@ -339,7 +316,11 @@ def main():
 
 
 def game(varPtsDiffSelect):
-    ### création de la fenêtre ###
+    """une partie de tertis
+    
+    prend en argument les variantes activées
+    renvoie un flag pour qui sera traité par le menu
+    """
     
     # on efface le menu
     efface_tout()
@@ -513,12 +494,16 @@ def game(varPtsDiffSelect):
     return endScreen(score)
 
 
-def genColorRGBLst(len):
-    """génére une liste de couleurs RGB contenant une couleur par pièces avec 0 a l'index 0 une case vide"""
+def genColorRGBLst(nbPoly):
+    """génére une liste de couleurs RGB contenant une couleur par pièces avec 0 a l'index 0 une case vide
+    
+    :param nbPoly: nombre de polyomino qu'il faut affecter une couleur
+    :return lst: une liste contenant une couleur pour chaque polymino
+    """
 
     lst = [0]
 
-    for i in range(len):
+    for i in range(nbPoly):
         lst.append(genColorRGB())
     
     # couleur grise pour l'ombre de la pièce active
@@ -526,15 +511,34 @@ def genColorRGBLst(len):
     return lst
 
 def genColorRGB():
+    """
+    génère une couleur aléatoire formaté pour fltk
+
+    :return hexColor:
+    """
+
+
     # composante rouge verte et bleu aléatoire
     return '#' + toHex(randrange(0, 256)) + toHex(randrange(0, 256)) + toHex(randrange(0, 256))
 
 def toHex(n):
+    """
+    convertie un nombre en base 10 en base 16 sur deux octets 
+    """
+
+
     if n < 16:
         return "0" + hex(n)[2:]
     return hex(n)[2:]    
 
 def drawGrid(grid, nextPoly, score):
+    """
+    dessine sur la fennêtre la représentation de la `grid`
+
+    `grid` : matrice qui représente la partie elle même
+    `nextPoly` : matice contenant la pochaine pièce à jouer pour la passer en param à la fonction `drawNextPoly()`
+    `score` : variable contenant le score pour la passer en param à la fonction `drawScore()`
+    """
 
     efface_tout()
 
@@ -642,7 +646,7 @@ def genPolyominoLst(n):
         if polyIn == False:
             lstPolyomino.append(polyRotationLst)
 
-        print(len(lstPolyomino))
+        #print(len(lstPolyomino))
 
     # on identifie chaque pièce par son index
     # pour chaque liste contenant toute les rotation d'un meme polyomino
@@ -656,6 +660,67 @@ def genPolyominoLst(n):
             for i in range(len(polyomino)):
                 for j in range(len(polyomino[0])):
                     if polyomino[i][j] == n:
+                        polyomino[i][j] = k + 1
+
+    return lstPolyomino
+
+
+def genPolyominoBonnusLst(n):
+    """génère une liste de tous les polyomino unique et unilatérale de taille inférieur ou égale a n """
+
+    lstPolyomino = []
+
+    # selon la page wikipedia des polyomino il existe 7 polyomino de forme unilatérale de taille 4
+    
+    lenLstMaxPolyomino = [1, 1, 2, 7, 17, 57, 184, 500, 500]
+
+
+
+    # on enregistre la longueur de la liste pour la condition du while
+    lenLstPolyPrevN = len(lstPolyomino)
+
+    # pour n allant de 1 a n
+    for nPoly in range(1, n+1):
+
+        # pour inserer le premier poly
+        polyIn = False
+
+        # tant qu'on a pas dans cette liste tout les polyomino de forme unilatératle de taille n 
+        while len(lstPolyomino) - lenLstPolyPrevN  < lenLstMaxPolyomino[nPoly-1]:
+            
+            polyRotationLst = genPolyRoationLst(nPoly)
+
+            
+            # on met la liste des rotation du polyomino si ce polyomino n'y est pas deja
+            k = 0
+            while k < len(lstPolyomino):
+                if polyRotationLst[0] in lstPolyomino[k]:
+                    # ce polyomino est deja dans la liste
+                    polyIn = True
+                    break
+                polyIn = False
+                k += 1
+
+            if polyIn == False:
+                lstPolyomino.append(polyRotationLst)
+        
+        # on enregistre la longueur de la liste pour la condition du while
+        lenLstPolyPrevN = len(lstPolyomino)
+
+        #print(len(lstPolyomino))
+
+    # on identifie chaque pièce par son index
+    # pour chaque liste contenant toute les rotation d'un meme polyomino
+    for k in range(len(lstPolyomino)):
+        
+        # on remplace le n par k
+
+        polyominoRotaLst = lstPolyomino[k]
+
+        for polyomino in polyominoRotaLst:
+            for i in range(len(polyomino)):
+                for j in range(len(polyomino[0])):
+                    if polyomino[i][j] != 0:
                         polyomino[i][j] = k + 1
 
     return lstPolyomino
@@ -1540,11 +1605,14 @@ if __name__ == "__main__":
     numXSquare = 10
     sizeSquareGrid = int(0.65*hauteurFenetre/numYSquare)
 
+        
+
     # au début du jeu on génére dans une liste toutes les polyomino de taille n 
     # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
     # n =  4 pour le mode de jeu classique 
     polyLst = genPolyominoLst(n=4)
-    
+
+    # génération des couleurs pour chaque poly 
     squareColors = genColorRGBLst(len(polyLst))
 
 
