@@ -1,4 +1,5 @@
 from fltk import *
+from tetriFont import *
 import time
 from random import randrange
 
@@ -34,11 +35,29 @@ def main():
     # création de la fenêtre
     cree_fenetre(largeurFenetre, hauteurFenetre)
 
-    
-
 
     # choix par défaut est jouer c'es pour cela qu'il est plus gros, pour indiquer qu'il est selectionner
     choix = 0
+
+    # le titre
+    xOffset, yOffset = tailleTetriTexte("TETRIS", 50)
+    tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/4 - yOffset/2 , "TETRIS", 'black', 50) 
+
+
+
+    # pour centrer le tetriTexte
+    xOffset, yOffset = tailleTetriTexte(jouer[0], 18)
+    tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 18)
+            
+
+
+
+    # Quitter
+    xOffset, yOffset = tailleTetriTexte(jouer[1], 18)
+    tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 + 50, jouer[1], 'black', 18)
+
+    # curseur 
+    drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 - 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
 
     # boucle de jeu
     while True: 
@@ -54,37 +73,33 @@ def main():
 
         # pour le menu
         elif flag == 'menu':
+
+            efface_tout()
+
+            # on redessine tout une fois 
+            # le titre
+            xOffset, yOffset = tailleTetriTexte("TETRIS", 50)
+            tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/4 - yOffset/2 , "TETRIS", 'black', 50) 
+
+
+
+            # pour centrer le tetriTexte
+            xOffset, yOffset = tailleTetriTexte(jouer[0], 18)
+            tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 18)
+                    
+
+
+
+            # Quitter
+            xOffset, yOffset = tailleTetriTexte(jouer[1], 18)
+            tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 + 50, jouer[1], 'black', 18)
+
+            # curseur 
+            drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 - 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
+
             flag = None
 
-            # il ne faut pas détecter les touches trop tot 
 
-        # affichage du text selection en plus gros dynamiquement
-
-        # on supprime tout 
-        efface_tout()
-
-        # le titre
-        xOffset, yOffset = taille_texte("TETRIS", "Helvetica", 100)
-        texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/4 - yOffset/2 , "TETRIS", 'black', 'nw', 'Helvetica', 100) 
-
-        # on calcule la taille de la police
-        # la taille du texte 1 est de 30 quand choix est 0 
-        # et 20 quand choix est 1
-        tailleTxt1 = 30 - choix*10
-
-        # pour centrer le texte
-        xOffset, yOffset = taille_texte(jouer[0], "Helvetica", tailleTxt1)
-        texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 'nw', 'Helvetica', tailleTxt1)
-            
-
-        # on calcule la taille de la police 
-        # la taille du texte 2 est de 20 quand choix est 0
-        # et 30 quand choix est 1
-        tailleTxt2 = 20 + choix*10
-
-        # Quitter
-        xOffset, yOffset = taille_texte(jouer[1], "Helvetica", tailleTxt2)
-        texte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 + 50, jouer[1], 'black', 'nw', 'Helvetica', tailleTxt2)
 
         # on met a jour le fenêtre pour récuperer les touches pressées
         mise_a_jour()
@@ -117,16 +132,26 @@ def main():
                     # on inverse l'état de choix
                     if choix == 1: 
                         choix = 0
+                        efface("Curseur")   
+                        drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 - 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
+                        
+                    
                     else : 
                         choix += 1
+                        efface("Curseur")
+                        drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 + 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
 
                 # flêche du haut
                 elif key=='Up':
                     # on inverse l'état de choix
                     if choix == 0: 
                         choix = 1
+                        efface("Curseur")
+                        drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 + 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
                     else : 
                         choix -= 1
+                        efface("Curseur")
+                        drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 - 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
 
                 
                 
@@ -136,9 +161,9 @@ def main():
                     # si le joueur a selectionné 'jouer'
                     if choix==0 :
 
-                        # liste contentant les textes pour les variantes
-                        variantes = ["Score en fonction \nde la difficulté", "Polynomios \nArbitraires", "Mode 2 joueurs", "Mode pourrissement"]
-                        descriptionVar = ["desciption : Score en fonction de la difficulté", "comming soon", "comming soon", "comming soon"]
+                        # liste contentant les tetriTextes pour les variantes
+                        variantes = ["Score en fonction \nde la difficulte", "Polynomios \nArbitraires", "Mode 2 joueurs", "Mode pourrissement"]
+                        descriptionVar = ["Score en fonction de la difficulte", "comming soon", "comming soon", "comming soon"]
                         
                         saisie = 0 
                         
@@ -150,6 +175,13 @@ def main():
                         suivant=0 
                         saisie = 0 
                         
+                        # on stoque toues les couleurs selon les saisi possible
+                        colSaissieLst = [["black", "light gray", "light gray", "light gray"], 
+                                         ["light gray", "black", "light gray", "light gray"],
+                                         ["light gray", "light gray", "black", "light gray"],
+                                         ["light gray", "light gray", "light gray", "black"]
+                                         ]
+
                         while suivant != 1 : 
 
 
@@ -163,9 +195,11 @@ def main():
                             rectangleOmbre(largeurFenetre*1/5, hauteurFenetre*1/5 , largeurFenetre*4/5,  hauteurFenetre*4/5, 1*sizeSquareGrid, "white", "black", "gray", 5)
 
 
-                            # texte explicatif
-                            texteCentre(largeurFenetre/2, hauteurFenetre*0.3, "choisisez les variantes avec les flèches", 'black','Helvetica', 28)
+                            # tetriTexte explicatif
+                            tetriTexteCentre(largeurFenetre/2, hauteurFenetre*0.25, "choisisez vos variantes", 'black', 14)
+                            tetriTexteCentre(largeurFenetre/2, hauteurFenetre*0.3, "avec les fleches", 'black', 14)
 
+                            
                             # case 1
                             xCase1 = largeurFenetre*1/5 + 1*sizeSquareGrid
                             yCase1 = hauteurFenetre/2 - 2*sizeSquareGrid
@@ -189,27 +223,28 @@ def main():
                             
                             
                                 
-                            # textes des variantes a droite de chaque cases
+                            # tetriTextes des variantes a droite de chaque cases
                             
-                            textMarginLeft = sizeSquareGrid + 1/3*sizeSquareGrid
+                            textMarginLeft = sizeSquareGrid + 0.2*sizeSquareGrid
 
                             # case 1
-                            texte(xCase1 + textMarginLeft, yCase1, variantes[0], 'black', 'nw', 'Helvetica', 20)
+                            tetriTexte(xCase1 + textMarginLeft, yCase1, "Score en fonction", colSaissieLst[saisie][0], 8)
+                            tetriTexte(xCase1 + textMarginLeft, yCase1 + 0.70*sizeSquareGrid, "de la difficulte", colSaissieLst[saisie][0], 8)
                             
                             # case 2
-                            texte(xCase2 + textMarginLeft, yCase2, variantes[1], 'black', 'nw', 'Helvetica', 20)
+                            tetriTexte(xCase2 + textMarginLeft, yCase2, "Polynomios", colSaissieLst[saisie][1], 8)
+                            tetriTexte(xCase2 + textMarginLeft, yCase2 + 0.70*sizeSquareGrid, "arbitraire", colSaissieLst[saisie][1], 8)
                             
                             # case 3
-                            texte(xCase3 + textMarginLeft, yCase3, variantes[2], 'black', 'nw', 'Helvetica', 20)
+                            tetriTexte(xCase3 + textMarginLeft, yCase3 + 0.2*sizeSquareGrid, "Mode 2 joueurs", colSaissieLst[saisie][2], 8)
                             
                             # case 4
-                            texte(xCase4 + textMarginLeft, yCase4, variantes[3], 'black', 'nw', 'Helvetica', 20)
+                            tetriTexte(xCase4 + textMarginLeft, yCase4, variantes[3], colSaissieLst[saisie][3], 8)
                             
 
-                            # texte de description de la variante
-                            texteCentre(largeurFenetre*1/2, hauteurFenetre*0.7, descriptionVar[saisie])
+                            # tetriTexte de description de la variante
+                            tetriTexteCentre(largeurFenetre*1/2, hauteurFenetre*0.7, descriptionVar[saisie], "black", 10)
                             
-
                             # cases cochés 
                             if varPtsDiffSelect == True : 
 
@@ -229,7 +264,7 @@ def main():
                                 ligne(xCase4, yCase4, xCase4 + sizeSquareGrid, yCase4 + sizeSquareGrid, "black", 5)
                                 ligne(xCase4 + sizeSquareGrid, yCase4, xCase4, yCase4 + sizeSquareGrid, "black", 5)
                                     
-
+                            tetriTexteCentre(largeurFenetre*1/2, hauteurFenetre*0.9, "appuyez sur espace pour lancer la partie", "black", 10)
 
                             # gestion des touches
                             
@@ -263,6 +298,8 @@ def main():
                                             saisie=0
                                         else : 
                                             saisie+=1
+
+                                        
                                         
         
                                     elif key=='Down':
@@ -309,7 +346,7 @@ def main():
  
                         
 
-# Dans la boucle ci dessus, il faut rajouter le texte description de ce que l'utilisateur doit faire, ainsi que lde la description des modes 
+# Dans la boucle ci dessus, il faut rajouter le tetriTexte description de ce que l'utilisateur doit faire, ainsi que lde la description des modes 
 #Activer en fonction les modes 
 
 
@@ -361,6 +398,7 @@ def game(varPtsDiffSelect):
 
     # on initialise la variable pour la condition de défaite
     maxY = len(grid)
+
 
     # TODO : menu
     while True:
@@ -1358,19 +1396,19 @@ def pointsEnFonctionDifficulte(score, nbLignesSupp, nbLignesSuppTotale) :
 def drawScore(score) : 
     """dessine a droite de la grille le score"""
     
-    # le décalage de chaque coté pour que la ligne du dessous soit un peut plus grande que la taille du texte
+    # le décalage de chaque coté pour que la ligne du dessous soit un peut plus grande que la taille du tetriTexte
     xOffset = sizeSquareGrid/4
     yOffset = sizeSquareGrid/8
 
     # ligne du dessous a droite de la grille a la 2eme case
-    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 2*sizeSquareGrid , largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + taille_texte(str(score))[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 2*sizeSquareGrid, "black", 4) 
+    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 2*sizeSquareGrid , largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte(str(score), 14)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 2*sizeSquareGrid, "black", 7) 
     
-    # possition du texte 
+    # possition du tetriTexte 
     xPose = largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + xOffset
     yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + sizeSquareGrid  - yOffset
     
     # TODO : taille de police en fonction de la taille de la fenêtre
-    texte(xPose, yPose ,str(score), "black", "nw", "Helveltica", 24)
+    tetriTexte(xPose, yPose ,str(score), "black", 14)
 
 
 def temps(nbLignesSuppTotale):
@@ -1434,33 +1472,37 @@ def endScreen(score):
                     colOmbre = "gray",
                    epaisseur = 4)
        
-    # texte du game over
-    xOffset, yOffset = taille_texte('GAME OVER', "Helvetica", 30)
-    texte(x = largeurFenetre/2 - xOffset/2, 
+    # tetriTexte du game over
+    xOffset, yOffset = tailleTetriTexte('GAME OVER', 12)
+    tetriTexte(x = largeurFenetre/2 - xOffset/2, 
           y = hauteurFenetre/2 - 3*sizeSquareGrid - yOffset/2, 
           chaine =  "GAME OVER", 
-          taille =  30)
+          taille =  12)
 
     # score
-    texteCentre(x = largeurFenetre/2, 
+    tetriTexteCentre(x = largeurFenetre/2, 
                 y = hauteurFenetre/2 - 1*sizeSquareGrid,
-                chaine="Score : " + str(score),
-                taille=27
+                chaine="Score:" + str(score),
+                taille=11
                 )
     
-    # on recupere la hauteure et la largeurs du texte pour les caluls de position du cuseur 
+    # on recupere la hauteure et la largeurs du tetriTexte pour les caluls de position du cuseur 
 
     # retry
-    xRetryLen, yRetryHight = texteCentre(x = largeurFenetre/2, 
+    tetriTexteCentre(x = largeurFenetre/2, 
                         y = hauteurFenetre/2 + 1*sizeSquareGrid, 
                         chaine =  option[0], 
-                        taille =  25,)
+                        taille =  10)
+    
+    xRetryLen, yRetryHight = tailleTetriTexte(option[0], 10)
 
     # menu
-    xMenuLen, yMenuHight = texteCentre(x = largeurFenetre/2, 
+    tetriTexteCentre(x = largeurFenetre/2, 
                         y = hauteurFenetre/2 + 2.5*sizeSquareGrid, 
                         chaine =  option[1], 
-                        taille =  25)
+                        taille =  10)
+    
+    xMenuLen, yMenuHight = tailleTetriTexte(option[1], 10)
 
     # on enregistre toutes les posistions possible du curseur
     # ici 2 (retry et menu) dans une liste
@@ -1468,22 +1510,18 @@ def endScreen(score):
     cursorPoseLst = [
         # tuple contenant ax, ay, bx, by pour le retry
         (
-            largeurFenetre/2 - xRetryLen/2, 
-            hauteurFenetre/2 + 1*sizeSquareGrid + yRetryHight/2, 
-            largeurFenetre/2 - xRetryLen/2 + xRetryLen, 
+            largeurFenetre/2 - xRetryLen/2 - 1.2*sizeSquareGrid, 
             hauteurFenetre/2 + 1*sizeSquareGrid + yRetryHight/2
          ), 
          # meme chose pour le menu
          (
-            largeurFenetre/2 - xMenuLen/2, 
-            hauteurFenetre/2 + 2.5*sizeSquareGrid + yMenuHight/2, 
-            largeurFenetre/2 - xMenuLen/2 + xMenuLen, 
+            largeurFenetre/2 - xMenuLen/2 - 1.2*sizeSquareGrid, 
             hauteurFenetre/2 + 2.5*sizeSquareGrid + yMenuHight/2
         )
         ]
 
     # on dessine le curseur a la posision par défaut
-    cursorIconeId = ligne(cursorPoseLst[select][0], cursorPoseLst[select][1], cursorPoseLst[select][2], cursorPoseLst[select][3], "black", 4)
+    drawCurseur(cursorPoseLst[select][0], cursorPoseLst[select][1], polyLst[randrange(0, len(polyLst))][randrange(4)])
 
     
     while True:
@@ -1518,24 +1556,18 @@ def endScreen(score):
                 # touche du bas 
                 if key == 'Down':
 
-                    # on efface l'ancien curseur
-                    efface(cursorIconeId)
-
                     if select == 1:
                         select = 0
                     else:
                         select += 1
 
-                    
-                    cursorIconeId = ligne(cursorPoseLst[select][0], cursorPoseLst[select][1], cursorPoseLst[select][2], cursorPoseLst[select][3], "black", 4)
+                    efface("Curseur")
+                    drawCurseur(cursorPoseLst[select][0], cursorPoseLst[select][1], polyLst[randrange(0, len(polyLst))][randrange(4)])
 
                     
                 
                 # touche du haut 
                 elif key == 'Up':
-
-                    # on efface l'ancien curseur
-                    efface(cursorIconeId)
 
                     if select == 0:
                         select = 1
@@ -1543,17 +1575,14 @@ def endScreen(score):
                         select -= 1
 
 
-                    cursorIconeId = ligne(cursorPoseLst[select][0], cursorPoseLst[select][1], cursorPoseLst[select][2], cursorPoseLst[select][3], "black", 4)
-                
+                    efface("Curseur")
+                    drawCurseur(cursorPoseLst[select][0], cursorPoseLst[select][1], polyLst[randrange(0, len(polyLst))][randrange(4)])                
                 
 
                 # touche entrer
                 elif key == 'Return':
                     return option[select]
                 
-
-
-
 
 
 def rectangleOmbre(ax, ay, bx, by, offsetOmbre, colRemplissage, colBordure = "", colOmbre = "gray",epaisseur = 1):
@@ -1566,30 +1595,29 @@ def rectangleOmbre(ax, ay, bx, by, offsetOmbre, colRemplissage, colBordure = "",
     rectangle(ax, ay, bx, by, colBordure, colRemplissage, epaisseur)
 
 
-def texteOmbre(x, y, chaine, taille, couleur = "black", police = "Helvetica", colOmbre = "black", epaisseurOmbre = 4):
-    """dessine un texte centré sur x et y avec son ombre"""
 
-    # on centre le texte sur x et y
-    textId = texteCentre(x, y, chaine, couleur, police, taille)
+def tetriTexteCentre(x, y, chaine, couleur = "black", taille = 24):
+    """dessine un tetriTexte centré sur x et y"""
 
-    # l'ombre du texte 
-    xOffset, yOffset = taille_texte(texte, police=police, taille=taille)
-    ligneId = ligne(x - xOffset/2, y + yOffset/2, x + xOffset/2, y + yOffset/2, colOmbre, epaisseurOmbre)
+    # on centre le tetriTexte sur x et y
+    xOffset, yOffset = tailleTetriTexte(chaine=chaine, taille=taille)
+    return tetriTexte(x = x - xOffset/2, y = y - yOffset/2, chaine = chaine, couleur = couleur, taille = taille)
 
-    return textId, ligneId
 
-def texteCentre(x, y, chaine, couleur = "black", police = "Helvetica", taille = 24):
-    """dessine un texte centré sur x et y"""
-
-    # on centre le texte sur x et y
-    xOffset, yOffset = taille_texte(chaine=chaine, police=police, taille=taille)
-    texte(x = x - xOffset/2, y = y - yOffset/2, chaine = chaine, couleur = couleur, police = police, taille = taille)
-
-    return xOffset, yOffset
-
-def pixelTexte():
-    pass
-
+def drawCurseur (x, y, poly ) : 
+    #largeur d'un carré du curseur 
+    largeurCarreCurseur=10
+    
+    #on va dessiner le polyomino grâce à une boucle for pour les colonnes et les lignes 
+    for i in range(len(poly)):
+        for j in range(len(poly[0])) : 
+            
+            #Si le coefficient ij de la matrice vaut 0, alors on dessine un carre transparent 
+            if poly[i][j]==0 : 
+                pass
+            #Si le coefficient ij de la matrice vaut 1, alors on dessine un carre de la couleur choisie 
+            elif poly[i][j]!=0 :
+                rectangle((i*largeurCarreCurseur)+x, (j*largeurCarreCurseur)+y, x+((i+1)*largeurCarreCurseur), y+((j+1)*largeurCarreCurseur), "black", squareColors[poly[i][j]], 3, "Curseur") 
 
 if __name__ == "__main__":
     ## on charge la police d'écriture style rétro
