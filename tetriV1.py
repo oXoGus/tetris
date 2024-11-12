@@ -1624,7 +1624,7 @@ if __name__ == "__main__":
 
     #### constantes et variables globales ####
 
-    largeurFenetre = 1200
+    largeurFenetre = 900
     hauteurFenetre = largeurFenetre
     yMargin = int(0.15*hauteurFenetre)
 

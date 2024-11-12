@@ -3,6 +3,7 @@ from fltk import *
 import random, string, math
 
 
+
 # liste contenant la matrice de chaque lettre 
 # exemple pour obtenire la matrice représentant la lettre :
 # tetriFontLst[ord(lettre) - ord(' ')] 
@@ -567,6 +568,16 @@ def tetriTexte(x: float,
     # sauvegarde du x initiale
     xInit = x
 
+
+    # on calcule la taille de la police en fonction de la taille de la fenêtre
+    
+    # la taille de la fenêtre ou toutes polices on été bien calibré
+    sizeSquareGridInit = int(0.65*1200/20)
+
+    # taille actuel
+    sizeSquareGridActual = int(0.65*largeur_fenetre()/20)
+
+    taille = taille*(sizeSquareGridActual/sizeSquareGridInit)
     # taille de chaque pixel de la lettre
     sizePix = taille//2
 
@@ -622,6 +633,17 @@ def tailleTetriTexte(
         taille: int = 24):
     """renvoie la taille x et y d'un texte"""
     x, y = 0, 0
+
+
+    # on calcule la taille de la police en fonction de la taille de la fenêtre
+    
+    # la taille de la fenêtre ou toutes polices on été bien calibré
+    sizeSquareGridInit = int(0.65*1200/20)
+
+    # taille actuel
+    sizeSquareGridActual = int(0.65*largeur_fenetre()/20)
+
+    taille = taille*(sizeSquareGridActual/sizeSquareGridInit)
 
     # taille de chaque pixel de la lettre
     sizePix = taille//2
@@ -688,7 +710,8 @@ def drawTetriLettre(x: float,
 
 
 if __name__ == "__main__":
-    cree_fenetre(800, 800)
+    cree_fenetre(900, 800)
+    print(largeur_fenetre())
 
     tetriTexte(100, 50, "0123456789")
     tetriTexte(100, 200, "abcdefghijklmnopqrs", "black", 18)
