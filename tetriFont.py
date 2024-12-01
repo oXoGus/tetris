@@ -572,12 +572,10 @@ def tetriTexte(x: float,
     # on calcule la taille de la police en fonction de la taille de la fenêtre
     
     # la taille de la fenêtre ou toutes polices on été bien calibré
-    sizeSquareGridInit = int(0.65*1200/20)
+    sizeSquareGridInit = 1200
 
-    # taille actuel
-    sizeSquareGridActual = int(0.65*largeur_fenetre()/20)
-
-    taille = taille*(sizeSquareGridActual/sizeSquareGridInit)
+    taille = taille*(largeur_fenetre()/sizeSquareGridInit)
+    
     # taille de chaque pixel de la lettre
     sizePix = taille//2
 

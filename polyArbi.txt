@@ -1,0 +1,24 @@
+chaque pièce est précisée par des lignes où un bloc est représenté 
+par un +, et les pièces sont séparées par une ou plusieurs lignes vides
+
++++++
+
+ +++++
++     +
++ + + +
++     +
++ + + +
++  +  +
+ +   +
+  +++
+
+++
++
+
++
+
++
+ +
+  +
+   +
+    +

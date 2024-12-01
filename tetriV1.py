@@ -66,7 +66,7 @@ def main():
         if flag == 'retry':
 
             # on relance une partie avec les memes variantes activés
-            flag = game(varPtsDiffSelect)
+            flag = game(varPtsDiffSelect, varPolyArbitraires)
             
             # on ne refait pas une boucle sinon le menu sera affiché 
             continue
@@ -247,7 +247,6 @@ def main():
                             
                             # cases cochés 
                             if varPtsDiffSelect == True : 
-
                                 # on coche la première case
                                 ligne(xCase1, yCase1, xCase1 + sizeSquareGrid, yCase1 + sizeSquareGrid, "black", 5)
                                 ligne(xCase1 + sizeSquareGrid, yCase1, xCase1, yCase1 + sizeSquareGrid, "black", 5)
@@ -319,11 +318,29 @@ def main():
                                                 varPtsDiffSelect = False
                                             else:
                                                 varPtsDiffSelect = True 
+
+                                        if saisie == 1:
+                                            if varPolyArbitraires == True:
+                                                varPolyArbitraires = False
+                                            else:
+                                                varPolyArbitraires = True
+
+                                        if saisie == 2:
+                                            if varModePourrisement == True:
+                                                varModePourrisement = False
+                                            else:
+                                                varModePourrisement = True
                                     
+                                        if saisie == 3:
+                                            if varMode2joueurs == True:
+                                                varMode2joueurs = False
+                                            else:
+                                                varMode2joueurs = True
+
                                     elif key=='space' :
                                         
                                         #  on démare la partie avec les variantes
-                                        flag = game(varPtsDiffSelect)
+                                        flag = game(varPtsDiffSelect, varPolyArbitraires)
 
                                         # la fenêtre est deja fermer on ferme le programme
                                         if flag == 'Quitte':
@@ -352,7 +369,7 @@ def main():
 
 
 
-def game(varPtsDiffSelect):
+def game(varPtsDiffSelect, varPolyArbitraires):
     """une partie de tertis
     
     prend en argument les variantes activées
@@ -374,6 +391,26 @@ def game(varPtsDiffSelect):
         grid.append([])
         for j in range(numXSquare):
             grid[i].append(0)
+
+
+
+    # génération des pièce ainsi que leurs couleurs
+    
+    # si la variante est activé 
+    if varPolyArbitraires:
+        # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
+        # n =  4 pour le mode de jeu classique 
+        polyLst = genVarPolyArbitraire()
+
+        # génération des couleurs pour chaque poly 
+        squareColors = genColorRGBLst(len(polyLst))
+    else:
+        # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
+        # n =  4 pour le mode de jeu classique 
+        polyLst = genPolyominoLst(n=4)
+
+        # génération des couleurs pour chaque poly 
+        squareColors = genColorRGBLst(len(polyLst))
 
     flag = None
 
@@ -400,7 +437,6 @@ def game(varPtsDiffSelect):
     maxY = len(grid)
 
 
-    # TODO : menu
     while True:
 
 
@@ -434,19 +470,26 @@ def game(varPtsDiffSelect):
 
             # on initialise l'oriantation de la pièce a 0
             ori = 0
-
+            
             # condition de défaite
-            # si le maxY de la dernière pièce qui vient d'être posé va se supperposer avec le nouveau poly généré
-            if len(poly[ori]) - 1 >= maxY:
+            # si on a le polyomino va se supperposer a une pièce de la grille 
+            # avant qu'on l'affiche a l'écrant 
+
+            x = 4
+            y = 0
+            while x + len(poly[ori][0]) > len(grid[0]): 
+                x -= 1 
+                y = y
+
+            if isColision(grid, poly, x, y, ori) == True:
                 break
 
-            
 
             # on fait apparaitre un pièce aléatoirement 
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
             grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
 
-            #printGrid(grid)
+            
 
             pieceActivated = 1
 
@@ -494,7 +537,7 @@ def game(varPtsDiffSelect):
 
         # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
         if change == 1:
-            drawGrid(grid, nextPoly, score)
+            drawGrid(grid, nextPoly, score, squareColors)
 
             change = 0
 
@@ -523,7 +566,7 @@ def game(varPtsDiffSelect):
 
                 # si la touche est utile pour le jeu
                 if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
-                    grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated)
+                    grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors)
             else:
                 pass
                 #print(key)
@@ -569,7 +612,7 @@ def toHex(n):
         return "0" + hex(n)[2:]
     return hex(n)[2:]    
 
-def drawGrid(grid, nextPoly, score):
+def drawGrid(grid, nextPoly, score, squareColors):
     """
     dessine sur la fennêtre la représentation de la `grid`
 
@@ -581,7 +624,7 @@ def drawGrid(grid, nextPoly, score):
     efface_tout()
 
     # affichage du poly suivant
-    drawNextPoly(nextPoly)
+    drawNextPoly(nextPoly, squareColors)
 
     # affichage du score
     drawScore(score)
@@ -967,16 +1010,15 @@ def isPolyMaxY(grid, poly, x, y, ori):
     for i in range(len(poly[ori])):
         for j in range(len(poly[ori][0])):
             if poly[ori][i][j] != 0:
+
                 # pour ne pas détécter la piece elle meme
                 if i + 1 < len(poly[ori]) and poly[ori][i + 1][j] == 0:
-                    if grid[y + i + 1][x + j] != 0:
-                        #print("poly posé")
+                    if grid[y + i + 1][x + j] > 0:
                         return True
                     
                 # les case en dessous du poly
                 elif i + 1 == len(poly[ori]):
-                    if grid[y + i + 1][x + j] != 0:
-                        #print("poly posé")
+                    if grid[y + i + 1][x + j] > 0:
                         return True
     return False
 
@@ -1237,7 +1279,7 @@ def rotatePiece(grid, poly, prevX, prevY, x, y, ori, change, maxY):
 
 
 
-def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated):
+def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors):
     """prends en argument la touche pressée et appelle differentes fonction selon la touche pressée"""
     
     #debug 
@@ -1273,6 +1315,10 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
         # on pose la pièce définitivement
         pieceActivated = 0
 
+
+        # on dessine la pièce qui viens de se possé directement sinon elle restait en l'air si la condition de défaite 
+        drawGrid(grid, nextPoly, score, squareColors)
+
         return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
 
@@ -1284,7 +1330,7 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
         return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
 
-def drawNextPoly(nextPoly):
+def drawNextPoly(nextPoly, squareColors):
     """dsesine a droite de la grille le poly suivant"""
     
     # ligne du dessus a droite de la grille a la 4eme case et 
@@ -1305,6 +1351,8 @@ def drawNextPoly(nextPoly):
                 pass
             else:
                 rectangle(x+j*sizeSquareGrid, y+i*sizeSquareGrid, x+j*sizeSquareGrid + sizeSquareGrid, y+i*sizeSquareGrid + sizeSquareGrid, "black", squareColors[nextPoly[0][i][j]], 3)
+
+
 
 def suppLignes (grid, score, nbLignesSuppTotale, varPtsDiffSelect) : 
     """Supprimer les lignes lorsque toutes les valeurs sont diférentes de 0 et appelle la fonction qui descend les lignes au dessus de celle supprimée"""
@@ -1619,12 +1667,192 @@ def drawCurseur (x, y, poly ) :
             elif poly[i][j]!=0 :
                 rectangle((i*largeurCarreCurseur)+x, (j*largeurCarreCurseur)+y, x+((i+1)*largeurCarreCurseur), y+((j+1)*largeurCarreCurseur), "black", squareColors[poly[i][j]], 3, "Curseur") 
 
+
+###### fonctions pour la variante : polyominos arbitraires #######
+def genVarPolyArbitraire():
+    """génère les matrice de chaque pièce dans le fichier polyArbi.txt
+
+    Dans le ficher polyArbi.txt 
+    chaque pièce est précisée par des lignes où un bloc est représenté 
+    par un +, et les pièces sont séparées par une ou plusieurs lignes vides
+    """
+
+    # on ouvre le fichier 
+    with open("polyArbi.txt") as f:
+
+        # on déplace le curseur pour ne pas suvegarder 
+        # les explicaiton qui se trouvent au deux première ligne
+        f.readline()
+        f.readline()
+
+
+        # on prend toutes les lignes restantes du fichier dans une liste
+        polyArbiLignes = list(f)
+
+
+    # on creer une liste contenant une liste des lignes formant un poliomino 
+    polyArbiLst = []
+    nouveauPoly = True 
+    polyLst = []
+    for ligne in polyArbiLignes:
+
+        # si on saute une ligne marque la fin d'un poly
+        if ligne == '\n':
+            nouveauPoly = True
+            
+            # si la liste du poly est non vide
+            # cas du \n au tout début du fichier 
+            if polyLst != []:
+                
+                # on ajoute ce poly 
+                polyArbiLst.append(polyLst)
+
+        else:
+
+            # nouveau poly
+            if nouveauPoly == True:
+                
+                # on crée une liste qui contiendra les lignes du poly
+                polyLst = []
+
+                # on ajoute le ligne sans le \n avec le [:-1] qui retire le dernier caract de la chaine
+                
+                # si le dernier caract est un '\n'
+                if ligne[len(ligne) - 1] == '\n':
+                    polyLst.append(ligne[:-1])
+                else:
+                    polyLst.append(ligne)
+
+                nouveauPoly = False
+
+            # les lignes suivantes du poly            
+            else:
+                
+                # on ajoute le ligne sans le \n avec le [:-1] qui retire le dernier caract de la chaine
+                
+                # si le dernier caract est un '\n'
+                if ligne[len(ligne) - 1] == '\n':
+                    polyLst.append(ligne[:-1])
+                else:
+                    polyLst.append(ligne)
+    
+    # si le fichier ne se termine pas par un saut de ligne on n'engregistre pas le dernier poly
+    if polyLst != []:
+        polyArbiLst.append(polyLst)
+
+    # liste contenant tout les matrice de chaque poly arbitraire
+    polyArbiMatLst = []
+
+    # maintenant qu'on a un poly a un index on le tranforme en matrice
+    for poly in polyArbiLst:
+        
+        # on prend la ligne la plus longue
+        maxLen = 0
+        for l in poly:
+            if len(l) > maxLen:
+                maxLen = len(l)
+
+        # on prend aussi le nombre de ligne pour maxLen
+
+        if len(poly) > maxLen:
+            maxLen = len(poly)
+
+        # si le polyomino peut sortir de la grille
+        if maxLen >= 10:
+            
+            # on passe au polyomino suivant
+            continue
+
+        # matrice du poly
+        polyMat = []
+
+        # pour chaque lignes du poly
+        for n, l in enumerate(poly):
+
+            # ligne de la matrice 
+            polyMat.append([])
+
+            # on prend comme largeur de la matreice la largeur max du poly
+            for i in range(maxLen):
+                
+                # si on est dehors de la liste ou que la caractère est un espace, 
+                # on ajoute une case vide
+                if i >= len(l) or l[i] == ' ':
+                    polyMat[n].append(0)
+                
+                # case pleine représenter par un + dans le fichier texte
+                elif l[i] == '+':
+                    polyMat[n].append(1)
+        
+        # pour avoir une matrice carré de taille maxLen
+        # ajout des lignes vides si besoin
+        for i in range(maxLen - len(poly)):
+            polyMat.append([0 for _ in range(maxLen)])
+
+        # on ajoute la matrice du poly
+        polyArbiMatLst.append(polyMat)
+
+
+    # on génere toutes les rotations de chaque poly
+
+
+    # liste qui va contenire les liste des 4 rotations pour chaque poly
+    polyArbiLst = list()
+
+    # pour chaque poly
+    for poly in polyArbiMatLst:
+        
+        polyRoationLst = []
+
+        # on tourne la piece 4 fois
+        for _ in range(4):
+
+            # on tourne la pièce
+            poly = rotatePoly(poly)
+            
+            cleanPoly = polyCleanUp(poly)
+
+            polyRoationLst.append(cleanPoly)
+
+        
+
+        # on ajoute toute les rotation du poly
+        polyArbiLst.append(polyRoationLst)
+
+
+    # on assigne à chaque poly son identifiant qui sera 
+    # l'index de sa couleur dans la liste des couleurs
+
+    for k in range(len(polyArbiLst)):
+    
+        # on remplace le n par k
+
+        polyominoRotaLst = polyArbiLst[k]
+
+        for polyomino in polyominoRotaLst:
+            for i in range(len(polyomino)):
+                for j in range(len(polyomino[0])):
+                    if polyomino[i][j] != 0:
+                        polyomino[i][j] = k + 1
+
+
+    for polyRotaLst in polyArbiLst:
+        print()
+        for polyRota in polyRotaLst:
+            printPgrid(polyRota)
+            print()
+
+    # on renvoie tout les poly arbitraire avec leurs rotations
+    return polyArbiLst
+
+
+
 if __name__ == "__main__":
     ## on charge la police d'écriture style rétro
 
     #### constantes et variables globales ####
 
-    largeurFenetre = 900
+    largeurFenetre = 1200
     hauteurFenetre = largeurFenetre
     yMargin = int(0.15*hauteurFenetre)
 
@@ -1633,7 +1861,7 @@ if __name__ == "__main__":
     numXSquare = 10
     sizeSquareGrid = int(0.65*hauteurFenetre/numYSquare)
 
-        
+    # pièces par défaut
 
     # au début du jeu on génére dans une liste toutes les polyomino de taille n 
     # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
