@@ -1846,6 +1846,9 @@ def genVarPolyArbitraire():
     return polyArbiLst
 
 
+######## fonctions pour le menu pause et sauvegarde ########
+
+
 
 if __name__ == "__main__":
     ## on charge la police d'écriture style rétro
