@@ -9,8 +9,8 @@ par un +, et les pièces sont séparées par une ou plusieurs lignes vides
 +     +
 + + + +
 +  +  +
- +   +
-  +++
++     +
+ +++++
 
 ++
 +
