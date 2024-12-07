@@ -305,11 +305,11 @@ tetriFontLstUpper = [
     ],
     # 'W'
     [
-        [1, 0, 0, 1],
-        [1, 0, 0, 1],
-        [1, 0, 0, 1],
-        [1, 1, 1, 1], 
-        [1, 0, 0, 1]
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1],
+        [1, 1, 0, 1, 1], 
+        [1, 0, 0, 0, 1]
     ],
     # 'X'
     [
@@ -561,7 +561,8 @@ def tetriTexte(x: float,
         y: float,
         chaine: str,
         couleur: str = "black",
-        taille: int = 24):
+        taille: int = 24,
+        tag = 'default'):
     
     """affiche une chaine de caractère donnée en paramètre avec un style pixélisé"""
 
@@ -610,7 +611,7 @@ def tetriTexte(x: float,
 
 
         # on dessine la lettre ou posision x y
-        drawTetriLettre(x, y, lettreMat, couleur, taille)
+        drawTetriLettre(x, y, lettreMat, couleur, taille, tag)
 
         # après avoir dessiné la lettre 
         # on décale la posision de la prochaine lettre 
@@ -694,7 +695,8 @@ def drawTetriLettre(x: float,
         y: float,
         lettreMat: str,
         couleur: str = "black",
-        taille: int = 24):
+        taille: int = 24, 
+        tag = 'default'):
     
     sizePix = taille//2
 
@@ -704,7 +706,7 @@ def drawTetriLettre(x: float,
             
             # pixel plein
             if lettreMat[i][j] == 1:
-                rectangle(x + j * sizePix, y + i * sizePix, x + j * sizePix + sizePix, y + i * sizePix + sizePix, couleur, couleur)
+                rectangle(x + j * sizePix, y + i * sizePix, x + j * sizePix + sizePix, y + i * sizePix + sizePix, couleur, couleur, tag=tag)
 
 
 if __name__ == "__main__":

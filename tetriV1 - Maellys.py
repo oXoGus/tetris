@@ -2,57 +2,12 @@ from fltk import *
 from tetriFont import *
 import time
 from random import randrange
-from tetriGenPolyArbi import *
-from datetime import datetime
-from tetriSaves import *
-from tetri2players import *
-from tetriGenPoly import *
-import subprocess
 
 
-#### constantes et variables globales ####
-
-# on récumpère la resolution de l'écran en executat la commande `xrandr | grep \\* | cut -d' ' -f4`
-# avec la module subprocess
-resolution = subprocess.Popen("xrandr | grep \\* | cut -d' ' -f4", shell=True, stdout=subprocess.PIPE).communicate()[0]
-
-# cela renvoie : b'2560x1600\n'
-
-# le b au début signifit que cette chaine est encodé en UTF-8
-# pour le retirer un faut décoder la chaine de caractère  
-
-# la methode decode a pour argument par défaut encodage UTF-8
-resolution = resolution[:-1].decode()
-
-# on obtient bien 2560x1600
-print(resolution)
-
-largeurScreen = int(resolution.split('x')[0])
-
-hauteurScreen = int(resolution.split('x')[1])
-
-largeurFenetre = largeurScreen//2
-
-hauteurFenetre = largeurScreen//2
-
-yMargin = int(0.10*largeurFenetre)
-
-# constante
-numYSquare = 20
-numXSquare = 10
-sizeSquareGrid = int(0.73*hauteurFenetre/numYSquare)
-
-# pièces par défaut
-
-# au début du jeu on génére dans une liste toutes les polyomino de taille n 
-# dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
-# n =  4 pour le mode de jeu classique 
-polyLst = genPolyominoLst(n=4)
-
-# génération des couleurs pour chaque poly 
-squareColors = genColorRGBLst(len(polyLst))
 
 def main():
+
+
     # initialisation des varible pour le menu
     fermer = 0
     jouer=["Jouer", "Quitter"]
@@ -72,8 +27,13 @@ def main():
     # variante Mode 2 joueurs 
     varMode2joueurs = False
 
-    # création de la fenêtre carré 
-    cree_fenetre(largeurFenetre, largeurFenetre)
+    # variante pause et sauvegarde
+    varPauseEtSave = False
+    
+
+
+    # création de la fenêtre
+    cree_fenetre(largeurFenetre, hauteurFenetre)
 
 
     # choix par défaut est jouer c'es pour cela qu'il est plus gros, pour indiquer qu'il est selectionner
@@ -84,10 +44,13 @@ def main():
     tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/4 - yOffset/2 , "TETRIS", 'black', 50) 
 
 
+
     # pour centrer le tetriTexte
     xOffset, yOffset = tailleTetriTexte(jouer[0], 18)
     tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 18)
-    
+            
+
+
 
     # Quitter
     xOffset, yOffset = tailleTetriTexte(jouer[1], 18)
@@ -100,14 +63,16 @@ def main():
     while True: 
 
         # si le joueur a appuié sur réessayer 
-        while flag == 'retry':
+        if flag == 'retry':
 
             # on relance une partie avec les memes variantes activés
-            flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement)
+            flag = game(varPtsDiffSelect, varPolyArbitraires)
             
+            # on ne refait pas une boucle sinon le menu sera affiché 
+            continue
 
         # pour le menu
-        if flag == 'menu':
+        elif flag == 'menu':
 
             efface_tout()
 
@@ -115,7 +80,6 @@ def main():
             # le titre
             xOffset, yOffset = tailleTetriTexte("TETRIS", 50)
             tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/4 - yOffset/2 , "TETRIS", 'black', 50) 
-
 
 
             # pour centrer le tetriTexte
@@ -207,7 +171,7 @@ def main():
                         
                         
                         
-                        suivant = 0 
+                        suivant=0 
                         saisie = 0 
                         
                         # on stoque toues les couleurs selon les saisi possible
@@ -293,11 +257,11 @@ def main():
                             if varModePourrisement==True : 
                                 ligne(xCase4, yCase4, xCase4 + sizeSquareGrid, yCase4 + sizeSquareGrid, "black", 5)
                                 ligne(xCase4 + sizeSquareGrid, yCase4, xCase4, yCase4 + sizeSquareGrid, "black", 5)
-                                 
+                                        
                             if varMode2joueurs==True :
                                 ligne(xCase3, yCase3, xCase3 + sizeSquareGrid, yCase3 + sizeSquareGrid, "black", 5)
                                 ligne(xCase3 + sizeSquareGrid, yCase3, xCase3, yCase3 + sizeSquareGrid, "black", 5)
-                            
+                                    
                             tetriTexteCentre(largeurFenetre*1/2, hauteurFenetre*0.9, "appuyez sur espace pour lancer la partie", "black", 10)
 
                             # gestion des touches
@@ -324,23 +288,26 @@ def main():
                                     key=touche(ev)
                                     print(key)
                                     
+                                    
 
                                     if key=='Up' : 
 
                                         # on change saisie
-                                        if saisie == 0: 
-                                            saisie = 3
+                                        if saisie==0 : 
+                                            saisie=3
                                         else : 
-                                            saisie -= 1
+                                            saisie-=1
 
+                                        
+                                        
         
                                     elif key=='Down':
 
                                         # on change la saisie
-                                        if saisie == 3: 
-                                            saisie = 0 
+                                        if saisie==3 : 
+                                            saisie=0 
                                         else : 
-                                            saisie += 1
+                                            saisie+=1
                                         
                                            
                                     elif key=='Return' : 
@@ -369,38 +336,22 @@ def main():
                                                 varModePourrisement = False
                                             else:
                                                 varModePourrisement = True
-
+                                                
+                                                
                                     elif key=='space' :
-                                        
                                         if varMode2joueurs==True : 
-                                        
                                             flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement)
-                                            
-                                            while flag == 'retry':
-                                                flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement)
-                                        
-
-                                            if flag == 'menu':
-
-                                                ferme_fenetre()
-
-                                                # on recréer une fenêtre de la bonne taille
-                                                cree_fenetre(largeurFenetre, largeurFenetre)
-
-                                                continue
-
-                                            
                                         else : 
                                             #  on démare la partie avec les variantes
                                             flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement)
 
-                                        # la fenêtre est deja fermer on ferme le programme
-                                        if flag == 'Quitte':
-                                            return None
-                                        
-                                        # pour ne pas refaire la boucle et afficher la selection des variantes
-                                        if flag == 'retry' or flag == 'menu':
-                                            break
+                                            # la fenêtre est deja fermer on ferme le programme
+                                            if flag == 'Quitte':
+                                                return None
+                                            
+                                            # pour ne pas refaire la boucle et afficher la selection des variantes
+                                            if flag == 'retry' or flag == 'menu':
+                                                break
                                         
                                         
                     
@@ -421,8 +372,8 @@ def main():
 
 
 
-def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
-    """une partie de tetris
+def game(varPtsDiffSelect, varPolyArbitraires, varModePourrissement):
+    """une partie de tertis
     
     prend en argument les variantes activées
     renvoie un flag pour qui sera traité par le menu
@@ -488,7 +439,6 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
     # on initialise la variable pour la condition de défaite
     maxY = len(grid)
 
-    globalTimer = time.perf_counter()
 
     while True:
 
@@ -529,7 +479,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
             # avant qu'on l'affiche a l'écrant 
 
             x = 4
-            y = 1
+            y = 0
             while x + len(poly[ori][0]) > len(grid[0]): 
                 x -= 1 
                 y = y
@@ -549,16 +499,6 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
             desactivateCounter = 0
 
 
-            # pour le mode pourrissement 
-            if varModePourrisement:
-                if time.perf_counter() - globalTimer > temps(nbLignesSuppTotale) * 15:
-                    pourrissement(grid, polyLst)
-                    globalTimer = time.perf_counter()
-                    
-                    # on affiche le poly supprimé 
-                    drawGrid(grid, nextPoly, score, squareColors)
-
-
         # timer pour descendre la pièce de une case toute les une secondes
         if timer == 0:
             timer = time.perf_counter()
@@ -567,7 +507,6 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
         if time.perf_counter() - timer > temps(nbLignesSuppTotale):
             #print(nbLignesSuppTotale, temps(nbLignesSuppTotale))
             
-
             # gestion du délais pour desactiver la piece
 
             if isPolyMaxY(grid, poly, x, y, ori) == True:
@@ -583,7 +522,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
                 pieceActivated = 0
                 
             # print(desactivateCounter)
-
+            
             y += 1
             
             grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
@@ -593,13 +532,15 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
             # on reset le timer pour déclancher le if dans la prochaine itération
             timer = 0
 
-            
+            #printGrid(grid)
 
 
         
 
         # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
         if change == 1:
+            if varModePourrissement : 
+                grid=pourrissement(grid, poly)
             drawGrid(grid, nextPoly, score, squareColors)
 
             change = 0
@@ -618,9 +559,6 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
             
             # si l'utilisateur appuis pour sur la croix ou alt + f4 pour fermer la fenêtre
             if key == 'Quitte':
-
-                # test de sauvegarde automatique
-                createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPoly, varPtsDiffSelect, varPolyArbitraires, varModePourrisement, varMode2joueurs = False)
                 ferme_fenetre()
 
                 # on met le flag a 'Quitte' pour ne pas refaire le menu
@@ -640,6 +578,43 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
     # ecran de fin revoie un flag
     return endScreen(score)
 
+
+def genColorRGBLst(nbPoly):
+    """génére une liste de couleurs RGB contenant une couleur par pièces avec 0 a l'index 0 une case vide
+    
+    :param nbPoly: nombre de polyomino qu'il faut affecter une couleur
+    :return lst: une liste contenant une couleur pour chaque polymino
+    """
+
+    lst = [0]
+
+    for i in range(nbPoly):
+        lst.append(genColorRGB())
+    
+    # couleur grise pour l'ombre de la pièce active
+    lst.append("#b2b7bf")
+    return lst
+
+def genColorRGB():
+    """
+    génère une couleur aléatoire formaté pour fltk
+
+    :return hexColor:
+    """
+
+
+    # composante rouge verte et bleu aléatoire
+    return '#' + toHex(randrange(0, 256)) + toHex(randrange(0, 256)) + toHex(randrange(0, 256))
+
+def toHex(n):
+    """
+    convertie un nombre en base 10 en base 16 sur deux octets 
+    """
+
+
+    if n < 16:
+        return "0" + hex(n)[2:]
+    return hex(n)[2:]    
 
 def drawGrid(grid, nextPoly, score, squareColors):
     """
@@ -763,14 +738,12 @@ def isPolyMaxY(grid, poly, x, y, ori):
 
                 # pour ne pas détécter la piece elle meme
                 if i + 1 < len(poly[ori]) and poly[ori][i + 1][j] == 0:
-                    if grid[y + i + 1][x + j] > 0 or grid[y + i + 1][x + j] == -2:
+                    if grid[y + i + 1][x + j] > 0:
                         return True
                     
                 # les case en dessous du poly
                 elif i + 1 == len(poly[ori]):
-
-                    # l'index -2 correspond au case rajouté par l'adversaire dans le mode 2 joueurs 
-                    if grid[y + i + 1][x + j] > 0 or grid[y + i + 1][x + j] == -2:
+                    if grid[y + i + 1][x + j] > 0:
                         return True
     return False
 
@@ -782,7 +755,7 @@ def isPolyMaxY(grid, poly, x, y, ori):
 def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY, rotated = 0):
     """dessine sur la grille la pièce active et gestion des colision"""
     
-    # si le poly sort de la griille de jeu
+    # si le poly sort de la grille de jeu
 
     # depasse a droite 
     
@@ -1010,7 +983,7 @@ def erasePiece(grid, poly, x, y, ori):
 
 def spawnPiece(grid, poly, ori, change):
     """on dessine une piece n aux coordonnées par défaut (x = 4 et y = 0)"""
-    return drawPiece(grid, poly, None, None, 4, 1, ori, change, None)
+    return drawPiece(grid, poly, None, None, 4, 0, ori, change, None)
         
                 
 def rotatePiece(grid, poly, prevX, prevY, x, y, ori, change, maxY):
@@ -1066,6 +1039,7 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
 
         # on pose la pièce définitivement
         pieceActivated = 0
+
 
         # on dessine la pièce qui viens de se possé directement sinon elle restait en l'air si la condition de défaite 
         drawGrid(grid, nextPoly, score, squareColors)
@@ -1403,7 +1377,7 @@ def tetriTexteCentre(x, y, chaine, couleur = "black", taille = 24):
     return tetriTexte(x = x - xOffset/2, y = y - yOffset/2, chaine = chaine, couleur = couleur, taille = taille)
 
 
-def drawCurseur (x, y, poly) : 
+def drawCurseur (x, y, poly ) : 
     #largeur d'un carré du curseur 
     largeurCarreCurseur=10
     
@@ -1418,155 +1392,615 @@ def drawCurseur (x, y, poly) :
             elif poly[i][j]!=0 :
                 rectangle((i*largeurCarreCurseur)+x, (j*largeurCarreCurseur)+y, x+((i+1)*largeurCarreCurseur), y+((j+1)*largeurCarreCurseur), "black", squareColors[poly[i][j]], 3, "Curseur") 
 
+def pourrissement (grid, poly) : 
+    y=randrange(len(grid)-len(poly[0][0]))
+    x=randrange(len(grid[0])-len(poly[0][0]))
+
+    #Parcours les différentes orientations du polyomino 
+    match, ori = verification(grid, poly, y, x)
+    #print(verification(grid, poly, x, y))
+    if match==True :   
+        erasePiece(grid, poly, x, y, ori)
+    return grid 
 
 
 
-######## fonctions pour le menu pause et sauvegarde ########
+def verification (grid, poly, y, x) : 
+    match=True
+    #Parcours les différentes orientations du polyomino  
+    for ori in range(len(poly)) : 
+        if x+len(poly[ori][0])<len(grid[0]) and y+len(poly[ori])<len(grid) :
+            for i in range(len(poly[ori])):
+                for j in range(len(poly[ori][0])):
+                    # pour ne pas mettre de 0 sur des cases deja remplis
+                    if poly[ori][i][j]==grid[y+i][x+j] : 
+                        match = not(match)
+                    else : 
+                        match=False
+                if match == True : 
+                    return match, ori
+                elif match == False : 
+                    return False, None 
 
-def menuPause():
-    """menu de pase dans une partie"""
+###### fonctions pour la variante : polyominos arbitraires #######
+def genVarPolyArbitraire():
+    """génère les matrice de chaque pièce dans le fichier polyArbi.txt
 
-
-def createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPoly, varPtsDiffSelect, varPolyArbitraires, varModePourrisement, varMode2joueurs):
-    """sauvegarde une partie avec la grille, les pièces, les couleurs, le score, le poly (x, y, ori) et le nextpoly"""
-
-    # on supprime l'ombre de la la pièce active pour ne pas a gérer les -1 sur la grid
-    erasePiece(grid, poly, x, maxY, ori)
-
-    # on regarde l'identifiant de la dernière partie 
-    with open('tetriSave.txt') as f:
-        f_save = list(f)
-    
-
-    # on ouvre le fichier texte contentant toutes les saves espacé par des \n
-    with open('tetriSave.txt', 'a') as f:
-        
-        # saut de ligne pour diferencier les différentes sauvegarde
-        f.write('\n')
-        
-        saveIdLst = list()
-        # identifiant de la sauvegarde unique
-        for ligne in f_save:
-
-            # on trouve tout les identifiants des saves
-            if ligne.split(":")[0] == 'id':
-                saveIdLst.append(int(ligne.split(':')[1]))
-
-        # si il n'y a pas de sauvegarde
-        if saveIdLst == []:
-            saveId = 0
-        
-        else:
-            saveId = None
-            # on trouve l'id qui n'est pas dans saveIdLst le plus petit possible 
-            for i in range(max(saveIdLst)+1):
-
-                # si l'id est unique
-                if i not in saveIdLst:
-                    saveId = i
-                    break
-            
-            # si il n'y a pas d'id disponible entre 0 et le plus grand id
-            if saveId == None:
-                saveId = max(saveIdLst)+1
-        
-        # on savegarde l'id au forma id:saveId
-        f.write("id:" + str(saveId)+'\n')
-
-        # sauvegarde de la date 
-        # on extrait la date
-        Date  =str(datetime.now()).split(' ')
-        date = Date[0].split('-')
-        
-        # on remplace les - par des /
-        date = date[2]+'/'+date[1]+'/'+date[0]
-
-        # on extrait l'heure
-        # on retire les micosecondes
-        hours = Date[1].split('.')[0]
-
-        # on retire les secondes
-        hours = hours[:-3]
-
-        # on peut recomposer la date de la save
-        f.write('date:'+date + ' à ' + hours + '\n')
-        
-        # sauvegarde du score
-        f.write('score:'+str(score)+'\n')
-
-        # sauvegarde du poly actif
-        f.write('poly:'+polyLstToStr([poly]))
-        
-        # sauvegarde des info pour reprendre la partie au même moment de la sauvegarde
-        # cords de x et y et l'ori
-        f.write('x:'+str(x)+'\n')
-        f.write('y:'+str(y)+'\n')
-        f.write('ori:'+str(ori)+'\n')
-
-        # nextPoly
-        f.write('nextPoly:'+polyLstToStr([nextPoly]))
-
-        # sauvegarde de polyLst
-        f.write('polyLst:'+ polyLstToStr(polyLst))
-
-        # sauvegarde des couleurs
-        f.write('squareColors:'+lstToStr(squareColors)+'\n')
-        
-        # sauvegarde de la grille
-        f.write('grid:'+polyLstToStr([[grid]]))
-
-
-        f.write('varActiv:')
-
-        # sauvegardes variantes active
-        if varPtsDiffSelect == True:
-            f.write('varPtsDiffSelect ')
-        
-        if varPolyArbitraires == True:
-            f.write('varPolyArbitraires ')
-        
-        if varMode2joueurs == True:
-            f.write('varMode2joueurs ')
-
-        if varModePourrisement == True:
-            f.write('varModePourrisement ')
-
-
-def saveMenu():
-    """met en forme les donnés de toutes les saves
-    et gère la sélection de la sauvegarde a charger 
+    Dans le ficher polyArbi.txt 
+    chaque pièce est précisée par des lignes où un bloc est représenté 
+    par un +, et les pièces sont séparées par une ou plusieurs lignes vides
     """
 
-    
-    
-    # on récup les données formaté 
-    saves = savesDataToDict()
+    # on ouvre le fichier 
+    with open("polyArbi.txt") as f:
 
-    # partie affichage
+        # on déplace le curseur pour ne pas suvegarder 
+        # les explicaiton qui se trouvent au deux première ligne
+        f.readline()
+        f.readline()
+
+
+        # on prend toutes les lignes restantes du fichier dans une liste
+        polyArbiLignes = list(f)
+
+
+    # on creer une liste contenant une liste des lignes formant un poliomino 
+    polyArbiLst = []
+    nouveauPoly = True 
+    polyLst = []
+    for ligne in polyArbiLignes:
+
+        # si on saute une ligne marque la fin d'un poly
+        if ligne == '\n':
+            nouveauPoly = True
+            
+            # si la liste du poly est non vide
+            # cas du \n au tout début du fichier 
+            if polyLst != []:
+                
+                # on ajoute ce poly 
+                polyArbiLst.append(polyLst)
+
+        else:
+
+            # nouveau poly
+            if nouveauPoly == True:
+                
+                # on crée une liste qui contiendra les lignes du poly
+                polyLst = []
+
+                # on ajoute le ligne sans le \n avec le [:-1] qui retire le dernier caract de la chaine
+                
+                # si le dernier caract est un '\n'
+                if ligne[len(ligne) - 1] == '\n':
+                    polyLst.append(ligne[:-1])
+                else:
+                    polyLst.append(ligne)
+
+                nouveauPoly = False
+
+            # les lignes suivantes du poly            
+            else:
+                
+                # on ajoute le ligne sans le \n avec le [:-1] qui retire le dernier caract de la chaine
+                
+                # si le dernier caract est un '\n'
+                if ligne[len(ligne) - 1] == '\n':
+                    polyLst.append(ligne[:-1])
+                else:
+                    polyLst.append(ligne)
+    
+    # si le fichier ne se termine pas par un saut de ligne on n'engregistre pas le dernier poly
+    if polyLst != []:
+        polyArbiLst.append(polyLst)
+
+    # liste contenant tout les matrice de chaque poly arbitraire
+    polyArbiMatLst = []
+
+    # maintenant qu'on a un poly a un index on le tranforme en matrice
+    for poly in polyArbiLst:
+        
+        # on prend la ligne la plus longue
+        maxLen = 0
+        for l in poly:
+            if len(l) > maxLen:
+                maxLen = len(l)
+
+        # on prend aussi le nombre de ligne pour maxLen
+
+        if len(poly) > maxLen:
+            maxLen = len(poly)
+
+        # si le polyomino peut sortir de la grille
+        if maxLen >= 10:
+            
+            # on passe au polyomino suivant
+            continue
+
+        # matrice du poly
+        polyMat = []
+
+        # pour chaque lignes du poly
+        for n, l in enumerate(poly):
+
+            # ligne de la matrice 
+            polyMat.append([])
+
+            # on prend comme largeur de la matreice la largeur max du poly
+            for i in range(maxLen):
+                
+                # si on est dehors de la liste ou que la caractère est un espace, 
+                # on ajoute une case vide
+                if i >= len(l) or l[i] == ' ':
+                    polyMat[n].append(0)
+                
+                # case pleine représenter par un + dans le fichier texte
+                elif l[i] == '+':
+                    polyMat[n].append(1)
+        
+        # pour avoir une matrice carré de taille maxLen
+        # ajout des lignes vides si besoin
+        for i in range(maxLen - len(poly)):
+            polyMat.append([0 for _ in range(maxLen)])
+
+        # on ajoute la matrice du poly
+        polyArbiMatLst.append(polyMat)
+
+
+    # on génere toutes les rotations de chaque poly
+
+
+    # liste qui va contenire les liste des 4 rotations pour chaque poly
+    polyArbiLst = list()
+
+    # pour chaque poly
+    for poly in polyArbiMatLst:
+        
+        polyRoationLst = []
+
+        # on tourne la piece 4 fois
+        for _ in range(4):
+
+            # on tourne la pièce
+            poly = rotatePoly(poly)
+            
+            cleanPoly = polyCleanUp(poly)
+
+            polyRoationLst.append(cleanPoly)
+
+        
+
+        # on ajoute toute les rotation du poly
+        polyArbiLst.append(polyRoationLst)
+
+
+    # on assigne à chaque poly son identifiant qui sera 
+    # l'index de sa couleur dans la liste des couleurs
+
+    for k in range(len(polyArbiLst)):
+    
+        # on remplace le n par k
+
+        polyominoRotaLst = polyArbiLst[k]
+
+        for polyomino in polyominoRotaLst:
+            for i in range(len(polyomino)):
+                for j in range(len(polyomino[0])):
+                    if polyomino[i][j] != 0:
+                        polyomino[i][j] = k + 1
+
+
+    for polyRotaLst in polyArbiLst:
+        print()
+        for polyRota in polyRotaLst:
+            printPgrid(polyRota)
+            print()
+
+    # on renvoie tout les poly arbitraire avec leurs rotations
+    return polyArbiLst
+
+
+
+########################Pour le mode deux joueurs################################################
+
+def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrissement):
+    """une partie de tertis
+    
+    prend en argument les variantes activées
+    renvoie un flag pour qui sera traité par le menu
+    """
+    
+    # on efface le menu
     efface_tout()
-
-    tetriTexteCentre(largeurFenetre//2, hauteurFenetre*0.2, "sauvegardes", "black", 30)
     
-    # aucune save a montrer
-    if saves == []:
-        tetriTexteCentre(largeurFenetre//2, hauteurFenetre//2, "aucune sauvegardes a charger")
+    # grille du haut contenant les id des carrées pour pouvoir les supprimer 
+
+    # structure de donnée pour représenter la grille de jeu
+    # la grille de jeu fait du 10 par 20 
+    # mais comme les pièces apparaissent au dessus des 20 de hauteur 
+    # on doit rajouter 4 cases sur les y
+    grid1 = []
+
+    for i in range(numYSquare + 4):
+        grid1.append([])
+        for j in range(numXSquare):
+            grid1[i].append(0)
+
+    grid2 = []
+
+    for i in range(numYSquare + 4):
+        grid2.append([])
+        for j in range(numXSquare):
+            grid2[i].append(0)
+
+
+
+    # génération des pièce ainsi que leurs couleurs
+    
+    # si la variante est activé 
+    if varPolyArbitraires:
+        # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
+        # n =  4 pour le mode de jeu classique 
+        polyLst = genVarPolyArbitraire()
+
+        # génération des couleurs pour chaque poly 
+        squareColors = genColorRGBLst(len(polyLst))
     else:
-        
-        # on montre les info de la première save
-        drawSaveData(saves[0])
-        
-        
+        # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
+        # n =  4 pour le mode de jeu classique 
+        polyLst = genPolyominoLst(n=4)
 
-def drawSaveData(save):
+        # génération des couleurs pour chaque poly 
+        squareColors = genColorRGBLst(len(polyLst))
+
+    flag = None
+
+
+    # les variables locales, on ne peut pas utiliser de variables globales en les définissant hors de la fonction son accessible qu'en lecture exeption faite au liste 
+    pieceActivated = 0
+
+    # on initialise la variable qui va contenir le poly que le joueur va jouer, celui qui apparaitera a la droite de la grille
+    nextPoly = None
+
+    # Initialisation du score du joueur 1 à 0
+    score1 = 0
+    score2 = 0
     
-    # on dessine la grille a gauche
-    pass
 
-def drawSaveGrid(grid):
-    """dssine une version miniature de la grille de jeu 
-    spécialement prévu pour l'affichage des données de la save"""
+    # intialisation du nombre totale de ligne supprimer pour calculer le niveau de difficulté 
+    nbLignesSuppTotale = 0
 
-    # on reprend la fonction drawGrid mais avec les bonne dimentions et les bonnes 
+    # on initialise le flag pour détecter si il y a eu une modification sur la grille pour la redessiner qu'une fois
+    change = 1
+
+    # on intitialise le score pour svoir si le temps de dessendre la pièce est passé 
+    timer = 0
+
+    # on initialise la variable pour la condition de défaite
+    maxY = len(grid1)
+
+    # on initialise la variable pour détecter si le score a changé 
+    scoreChange=0
+    
+    #Variable permettant de vérifier à quel joueur est ce le tour, si c'est impair c'est le joueur 1 sinon c'est le joueur 2 
+    joueurOn = "joueur1"
+    joueurOff="joueur2"
+    drawGridModeDeuxJoueurs(grid1,grid2, nextPoly, score1, score2, squareColors, joueurOn, joueurOff)
+    
+    while True:
+        
+        #A chaque début, on cherche à savoir si c'est au tout du joueur 1 ou 2, 
+        while joueurOn == "joueur1" : 
+                    # il faut mettre à jour pour pouvoir afficher le cadrillage et mettre les touches en attente 
+            mise_a_jour()
+
+
+            # si la dernière piece a été déposé 
+            if pieceActivated == 0:
+
+                score1, nbLignesSuppTotale, nbLignesSupp, scoreChange = suppLignesModeDeuxJoueurs(grid1, score1, nbLignesSuppTotale, varPtsDiffSelect)
+
+
+                # si c'est la première pièce de la partie 
+                if nextPoly == None:
+                    
+                    # on génère les deux poly
+
+                    # on choisit aléatoirement la nouvelle pièce 
+                    poly = polyLst[randrange(0, len(polyLst))]
+
+                    # on choisit aléatoirement le prochaine pièce
+                    nextPoly = polyLst[randrange(0, len(polyLst))]
+                else : 
+                    
+                    # la pièce suivante devient la pièce active et on génère la pièce suivante 
+                    poly = nextPoly
+
+                    # on choisit aléatoirement la nouvelle pièce 
+                    nextPoly = polyLst[randrange(0, len(polyLst))]
+
+                # on initialise l'oriantation de la pièce a 0
+                ori = 0
+                
+                # condition de défaite
+                # si on a le polyomino va se supperposer a une pièce de la grille 
+                # avant qu'on l'affiche a l'écrant 
+
+                x = 4
+                y = 0
+                while x + len(poly[ori][0]) > len(grid1[0]): 
+                    x -= 1 
+                    y = y
+
+                if isColision(grid1, poly, x, y, ori) == True:
+                    break
+
+
+                # on fait apparaitre un pièce aléatoirement 
+                # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
+                grid1, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid1, poly, ori, change)
+
+                
+
+                pieceActivated = 1
+
+                desactivateCounter = 0
+
+
+            # timer pour descendre la pièce de une case toute les une secondes
+            if timer == 0:
+                timer = time.perf_counter()
+            
+            # variable de difficulté avec la fonction temps()
+            if time.perf_counter() - timer > temps(nbLignesSuppTotale):
+                #print(nbLignesSuppTotale, temps(nbLignesSuppTotale))
+                
+                # gestion du délais pour desactiver la piece
+
+                if isPolyMaxY(grid1, poly, x, y, ori) == True:
+                    desactivateCounter += 1
+                
+                # on reinitialise la score dès qu'il y a de l'espace sous la pièce active
+                else:
+                    desactivateCounter = 0
+
+                if desactivateCounter > 3:
+
+                    # on desactive la pièce pour en faire spawn une autre
+                    pieceActivated = 0
+                    
+                # print(desactivateCounter)
+                
+                y += 1
+                
+                grid1, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid1, poly, prevX, prevY, x, y, ori, change, maxY)
+
+                #print(y)
+                
+                # on reset le timer pour déclancher le if dans la prochaine itération
+                timer = 0
+
+                #printGrid(grid)
+
+            # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
+            if change == 1:
+                if varModePourrissement : 
+                    grid1 = pourrissement(grid1, poly)
+                updateGridModeDeuxJoueurs(grid1, nextPoly, score1, score2, squareColors, joueurOn, scoreChange)
+                scoreChange=0
+                change = 0
+
+            
+
+            #### on gère les touches ####
+            
+            # on enregiste l'évenement en attente le plus ancien
+            ev = donne_ev()
+            
+            # si une touche  bien été pressé 
+            if ev is not None:
+                
+                key = type_ev(ev)
+                
+                # si l'utilisateur appuis pour sur la croix ou alt + f4 pour fermer la fenêtre
+                if key == 'Quitte':
+                    ferme_fenetre()
+
+                    # on met le flag a 'Quitte' pour ne pas refaire le menu
+                    flag = 'Quitte'
+                    return flag
+                    
+                elif key == 'Touche':
+                    key = touche(ev)
+
+                    # si la touche est utile pour le jeu
+                    if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
+                        grid1, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressedModeDeuxJoueurs(key, grid1, grid2, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score1, score2, squareColors, joueurOn, joueurOff)
+                else:
+                    pass
+                    #print(key)
+        
+            if pieceActivated==0 : 
+                score1, nbLignesSuppTotale, nbLignesSupp, scoreChange = suppLignesModeDeuxJoueurs(grid1, score1, nbLignesSuppTotale, varPtsDiffSelect)
+                if nbLignesSuppTotale!=0 : 
+                    grid2=ajoutLignesModeDeuxJoueurs(grid2, nbLignesSupp)
+                mise_a_jour()
+                joueurOn="joueur2"
+                joueurOff="joueur1"
+
+
+        while joueurOn=="joueur2" : 
+                
+            # il faut mettre à jour pour pouvoir afficher le cadrillage et mettre les touches en attente 
+            mise_a_jour()
+
+
+            # si la dernière piece a été déposé 
+            if pieceActivated == 0:
+
+                score2, nbLignesSuppTotale, nbLignesSupp, scoreChange = suppLignesModeDeuxJoueurs(grid2, score2, nbLignesSuppTotale, varPtsDiffSelect)
+
+
+                # si c'est la première pièce de la partie 
+                if nextPoly == None:
+                    
+                    # on génère les deux poly
+
+                    # on choisit aléatoirement la nouvelle pièce 
+                    poly = polyLst[randrange(0, len(polyLst))]
+
+                    # on choisit aléatoirement le prochaine pièce
+                    nextPoly = polyLst[randrange(0, len(polyLst))]
+                else : 
+                    
+                    # la pièce suivante devient la pièce active et on génère la pièce suivante 
+                    poly = nextPoly
+
+                    # on choisit aléatoirement la nouvelle pièce 
+                    nextPoly = polyLst[randrange(0, len(polyLst))]
+
+                # on initialise l'oriantation de la pièce a 0
+                ori = 0
+                
+                # condition de défaite
+                # si on a le polyomino va se supperposer a une pièce de la grille 
+                # avant qu'on l'affiche a l'écrant 
+
+                x = 4
+                y = 0
+                while x + len(poly[ori][0]) > len(grid2[0]): 
+                    x -= 1 
+                    y = y
+
+                if isColision(grid2, poly, x, y, ori) == True:
+                    break
+
+
+                # on fait apparaitre un pièce aléatoirement 
+                # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
+                grid2, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid2, poly, ori, change)
+
+                
+
+                pieceActivated = 1
+
+                desactivateCounter = 0
+
+
+            # timer pour descendre la pièce de une case toute les une secondes
+            if timer == 0:
+                timer = time.perf_counter()
+            
+            # variable de difficulté avec la fonction temps()
+            if time.perf_counter() - timer > temps(nbLignesSuppTotale):
+                #print(nbLignesSuppTotale, temps(nbLignesSuppTotale))
+                
+                # gestion du délais pour desactiver la piece
+
+                if isPolyMaxY(grid2, poly, x, y, ori) == True:
+                    desactivateCounter += 1
+                
+                # on reinitialise la score dès qu'il y a de l'espace sous la pièce active
+                else:
+                    desactivateCounter = 0
+
+                if desactivateCounter > 3:
+
+                    # on desactive la pièce pour en faire spawn une autre
+                    pieceActivated = 0
+                    
+                # print(desactivateCounter)
+                
+                y += 1
+                
+                grid2, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid2, poly, prevX, prevY, x, y, ori, change, maxY)
+
+                #print(y)
+                
+                # on reset le timer pour déclancher le if dans la prochaine itération
+                timer = 0
+
+                #printGrid(grid)
+
+
+            
+
+            # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
+            if change == 1:
+                if varModePourrissement : 
+                    grid2 = pourrissement(grid2, poly)
+                updateGridModeDeuxJoueurs(grid2, nextPoly, score2, score1, squareColors, joueurOn, scoreChange)
+                scoreChange=0
+                change = 0
+
+            
+
+            #### on gère les touches ####
+            
+            # on enregiste l'évenement en attente le plus ancien
+            ev = donne_ev()
+            
+            # si une touche  bien été pressé 
+            if ev is not None:
+                
+                key = type_ev(ev)
+                
+                # si l'utilisateur appuis pour sur la croix ou alt + f4 pour fermer la fenêtre
+                if key == 'Quitte':
+                    ferme_fenetre()
+
+                    # on met le flag a 'Quitte' pour ne pas refaire le menu
+                    flag = 'Quitte'
+                    return flag
+                    
+                elif key == 'Touche':
+                    key = touche(ev)
+
+                    # si la touche est utile pour le jeu
+                    if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
+                        grid2, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressedModeDeuxJoueurs(key, grid2, grid1, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score2, score1, squareColors, joueurOn, joueurOff)
+                else:
+                    pass
+                    #print(key)
+            
+            if pieceActivated==0 : 
+                score2, nbLignesSuppTotale, nbLignesSupp, scoreChange = suppLignesModeDeuxJoueurs(grid2, score2, nbLignesSuppTotale, varPtsDiffSelect)
+                print(nbLignesSuppTotale)
+                if nbLignesSuppTotale!=0 : 
+                    grid1=ajoutLignesModeDeuxJoueurs(grid1, nbLignesSupp)
+                mise_a_jour()
+                joueurOn="joueur1"
+                joueurOff="joueur2"
+
+    # ecran de fin revoie un flag
+    return endScreen(score1), endScreen(score2)
+
+
+
+
+def drawGridModeDeuxJoueurs(gridOn, gridOff, nextPoly, scoreOn, scoreOff, squareColors, joueurOn, joueurOff):
+    """
+    dessine sur la fennêtre la représentation de la `grid`
+
+    `grid1` : matrice qui représente la partie elle même du joueur 1 
+    `grid2` : matrice qui représente la partie elle même du joueur 2
+    `nextPoly` : matrice contenant la pochaine pièce à jouer pour la passer en param à la fonction `drawNextPoly()`
+    `score1` : variable contenant le score pour la passer en param à la fonction `drawScore()` du joueur 1
+    `score2` : variable contenant le score pour la passer en param à la fonction `drawScore()` du joueur 2
+    `joueurOn` : variable contenant le nom du joueur dont c'est le tour
+    `joueurOff` : variable contenant le nom du joueur en attente 
+    """
+
+    efface_tout()
+    if joueurOn=="joueur1" : 
+        coeffJoueurOn=1/4
+        coeffJoueurOff=3/4
+    elif joueurOn=="joueur2" : 
+        coeffJoueurOn=3/4
+        coeffJoueurOff=1/4
+        
+    # affichage du score
+    drawScoreDeuxJoueurs(scoreOn, scoreOff)
 
     yGrid = 0
     xGrid = 0
@@ -1574,26 +2008,26 @@ def drawSaveGrid(grid):
     thickness = 8
 
     # ligne basse de la grille
-    ligne(largeurFenetre/2 - sizeSquareGrid*numXSquare/2 - thickness//2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + thickness//2, hauteurFenetre - yMargin, "black", thickness)
+    ligne(largeurFenetre*coeffJoueurOn - sizeSquareGrid*numXSquare/2 - thickness//2, hauteurFenetre - yMargin, largeurFenetre*coeffJoueurOn + sizeSquareGrid*numXSquare/2 + thickness//2, hauteurFenetre - yMargin, "black", thickness)
 
     #ligne de gauche
-    ligne(largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
+    ligne(largeurFenetre*coeffJoueurOn - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre*coeffJoueurOn - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
 
     #ligne de droite
-    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
+    ligne(largeurFenetre*coeffJoueurOn + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre*coeffJoueurOn + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
 
 
 
     # on dessine les case vide pour que les épaisseurs des case des case pleines ne soit 'écrasé' par l'épaisseur de la case vide
-    for i in range(len(grid)):
+    for i in range(len(gridOn)):
 
         yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
-        for j in range(len(grid[0])):
+        for j in range(len(gridOn[0])):
 
-             # on enregistre la couleur de la case
-            n = grid[i][j]
+            # on enregistre la couleur de la case
+            n = gridOn[i][j]
 
-            xGrid = largeurFenetre/2 - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+            xGrid = largeurFenetre*coeffJoueurOn - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
 
             # si on est dans les 4 première ligne
             if i < 4:
@@ -1609,15 +2043,165 @@ def drawSaveGrid(grid):
     
     
     # on dessine que les cases pleines
-    for i in range(len(grid)):
+    for i in range(len(gridOn)):
 
         yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
-        for j in range(len(grid[0])):
+        for j in range(len(gridOn[0])):
 
-             # on enregistre la couleur de la case
-            n = grid[i][j]
+            # on enregistre la couleur de la case
+            n = gridOn[i][j]
 
-            xGrid = largeurFenetre/2 - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+            xGrid = largeurFenetre*coeffJoueurOn - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+
+            # si on est dans les 4 première ligne
+            if i < 4:
+                # on affiche que les pièce, pas la grille
+                if n == 0:
+                    pass
+                else:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
+            
+            else:
+                if n == 0:
+                    pass
+                elif n == -1:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
+                else:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
+    
+    
+    
+    ####################################Affichage joueur off ###############################################################
+    # affichage du poly suivant
+
+    yGrid = 0
+    xGrid = 0
+
+    thickness = 8
+
+    # ligne basse de la grille
+    ligne(largeurFenetre*coeffJoueurOff - sizeSquareGrid*numXSquare/2 - thickness//2, hauteurFenetre - yMargin, largeurFenetre*coeffJoueurOff + sizeSquareGrid*numXSquare/2 + thickness//2, hauteurFenetre - yMargin, "black", thickness)
+
+    #ligne de gauche
+    ligne(largeurFenetre*coeffJoueurOff - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre*coeffJoueurOff - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
+
+    #ligne de droite
+    ligne(largeurFenetre*coeffJoueurOff + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre*coeffJoueurOff + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
+
+
+
+    # on dessine les case vide pour que les épaisseurs des case des case pleines ne soit 'écrasé' par l'épaisseur de la case vide
+    for i in range(len(gridOff)):
+
+        yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
+        for j in range(len(gridOff[0])):
+
+            # on enregistre la couleur de la case
+            n = gridOff[i][j]
+
+            xGrid = largeurFenetre*coeffJoueurOff - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+
+            # si on est dans les 4 première ligne
+            if i < 4:
+                # on affiche que les pièce, pas la grille
+                if n == 0:
+                    pass
+            
+            else:
+
+                # on affiche bien que les case vide
+                if n == 0:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "light gray", "white")
+    
+    
+    # on dessine que les cases pleines
+    for i in range(len(gridOff)):
+
+        yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
+        for j in range(len(gridOff[0])):
+
+            # on enregistre la couleur de la case
+            n = gridOff[i][j]
+
+            xGrid = largeurFenetre*coeffJoueurOff - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+
+            # si on est dans les 4 première ligne
+            if i < 4:
+                # on affiche que les pièce, pas la grille
+                if n == 0:
+                    pass
+                else:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", "grey", 3)
+            
+            else:
+                if n == 0:
+                    pass
+                elif n == -1:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", "grey", 3)
+                else:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", "grey", 3)
+
+
+
+
+def updateGridModeDeuxJoueurs(gridOn, nextPoly, scoreOn, scoreOff, squareColors, joueurOn, scoreChange):
+    """
+    dessine sur la fennêtre la représentation de la `grid`
+
+    `grid1` : matrice qui représente la partie elle même du joueur 1 
+    `grid2` : matrice qui représente la partie elle même du joueur 2
+    `nextPoly` : matrice contenant la pochaine pièce à jouer pour la passer en param à la fonction `drawNextPoly()`
+    `score1` : variable contenant le score pour la passer en param à la fonction `drawScore()` du joueur 1
+    `score2` : variable contenant le score pour la passer en param à la fonction `drawScore()` du joueur 2
+    `joueurOn` : variable contenant le nom du joueur dont c'est le tour
+    `joueurOff` : variable contenant le nom du joueur en attente 
+    """
+
+    if joueurOn=="joueur1" : 
+        coeffJoueurOn=1/4
+    else : 
+        coeffJoueurOn=3/4
+    # affichage du poly suivant
+    drawNextPolyDeuxJoueurs(nextPoly, squareColors, joueurOn)
+    if scoreChange==1 :
+        # affichage du score
+        drawScoreDeuxJoueurs(scoreOn, scoreOff)
+
+
+    yGrid = 0
+    xGrid = 0
+    for i in range(len(gridOn)):
+
+        yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
+        for j in range(len(gridOn[0])):
+
+            # on enregistre la couleur de la case
+            n = gridOn[i][j]
+
+            xGrid = largeurFenetre*coeffJoueurOn - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+
+            # si on est dans les 4 première ligne
+            if i < 4:
+                # on affiche que les pièce, pas la grille
+                if n == 0:
+                    pass
+            
+            else:
+
+                # on affiche bien que les case vide
+                if n == 0:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "light gray", "white")
+                    
+    # on dessine que les cases pleines
+    for i in range(len(gridOn)):
+
+        yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
+        for j in range(len(gridOn[0])):
+
+            # on enregistre la couleur de la case
+            n = gridOn[i][j]
+
+            xGrid = largeurFenetre*coeffJoueurOn - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
 
             # si on est dans les 4 première ligne
             if i < 4:
@@ -1636,9 +2220,202 @@ def drawSaveGrid(grid):
                     rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
 
 
-if __name__ == "__main__":
+def drawScoreDeuxJoueurs(score1, score2) : 
+    """dessine a droite de la grille le score"""
+    
+    ############Affichage Score joueur 1#############################################
+    # le décalage de chaque coté pour que la ligne du dessous soit un peut plus grande que la taille du tetriTexte
+    xOffset = sizeSquareGrid/4
+    yOffset = sizeSquareGrid/8
+
+    # ligne du dessous a droite de la grille a la 2eme case
+    ligne(largeurFenetre/4 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 2*sizeSquareGrid , largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte(str(score1), 14)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 2*sizeSquareGrid, "black", 7) 
+    
+    # possition du tetriTexte 
+    xPose = largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + xOffset
+    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + sizeSquareGrid  - yOffset
+    
+    # TODO : taille de police en fonction de la taille de la fenêtre
+    tetriTexte(xPose, yPose ,str(score1), "black", 14)
     
     
+    ############Affichage Score joueur 2#############################################
+    # le décalage de chaque coté pour que la ligne du dessous soit un peut plus grande que la taille du tetriTexte
+    xOffset = sizeSquareGrid/4
+    yOffset = sizeSquareGrid/8
+
+    # ligne du dessous a droite de la grille a la 2eme case
+    ligne(3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 2*sizeSquareGrid , 3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte(str(score2), 14)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 2*sizeSquareGrid, "black", 7) 
+    
+    # possition du tetriTexte 
+    xPose = 3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + xOffset
+    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + sizeSquareGrid  - yOffset
+    
+    # TODO : taille de police en fonction de la taille de la fenêtre
+    tetriTexte(xPose, yPose ,str(score2), "black", 14)
+
+
+
+def drawNextPolyDeuxJoueurs(nextPoly, squareColors, joueurOn):
+    """dsesine a droite de la grille le poly suivant"""
+    if joueurOn=="joueur1": 
+        coeff=1/4
+    elif joueurOn=="joueur2" : 
+        coeff=3/4
+    thickness=8
+    
+    ######HEXAPICKER
+    rectangle(largeurFenetre*coeff- sizeSquareGrid*numXSquare/2 - thickness//2, 0, largeurFenetre*coeff + sizeSquareGrid*numXSquare/2 + thickness//2, sizeSquareGrid*2 + thickness//2, "white smoke", "white smoke")
+    # ligne du dessus a droite de la grille a la 4eme case et 
+    # de logueur la longueur de next poly + une 1 case pour le padding 
+    ligne(largeurFenetre*coeff + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid, largeurFenetre*coeff + sizeSquareGrid*numXSquare/2 + sizeSquareGrid*len(nextPoly[0][0]) + 1*sizeSquareGrid, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid, "black", 4)
+
+    # on dessine le poly avec sont orientation de base a une case en dessous de la ligne
+    # et 1/2 case horizontalement
+
+    y = hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid + 0.5*sizeSquareGrid
+    x = largeurFenetre*coeff + sizeSquareGrid*numXSquare/2 + 0.5*sizeSquareGrid
+
+    for i in range(len(nextPoly[0])):
+        for j in range(len(nextPoly[0][0])):
+            
+            # on affiche que les case remplit pour ne pas avoir de cases blanches
+            if nextPoly[0][i][j] == 0:
+                pass
+            else:
+                rectangle(x+j*sizeSquareGrid, y+i*sizeSquareGrid, x+j*sizeSquareGrid + sizeSquareGrid, y+i*sizeSquareGrid + sizeSquareGrid, "black", squareColors[nextPoly[0][i][j]], 3)
+
+
+
+def keyPressedModeDeuxJoueurs(key, gridOn, gridOff, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, scoreOn, scoreOff, squareColors, joueurOn, joueurOff):
+    """prends en argument la touche pressée et appelle differentes fonction selon la touche pressée"""
+    
+    #debug 
+    #print(key) 
+    # pour touner la pièce d'1/4 vers la droite
+    if key == 'Up':
+        gridOn, poly, prevX, prevY, x, y, ori, change, maxY = rotatePiece(gridOn, poly, prevX, prevY, x, y, ori, change, maxY)
+        return gridOn, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
+
+    # pour déplacer la pièce de une case vers la gauche
+    if key == 'Left':
+        x -= 1
+
+        gridOn, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(gridOn, poly, prevX, prevY, x, y, ori, change, maxY)
+        return gridOn, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
+
+
+    # pour déplacer la pièce de une case vers la gauche
+    elif key == 'Right':
+        x += 1
+
+        gridOn, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(gridOn, poly, prevX, prevY, x, y, ori, change, maxY)
+        return gridOn, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
     
+    # pour placer intantanément la pièce 
+    elif key == 'space':
+        
+        
+        gridOn, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(gridOn, poly, prevX, prevY, x, maxY, ori, change, maxY)
+
+        # on pose la pièce définitivement
+        pieceActivated = 0
+
+
+        # on dessine la pièce qui viens de se possé directement sinon elle restait en l'air si la condition de défaite 
+        drawGridModeDeuxJoueurs(gridOn, gridOff, nextPoly, scoreOn, scoreOff, squareColors, joueurOn, joueurOff)
+
+        return gridOn, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
+
+
+    # 'down' pour baisser la pièce plus rapidement 
+    else:
+        y += 1
+
+        gridOn, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(gridOn, poly, prevX, prevY, x, y, ori, change, maxY)
+        return gridOn, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
+
+
+def ajoutLignesModeDeuxJoueurs(grid, nbLignesSupp) :
+    newGrid=[]
+    for a in range(nbLignesSupp, len(grid)) : 
+        newGrid.append(grid[a])
+    nb=randrange(len(grid[-1]))
+    for _ in range(nbLignesSupp) : 
+        newGrid.append([])
+        for b in range(len(grid[-1])) :
+            if b==nb : 
+                newGrid[-1].append(0)
+            else : 
+                newGrid[-1].append(randrange(1, 5))
+    return newGrid 
+            
+             
+def suppLignesModeDeuxJoueurs (grid, score, nbLignesSuppTotale, varPtsDiffSelect) : 
+    """Supprimer les lignes lorsque toutes les valeurs sont diférentes de 0 et appelle la fonction qui descend les lignes au dessus de celle supprimée"""
+    
+    #fonction qui va supprimer les lignes remplies dans la grille 
+    # et qui va renvoyer le nombre de lignes supprimées 
+    nbLignesSupp = 0
+    
+    # boucle while qui va parcourir les sous listes, 
+    # soit les lignes de la grille
+    i = 0
+    while i < len(grid) :
+        
+        # boucle for qui va parcourir les diverses éléments de la lignes 
+        # et les passer à vide si il n'y a pas de zéro, c'est à dire qu'elle est remplie 
+        if 0 not in grid[i] : 
+            for j in range(len(grid[i])) : 
+                grid[i][j] = 0
+
+            nbLignesSupp += 1
+
+            
+            downLignes(grid, i)
+            
+        i+=1
+
+    # on augmente le nb de lignes supprimé toltale par le nb de lignes suppp
+    nbLignesSuppTotale += nbLignesSupp
+
+    # choix de la fonction a utiliser si la variante est selectionner
+    if varPtsDiffSelect == True:
+        if pointsEnFonctionDifficulte(score, nbLignesSupp)!=score : 
+            return pointsEnFonctionDifficulte(score, nbLignesSupp, nbLignesSuppTotale), nbLignesSuppTotale, 1
+        else : 
+            return pointsEnFonctionDifficulte(score, nbLignesSupp, nbLignesSuppTotale), nbLignesSuppTotale, 0
+    else:
+        if points(score, nbLignesSupp)!=score : 
+            return points(score, nbLignesSupp), nbLignesSuppTotale, nbLignesSupp, 1
+        else : 
+            return points(score, nbLignesSupp), nbLignesSuppTotale, nbLignesSupp, 0
+
+if __name__ == "__main__":
+    ## on charge la police d'écriture style rétro
+
+    #### constantes et variables globales ####
+
+    largeurFenetre = 800*2
+    hauteurFenetre = largeurFenetre/1.75
+    yMargin = int(0.15*hauteurFenetre)
+
+    # constante
+    numYSquare = 20
+    numXSquare = 10
+    sizeSquareGrid = int(0.80*hauteurFenetre/numYSquare)
+
+    # pièces par défaut
+
+    # au début du jeu on génére dans une liste toutes les polyomino de taille n 
+    # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
+    # n =  4 pour le mode de jeu classique 
+    polyLst = genPolyominoLst(n=4)
+
+    # génération des couleurs pour chaque poly 
+    squareColors = genColorRGBLst(len(polyLst))    
+    
+    
     main()
+    
