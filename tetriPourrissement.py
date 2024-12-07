@@ -1,5 +1,5 @@
 from random import randrange
-from tetriV1 import erasePiece
+from tetriV2 import erasePiece
 
 def pourrissement (grid, polyLst) : 
 
@@ -58,7 +58,7 @@ def verification (grid, poly, y, x, n) :
                 
                 # pour ne pas prendre les cases vides
                 if poly[ori][i][j] != 0:
-                    
+
                     # dès qu'une case correspond
                     if poly[ori][i][j]==grid[y+i][x+j] : 
                         

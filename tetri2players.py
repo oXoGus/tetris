@@ -1,5 +1,5 @@
 from fltk import *
-from tetriV1 import numYSquare, numXSquare, largeurScreen, hauteurScreen, polyLst, genColorRGBLst, isColision, isPolyMaxY, spawnPiece, drawPiece, temps, points, rotatePiece, downLignes, pointsEnFonctionDifficulte, rectangleOmbre, drawCurseur, tetriTexteCentre
+from tetriV2 import numYSquare, numXSquare, largeurScreen, hauteurScreen, polyLst, genColorRGBLst, isColision, isPolyMaxY, spawnPiece, drawPiece, temps, points, rotatePiece, downLignes, pointsEnFonctionDifficulte, rectangleOmbre, drawCurseur, tetriTexteCentre
 from tetriGenPolyArbi import *
 from tetriFont import *
 from tetriGenPoly import *
@@ -433,7 +433,7 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
 
             # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
             if change == 1:
-                
+
                 updateGridModeDeuxJoueurs(grid2, nextPoly2, score2, squareColors, joueurOn)
                 change = 0
 
