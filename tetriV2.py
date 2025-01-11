@@ -55,7 +55,7 @@ squareColors = genColorRGBLst(len(polyLst))
 def main():
     # initialisation des varible pour le menu
     fermer = 0
-    jouer=["Jouer", "Quitter"]
+    jouer=["Jouer", "Charger une partie", "Quitter"]
     flag = None
 
     # initialisation des flag de selection des variante 
@@ -85,16 +85,39 @@ def main():
 
 
     # pour centrer le tetriTexte
-    xOffset, yOffset = tailleTetriTexte(jouer[0], 18)
-    tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 18)
+    xOffsetJouer, yOffsetJouer = tailleTetriTexte(jouer[0], 18)
+    tetriTexte(largeurFenetre*1/2 - xOffsetJouer/2, hauteurFenetre*1/2 - yOffsetJouer/2 - 50, jouer[0], 'black', 18)
     
+    # charger une partie
+    xOffsetCharger, yOffsetCharger = tailleTetriTexte(jouer[1], 18)
+    tetriTexteCentre(largeurFenetre/2, hauteurFenetre/2 - yOffsetJouer/2 + 50, jouer[1], "black", 18)
 
     # Quitter
-    xOffset, yOffset = tailleTetriTexte(jouer[1], 18)
-    tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 + 50, jouer[1], 'black', 18)
+    xOffsetQuit, yOffsetQuit = tailleTetriTexte(jouer[2], 18)
+    tetriTexte(largeurFenetre*1/2 - xOffsetQuit/2, hauteurFenetre*1/2 - yOffsetQuit/2 + 150, jouer[2], 'black', 18)
+
+
+    # liste de toutes le coordonnées du curseur a l'index de l'option
+    cursorPoseLst = [
+        # tuple contenant ax, ay, bx, by pour le 'jouer'
+        (
+            largeurFenetre/2 - xOffsetJouer/2 - 1*sizeSquareGrid, 
+            hauteurFenetre*1/2 - yOffsetJouer/2 - 50 + yOffsetJouer/2
+         ), 
+         # pour le 'charger une partie'
+         (
+            largeurFenetre/2 - xOffsetCharger/2 - 1*sizeSquareGrid, 
+            hauteurFenetre*1/2 - yOffsetCharger/2 + 50 + yOffsetCharger/2
+         ), 
+         # pour le 'quitter'
+         (
+            largeurFenetre/2 - xOffsetQuit/2 - 1*sizeSquareGrid, 
+            hauteurFenetre*1/2 - yOffsetQuit/2 + 150 + yOffsetQuit/2
+         ), 
+        ]
 
     # curseur 
-    drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 - 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
+    drawCurseur(cursorPoseLst[choix][0],cursorPoseLst[choix][1], polyLst[randrange(0, len(polyLst))][randrange(4)])
 
     # boucle de jeu
     while True: 
@@ -119,18 +142,19 @@ def main():
 
 
             # pour centrer le tetriTexte
-            xOffset, yOffset = tailleTetriTexte(jouer[0], 18)
-            tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 - 50, jouer[0], 'black', 18)
-                    
-
-
+            xOffsetJouer, yOffsetJouer = tailleTetriTexte(jouer[0], 18)
+            tetriTexte(largeurFenetre*1/2 - xOffsetJouer/2, hauteurFenetre*1/2 - yOffsetJouer/2 - 50, jouer[0], 'black', 18)
+            
+            # charger une partie
+            xOffsetCharger, yOffsetCharger = tailleTetriTexte(jouer[1], 18)
+            tetriTexteCentre(largeurFenetre/2, hauteurFenetre/2 - yOffsetJouer/2 + 50, jouer[1], "black", 18)
 
             # Quitter
-            xOffset, yOffset = tailleTetriTexte(jouer[1], 18)
-            tetriTexte(largeurFenetre*1/2 - xOffset/2, hauteurFenetre*1/2 - yOffset/2 + 50, jouer[1], 'black', 18)
+            xOffsetQuit, yOffsetQuit = tailleTetriTexte(jouer[2], 18)
+            tetriTexte(largeurFenetre*1/2 - xOffsetQuit/2, hauteurFenetre*1/2 - yOffsetQuit/2 + 150, jouer[2], 'black', 18)
 
             # curseur 
-            drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 - 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
+            drawCurseur(cursorPoseLst[choix][0],cursorPoseLst[choix][1], polyLst[randrange(0, len(polyLst))][randrange(4)])
 
             flag = None
 
@@ -165,36 +189,83 @@ def main():
                 if key=='Down':
 
                     # on inverse l'état de choix
-                    if choix == 1: 
+                    if choix == 2: 
                         choix = 0
-                        efface("Curseur")   
-                        drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 - 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
-                        
                     
                     else : 
                         choix += 1
-                        efface("Curseur")
-                        drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 + 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
-
+                        
                 # flêche du haut
                 elif key=='Up':
                     # on inverse l'état de choix
                     if choix == 0: 
-                        choix = 1
-                        efface("Curseur")
-                        drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 + 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
+                        choix = 2
+
                     else : 
                         choix -= 1
-                        efface("Curseur")
-                        drawCurseur(largeurFenetre*1/2 - xOffset/2 - 60, hauteurFenetre*1/2 - yOffset/2 - 50, polyLst[randrange(0, len(polyLst))][randrange(4)])
+                    
+                    
+                efface("Curseur")
+                drawCurseur(cursorPoseLst[choix][0],cursorPoseLst[choix][1], polyLst[randrange(0, len(polyLst))][randrange(4)])
 
                 
                 
                 # si l'utilisateur appuis sur la touche entrer
                 if key == 'Return' : 
                     
+                    # le joueur a sélectionné 'charger une partie'
+                    if choix == 1:
+                        flag = saveMenu()
+
+                        if flag == 'Escape':
+
+                            # on réaffiche le menu
+                            flag = 'menu'
+                            continue
+                        
+                        # on charge une partie 
+                        else:
+
+                            
+
+                            save = flag
+
+                            # on supprime la save
+                            deleteSave(save['id'])
+                            
+                            # détéction des variantes 
+                            if 'varModePourrisement' in save['varActiv']:
+                                varModePourrisement = True 
+                            else:
+                                varModePourrisement = False
+                            
+                            if 'varPtsDiffSelect' in save['varActiv']:
+                                varPtsDiffSelect = True
+                            else:
+                                varPtsDiffSelect = False
+
+                            if 'varPolyArbitraires' in save['varActiv']:
+                                varPolyArbitraires = True
+                            else:
+                                varPolyArbitraires = False 
+
+                            # on appel les deux fonction avec la save en param pour récuperer la grille, les couleurs, les poly...
+                            if 'varMode2joueurs' in save['varActiv']:
+                                flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save)
+
+                            else:
+                                flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save)
+
+                            # la fenêtre est deja fermer on ferme le programme
+                            if flag == 'Quitte':
+                                return None
+                            
+                            # pour ne pas refaire la boucle et afficher la selection des variantes
+                            if flag == 'retry' or flag == 'menu':
+                                continue
+                    
                     # si le joueur a selectionné 'jouer'
-                    if choix==0 :
+                    elif choix==0 :
 
                         # liste contentant les tetriTextes pour les variantes
                         variantes = ["Score en fonction \nde la difficulte", "Polynomios \nArbitraires", "Mode 2 joueurs", "Mode pourrissement"]
@@ -223,9 +294,6 @@ def main():
                             # affichage de la selection des variantes
                             efface_tout()
 
-
-                            
-                            
                             # rectangle encatrant tout les choix
                             rectangleOmbre(largeurFenetre*1/5, hauteurFenetre*1/5 , largeurFenetre*4/5,  hauteurFenetre*4/5, 1*sizeSquareGrid, "white", "black", "gray", 5)
 
@@ -401,6 +469,12 @@ def main():
                                         # pour ne pas refaire la boucle et afficher la selection des variantes
                                         if flag == 'retry' or flag == 'menu':
                                             break
+
+                                    # la touche echape
+                                    elif key == 'Escape':
+                                        
+                                        flag = 'menu'
+                                        break
                                         
                                         
                     
@@ -421,7 +495,7 @@ def main():
 
 
 
-def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
+def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save=None):
     """une partie de tetris
     
     prend en argument les variantes activées
@@ -431,50 +505,85 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
     # on efface le menu
     efface_tout()
     
-    # grille du haut contenant les id des carrées pour pouvoir les supprimer 
+    # si on ne charge pas une partie 
+    if save is None:
+        # grille du haut contenant les id des carrées pour pouvoir les supprimer 
 
-    # structure de donnée pour représenter la grille de jeu
-    # la grille de jeu fait du 10 par 20 
-    # mais comme les pièces apparaissent au dessus des 20 de hauteur 
-    # on doit rajouter 4 cases sur les y
-    grid = []
+        # structure de donnée pour représenter la grille de jeu
+        # la grille de jeu fait du 10 par 20 
+        # mais comme les pièces apparaissent au dessus des 20 de hauteur 
+        # on doit rajouter 4 cases sur les y
+        grid = []
 
-    for i in range(numYSquare + 4):
-        grid.append([])
-        for j in range(numXSquare):
-            grid[i].append(0)
+        for i in range(numYSquare + 4):
+            grid.append([])
+            for j in range(numXSquare):
+                grid[i].append(0)
 
 
 
-    # génération des pièce ainsi que leurs couleurs
-    
-    # si la variante est activé 
-    if varPolyArbitraires:
-        # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
-        # n =  4 pour le mode de jeu classique 
-        polyLst = genVarPolyArbitraire()
+        # génération des pièce ainsi que leurs couleurs
+        
+        # si la variante est activé 
+        if varPolyArbitraires:
+            # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
+            # n =  4 pour le mode de jeu classique 
+            polyLst = genVarPolyArbitraire()
 
-        # génération des couleurs pour chaque poly 
-        squareColors = genColorRGBLst(len(polyLst))
+            # génération des couleurs pour chaque poly 
+            squareColors = genColorRGBLst(len(polyLst))
+        else:
+            # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
+            # n =  4 pour le mode de jeu classique 
+            polyLst = genPolyominoLst(n=4)
+
+            # génération des couleurs pour chaque poly 
+            squareColors = genColorRGBLst(len(polyLst))
+
+
+        # les variables locales, on ne peut pas utiliser de variables globales en les définissant hors de la fonction son accessible qu'en lecture exeption faite au liste 
+        pieceActivated = 0
+
+        # on initialise la variable qui va contenir le poly que le joueur va jouer, celui qui apparaitera a la droite de la grille
+        nextPoly = None
+
+        # Initialisation du score à 0
+        score = 0
+
+
+    # on récupère tout les éléments de la save
     else:
-        # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
-        # n =  4 pour le mode de jeu classique 
-        polyLst = genPolyominoLst(n=4)
+        grid = save['grid']
+        polyLst = save['polyLst']
+        squareColors = save['squareColors']
+        score = save['score']
+        poly = save['poly']
+        nextPoly = save['nextPoly']
+        x = save['x']
+        y = save['y']
+        ori = save['ori']
 
-        # génération des couleurs pour chaque poly 
-        squareColors = genColorRGBLst(len(polyLst))
+        prevX = x
+        prevY = y
 
-    flag = None
+        # on efface la pièce active pour la redessiner avec son ombre 
+        erasePiece(grid, poly, x, y, ori)
+
+        change = 1
+
+        # calcule du maxY pour placer l'ombre
+        maxY = y
+        while isPolyMaxY(grid, poly, x, maxY, ori) == False:
+            maxY += 1
+
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+
+        # la pièce est déja activé
+        pieceActivated = 1
+
+        desactivateCounter = 0
 
 
-    # les variables locales, on ne peut pas utiliser de variables globales en les définissant hors de la fonction son accessible qu'en lecture exeption faite au liste 
-    pieceActivated = 0
-
-    # on initialise la variable qui va contenir le poly que le joueur va jouer, celui qui apparaitera a la droite de la grille
-    nextPoly = None
-
-    # Initialisation du score à 0
-    score = 0
 
     # intialisation du nombre totale de ligne supprimer pour calculer le niveau de difficulté 
     nbLignesSuppTotale = 0
@@ -484,9 +593,6 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
 
     # on intitialise le score pour svoir si le temps de dessendre la pièce est passé 
     timer = 0
-
-    # on initialise la variable pour la condition de défaite
-    maxY = len(grid)
 
     globalTimer = time.perf_counter()
 
@@ -633,6 +739,25 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
                 # si la touche est utile pour le jeu
                 if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
                     grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors)
+            
+                elif key == 'Escape':
+                    flag = menuPause()
+
+                    print(flag)
+
+                    if flag == 'reprendre':
+
+                        # on met le change a un pour réafficher la grille 
+                        change = 1
+
+                    # save&quit
+                    else:
+                        createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPoly, varPtsDiffSelect, varPolyArbitraires, varModePourrisement, varMode2joueurs = False)
+                        ferme_fenetre()
+                        
+                        return 'Quitte'
+                        
+
             else:
                 pass
                 #print(key)
@@ -1072,6 +1197,8 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
 
         return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
+    
+            
 
     # 'down' pour baisser la pièce plus rapidement 
     else:
@@ -1406,7 +1533,16 @@ def tetriTexteCentre(x, y, chaine, couleur = "black", taille = 24):
 def drawCurseur (x, y, poly) : 
     #largeur d'un carré du curseur 
     largeurCarreCurseur=10
-    
+
+    ### centrage de curseur sur x et y
+    maxX = 0
+    for i in range(len(poly)):
+        if len(poly[i]) > maxX:
+            maxX = len(poly[i])
+
+    x = x - (maxX*largeurCarreCurseur)/2
+    y = y + len(poly)*largeurCarreCurseur/2
+
     #on va dessiner le polyomino grâce à une boucle for pour les colonnes et les lignes 
     for i in range(len(poly)):
         for j in range(len(poly[0])) : 
@@ -1425,6 +1561,163 @@ def drawCurseur (x, y, poly) :
 
 def menuPause():
     """menu de pase dans une partie"""
+    # la sélection est déja sur l'option retry
+    select = 0
+
+
+    # les deux options qu'a l'utilisateur
+    option = ['reprendre', 'sauvegarder', 'et quitter']
+
+    offset = 0.5*sizeSquareGrid
+
+
+
+
+    # on affiche le score dans un rectangle puis deux boutons pour réessayer 
+    # et pour revenir au menu
+    
+    # dans un rectangle 
+
+    
+    # affichage des éléments fixe une seul fois ici
+
+
+    # décalage du rectange pour que cela créer du relief avec le deuxieme rectengle qui le superpose
+
+
+    rectangleOmbre(ax = largeurFenetre/2 - 4*sizeSquareGrid, 
+                    ay = hauteurFenetre/2 - 4*sizeSquareGrid, 
+                   bx = largeurFenetre/2 + 4*sizeSquareGrid, 
+                   by = hauteurFenetre/2 + 4*sizeSquareGrid, 
+                   offsetOmbre = offset, 
+                   colBordure = "black", 
+                   colRemplissage = "white",
+                    colOmbre = "gray",
+                   epaisseur = 4)
+       
+    # tetriTexte du game over
+    xOffset, yOffset = tailleTetriTexte('PAUSE', 14)
+    tetriTexte(x = largeurFenetre/2 - xOffset/2, 
+          y = hauteurFenetre/2 - 3*sizeSquareGrid - yOffset/2, 
+          chaine =  "PAUSE", 
+          taille =  14)
+
+    
+    # on recupere la hauteure et la largeurs du tetriTexte pour les caluls de position du cuseur 
+
+    # reprendre
+    tetriTexteCentre(x = largeurFenetre/2, 
+                        y = hauteurFenetre/2 - 0.7*sizeSquareGrid, 
+                        chaine =  option[0], 
+                        taille =  10)
+    
+    xReprendreLen, yReprendreHight = tailleTetriTexte(option[0], 10)
+
+    # save
+    tetriTexteCentre(x = largeurFenetre/2, 
+                        y = hauteurFenetre/2 + 1*sizeSquareGrid, 
+                        chaine =  'sauvegarder', 
+                        taille =  10)
+    
+    xSaveLen, ySaveHight = tailleTetriTexte('sauvegarder', 10)
+    
+    # et quitter
+    tetriTexteCentre(x = largeurFenetre/2, 
+                        y = hauteurFenetre/2 + 2*sizeSquareGrid, 
+                        chaine =  'et quitter', 
+                        taille =  10)
+
+ 
+
+    # on enregistre toutes les posistions possible du curseur
+    # ici 2 (retry et menu) dans une liste
+    
+    cursorPoseLst = [
+        # tuple contenant ax, ay, bx, by pour le retry
+        (
+            largeurFenetre/2 - xReprendreLen/2 - 1.2*sizeSquareGrid, 
+            hauteurFenetre/2 - 0.7*sizeSquareGrid + yReprendreHight/2
+         ), 
+         # meme chose pour le menu
+         (
+            largeurFenetre/2 - xReprendreLen/2 - 1.2*sizeSquareGrid, 
+            hauteurFenetre/2 + 1.5*sizeSquareGrid
+        )
+        ]
+
+    # on dessine le curseur a la posision par défaut
+    drawCurseur(cursorPoseLst[select][0], cursorPoseLst[select][1], polyLst[randrange(0, len(polyLst))][randrange(4)])
+
+    
+    while True:
+
+        # partie gestions des input 
+       
+        # on met a jour le fenêtre pour récuperer les touches pressées
+        mise_a_jour()
+        
+        # recuperation de la touche 
+        ev=donne_ev() 
+
+        # si une touche a été pressé 
+        if ev is not None : 
+
+            # on enregistre son type
+            key = type_ev(ev)
+
+            # si l'utilisateur veut fermer la fenêtre
+            if key == 'Quitte':
+
+                # on ferme la fenre et on sort de la boucle de jeu ce qui revien a arrêter le programme
+                ferme_fenetre()                
+                return 'Quitte'
+            
+            # si la touche est une touche de clavier
+            elif key == 'Touche':
+                
+                # on enregistre la touche
+                key = touche(ev)
+
+                # touche du bas 
+                if key == 'Down':
+
+                    if select == 1:
+                        select = 0
+                    else:
+                        select += 1
+
+                    efface("Curseur")
+                    drawCurseur(cursorPoseLst[select][0], cursorPoseLst[select][1], polyLst[randrange(0, len(polyLst))][randrange(4)])
+
+                    
+                
+                # touche du haut 
+                elif key == 'Up':
+
+                    if select == 0:
+                        select = 1
+                    else:
+                        select -= 1
+
+
+                    efface("Curseur")
+                    drawCurseur(cursorPoseLst[select][0], cursorPoseLst[select][1], polyLst[randrange(0, len(polyLst))][randrange(4)])                
+                
+
+                # touche entrer
+                elif key == 'Return':
+                    if option[select] == 'reprendre':
+                        return option[select]
+                    
+                    # save & quit
+                    else:
+                        return 'save&quit'
+
+                
+                elif key == 'Escape' :
+                    return option[select]
+
+    
 
 
 def createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPoly, varPtsDiffSelect, varPolyArbitraires, varModePourrisement, varMode2joueurs):
@@ -1489,7 +1782,7 @@ def createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPo
         hours = hours[:-3]
 
         # on peut recomposer la date de la save
-        f.write('date:'+date + ' à ' + hours + '\n')
+        f.write('date:'+date + ' a ' + hours + '\n')
         
         # sauvegarde du score
         f.write('score:'+str(score)+'\n')
@@ -1531,6 +1824,8 @@ def createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPo
         if varModePourrisement == True:
             f.write('varModePourrisement ')
 
+        f.write('\n')
+
 
 def saveMenu():
     """met en forme les donnés de toutes les saves
@@ -1545,26 +1840,187 @@ def saveMenu():
     # partie affichage
     efface_tout()
 
-    tetriTexteCentre(largeurFenetre//2, hauteurFenetre*0.2, "sauvegardes", "black", 30)
+    tetriTexteCentre(largeurFenetre//2, hauteurFenetre*0.1, "sauvegardes", "black", 30)
+
+    saveSelected = 0
     
     # aucune save a montrer
     if saves == []:
         tetriTexteCentre(largeurFenetre//2, hauteurFenetre//2, "aucune sauvegardes a charger")
+
+        # on attend que le joueur quitte 
+
     else:
         
         # on montre les info de la première save
-        drawSaveData(saves[0])
+        drawSaveData(saves[saveSelected])
+
+        # si si il y a plus d'une save
+        if len(saves) > 1:
+
+            # on dessine une fleche de droite
+            drawTetriFleche(largeurFenetre*0.9, hauteurFenetre//2 - 2.5*sizeSquareGrid*2/3, sizeSquareGrid*0.3, 'right')
+
+
+        # gestion des touches 
+
+        while True:
+
+            # partie gestions des input 
+        
+            # on met a jour le fenêtre pour récuperer les touches pressées
+            mise_a_jour()
+            
+            # recuperation de la touche 
+            ev=donne_ev() 
+
+            # si une touche a été pressé 
+            if ev is not None : 
+
+                # on enregistre son type
+                key = type_ev(ev)
+
+                # si l'utilisateur veut fermer la fenêtre
+                if key == 'Quitte':
+
+                    # on ferme la fenre et on sort de la boucle de jeu ce qui revien a arrêter le programme
+                    ferme_fenetre()                
+                    return 'Quitte'
+                
+                # si la touche est une touche de clavier
+                elif key == 'Touche':
+                    
+                    # on enregistre la touche
+                    key = touche(ev)
+
+                    # flèche de gauche  
+                    if key == 'Left':
+
+                        if saveSelected == 0:
+                            saveSelected = 0
+                        else:
+                            saveSelected -= 1
+
+                            # on affiche la nouvelle save
+                            efface_tout()
+
+                            tetriTexteCentre(largeurFenetre//2, hauteurFenetre*0.1, "sauvegardes", "black", 30)
+
+                            drawSaveData(saves[saveSelected])
+
+                            # si on est pas a la derniere save 
+                            if saveSelected != 0:
+
+                                # on dessine une fleche de gauche
+                                drawTetriFleche(largeurFenetre*0.1 - 6*sizeSquareGrid*0.3, hauteurFenetre//2 - 2.5*sizeSquareGrid*2/3, sizeSquareGrid*0.3, 'left')
+
+                            # on dessine la fleche de droite
+                            drawTetriFleche(largeurFenetre*0.9, hauteurFenetre//2 - 2.5*sizeSquareGrid*2/3, sizeSquareGrid*0.3, 'right')
+                            
+                        
+                        
+                    
+                    # flèche de droite  
+                    elif key == 'Right':
+
+                        if saveSelected == len(saves) - 1:
+                            saveSelected == len(saves) - 1
+                        else:
+                            saveSelected += 1 
+
+                            # on affiche la nouvelle save
+                            efface_tout()
+
+                            tetriTexteCentre(largeurFenetre//2, hauteurFenetre*0.1, "sauvegardes", "black", 30)
+        
+                            drawSaveData(saves[saveSelected])
+
+                            # si on est pas a la derniere save 
+                            if saveSelected < len(saves) - 1:
+
+                                # on dessine une fleche de droite
+                                drawTetriFleche(largeurFenetre*0.9, hauteurFenetre//2 - 2.5*sizeSquareGrid*2/3, sizeSquareGrid*0.3, 'right')
+
+                            # on dessine la fleche de gauche
+                            drawTetriFleche(largeurFenetre*0.1 - 6*sizeSquareGrid*0.3, hauteurFenetre//2 - 2.5*sizeSquareGrid*2/3, sizeSquareGrid*0.3, 'left')
+
+
+
+
+                    # touche entrer 
+                    elif key == 'space':
+                        
+                        efface_tout()
+
+                        # on renvoie la save sélectioné
+                        return saves[saveSelected]
+                    
+
+                    # la touche echape
+                    elif key == 'Escape':
+                        
+                        return key
+
+
+    
+
+    
         
         
 
 def drawSaveData(save):
     
-    # on dessine la grille a gauche
-    pass
+    # on utilise les memes couleus que pour la partie
 
-def drawSaveGrid(grid):
+    # on dessine la grille a gauche
+    drawSaveGrid(save['grid'], sizeSquareGrid*2/3, save['squareColors'])
+
+    # date de la save
+    xOffset, yOffset = tailleTetriTexte("Date : " + save['date'].split(' ')[0])
+    tetriTexte(largeurFenetre*1/4 + numXSquare/2*sizeSquareGrid*2/3 + sizeSquareGrid*2/3, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid*2/3 - sizeSquareGrid*2/3*numYSquare + yOffset//2, "Date : " + save['date'].split(' ')[0], taille=12)
+
+    xOffsetDate, yOffsetDate = tailleTetriTexte("Date : ", 12)
+    xOffset, yOffset = tailleTetriTexte('a ' + save['date'].split(' ')[2])
+    tetriTexte(largeurFenetre*1/4 + numXSquare/2*sizeSquareGrid*2/3 + sizeSquareGrid*2/3 + xOffsetDate + 0.2*sizeSquareGrid, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid*2/3 - sizeSquareGrid*2/3*numYSquare + 3.3*yOffset + yOffsetDate, 'a ' + save['date'].split(' ')[2], taille=12)
+
+
+    # score
+    tetriTexte(largeurFenetre*1/4 + numXSquare/2*sizeSquareGrid*2/3 + sizeSquareGrid*2/3, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid*2/3 - sizeSquareGrid*2/3*numYSquare + 3*yOffset + yOffsetDate + 1.3*sizeSquareGrid, "Score : " + str(save['score']), taille=12)
+
+
+    # varActiv
+    tetriTexte(largeurFenetre*1/4 + numXSquare/2*sizeSquareGrid*2/3 + sizeSquareGrid*2/3, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid*2/3 - sizeSquareGrid*2/3*numYSquare + 3*yOffset + yOffsetDate + 1.3*sizeSquareGrid + 1.3*sizeSquareGrid, "variantes actives : ", taille=12)
+
+    for i, varActiv in enumerate(save['varActiv']):
+        tetriTexte(largeurFenetre*1/4 + numXSquare/2*sizeSquareGrid*2/3 + sizeSquareGrid*2/3, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid*2/3 - sizeSquareGrid*2/3*numYSquare + 3*yOffset + yOffsetDate + 3*1.3*sizeSquareGrid + i*1*sizeSquareGrid, varActiv, taille=10)
+
+    # poly utilisés
+
+
+    # pour charger cette save
+    tetriTexteCentre(largeurFenetre//2, hauteurFenetre*0.9, "Appuyer sur espace pour charger cette save", taille=12)
+
+
+    # les fleches pour 
+
+    
+
+def loadSave(save):
+    """ charge une partie sauvegardé """
+
+    
+
+def drawPolyUtils(polyLst):
+    """dessine la liste des poly utilisés"""
+
+
+
+
+def drawSaveGrid(grid, sizeSquareGrid, squareColors):
     """dssine une version miniature de la grille de jeu 
     spécialement prévu pour l'affichage des données de la save"""
+
+    
 
     # on reprend la fonction drawGrid mais avec les bonne dimentions et les bonnes 
 
@@ -1574,26 +2030,26 @@ def drawSaveGrid(grid):
     thickness = 8
 
     # ligne basse de la grille
-    ligne(largeurFenetre/2 - sizeSquareGrid*numXSquare/2 - thickness//2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + thickness//2, hauteurFenetre - yMargin, "black", thickness)
+    ligne(largeurFenetre*1/4 - sizeSquareGrid*numXSquare/2 - thickness//2, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid, largeurFenetre*1/4 + sizeSquareGrid*numXSquare/2 + thickness//2, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid, "black", thickness)
 
     #ligne de gauche
-    ligne(largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
+    ligne(largeurFenetre*1/4 - sizeSquareGrid*numXSquare/2, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid - numYSquare*sizeSquareGrid, largeurFenetre*1/4 - sizeSquareGrid*numXSquare/2, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid, "black", thickness)
 
     #ligne de droite
-    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
+    ligne(largeurFenetre*1/4 + sizeSquareGrid*numXSquare/2, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid - numYSquare*sizeSquareGrid, largeurFenetre*1/4 + sizeSquareGrid*numXSquare/2, hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid, "black", thickness)
 
-
+    
 
     # on dessine les case vide pour que les épaisseurs des case des case pleines ne soit 'écrasé' par l'épaisseur de la case vide
     for i in range(len(grid)):
 
-        yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
+        yGrid = hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
         for j in range(len(grid[0])):
 
              # on enregistre la couleur de la case
             n = grid[i][j]
 
-            xGrid = largeurFenetre/2 - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+            xGrid = largeurFenetre*1/4 - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
 
             # si on est dans les 4 première ligne
             if i < 4:
@@ -1611,13 +2067,13 @@ def drawSaveGrid(grid):
     # on dessine que les cases pleines
     for i in range(len(grid)):
 
-        yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
+        yGrid = hauteurFenetre/2 + numYSquare*0.70*sizeSquareGrid - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
         for j in range(len(grid[0])):
 
              # on enregistre la couleur de la case
             n = grid[i][j]
 
-            xGrid = largeurFenetre/2 - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+            xGrid = largeurFenetre*1/4 - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
 
             # si on est dans les 4 première ligne
             if i < 4:
@@ -1637,8 +2093,4 @@ def drawSaveGrid(grid):
 
 
 if __name__ == "__main__":
-    
-    
-
-    
     main()

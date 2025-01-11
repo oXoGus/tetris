@@ -14,7 +14,7 @@ sizeSquareGrid = int(0.73*hauteurScreen/numYSquare)
 largeurFenetre = largeurScreen
 hauteurFenetre = hauteurScreen
 
-def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrissement):
+def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrissement, save = None):
     """une partie de tertis
     
     prend en argument les variantes activées

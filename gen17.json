@@ -1,0 +1,177 @@
+[
+    {
+        "avgScore": 3248.8,
+        "coefNbLigneSupp": 27,
+        "coefCasePerdu": 4,
+        "coefCaseManquantes": 14,
+        "coefHauteurRect": 13
+    },
+    {
+        "avgScore": 3088.8,
+        "coefNbLigneSupp": 27,
+        "coefCasePerdu": 5,
+        "coefCaseManquantes": 14,
+        "coefHauteurRect": 13
+    },
+    {
+        "avgScore": 2972.8,
+        "coefNbLigneSupp": 21,
+        "coefCasePerdu": 9,
+        "coefCaseManquantes": 14,
+        "coefHauteurRect": 9
+    },
+    {
+        "avgScore": 2884.0,
+        "coefNbLigneSupp": 22,
+        "coefCasePerdu": 9,
+        "coefCaseManquantes": 13,
+        "coefHauteurRect": 13
+    },
+    {
+        "avgScore": 2798.4,
+        "coefNbLigneSupp": 26,
+        "coefCasePerdu": 5,
+        "coefCaseManquantes": 14,
+        "coefHauteurRect": 10
+    },
+    {
+        "avgScore": 2742.4,
+        "coefNbLigneSupp": 24,
+        "coefCasePerdu": 5,
+        "coefCaseManquantes": 9,
+        "coefHauteurRect": 9
+    },
+    {
+        "avgScore": 2678.4,
+        "coefNbLigneSupp": 25,
+        "coefCasePerdu": 6,
+        "coefCaseManquantes": 8,
+        "coefHauteurRect": 10
+    },
+    {
+        "avgScore": 2660.0,
+        "coefNbLigneSupp": 23,
+        "coefCasePerdu": 5,
+        "coefCaseManquantes": 14,
+        "coefHauteurRect": 9
+    },
+    {
+        "avgScore": 2585.6,
+        "coefNbLigneSupp": 24,
+        "coefCasePerdu": 9,
+        "coefCaseManquantes": 10,
+        "coefHauteurRect": 11
+    },
+    {
+        "avgScore": 2520.8,
+        "coefNbLigneSupp": 23,
+        "coefCasePerdu": 5,
+        "coefCaseManquantes": 8,
+        "coefHauteurRect": 15
+    },
+    {
+        "avgScore": 2483.2,
+        "coefNbLigneSupp": 23,
+        "coefCasePerdu": 10,
+        "coefCaseManquantes": 14,
+        "coefHauteurRect": 12
+    },
+    {
+        "avgScore": 2420.8,
+        "coefNbLigneSupp": 24,
+        "coefCasePerdu": 9,
+        "coefCaseManquantes": 10,
+        "coefHauteurRect": 11
+    },
+    {
+        "avgScore": 2408.8,
+        "coefNbLigneSupp": 24,
+        "coefCasePerdu": 5,
+        "coefCaseManquantes": 13,
+        "coefHauteurRect": 14
+    },
+    {
+        "avgScore": 2407.2,
+        "coefNbLigneSupp": 24,
+        "coefCasePerdu": 5,
+        "coefCaseManquantes": 13,
+        "coefHauteurRect": 11
+    },
+    {
+        "avgScore": 2380.8,
+        "coefNbLigneSupp": 23,
+        "coefCasePerdu": 8,
+        "coefCaseManquantes": 8,
+        "coefHauteurRect": 13
+    },
+    {
+        "avgScore": 2366.4,
+        "coefNbLigneSupp": 27,
+        "coefCasePerdu": 8,
+        "coefCaseManquantes": 8,
+        "coefHauteurRect": 11
+    },
+    {
+        "avgScore": 2344.8,
+        "coefNbLigneSupp": 24,
+        "coefCasePerdu": 9,
+        "coefCaseManquantes": 8,
+        "coefHauteurRect": 14
+    },
+    {
+        "avgScore": 2245.6,
+        "coefNbLigneSupp": 25,
+        "coefCasePerdu": 5,
+        "coefCaseManquantes": 9,
+        "coefHauteurRect": 9
+    },
+    {
+        "avgScore": 2125.6,
+        "coefNbLigneSupp": 26,
+        "coefCasePerdu": 6,
+        "coefCaseManquantes": 8,
+        "coefHauteurRect": 13
+    },
+    {
+        "avgScore": 2044.8,
+        "coefNbLigneSupp": 26,
+        "coefCasePerdu": 9,
+        "coefCaseManquantes": 10,
+        "coefHauteurRect": 9
+    },
+    {
+        "avgScore": 2004.0,
+        "coefNbLigneSupp": 27,
+        "coefCasePerdu": 4,
+        "coefCaseManquantes": 12,
+        "coefHauteurRect": 10
+    },
+    {
+        "avgScore": 1978.4,
+        "coefNbLigneSupp": 23,
+        "coefCasePerdu": 6,
+        "coefCaseManquantes": 10,
+        "coefHauteurRect": 10
+    },
+    {
+        "avgScore": 1892.8,
+        "coefNbLigneSupp": 27,
+        "coefCasePerdu": 7,
+        "coefCaseManquantes": 12,
+        "coefHauteurRect": 13
+    },
+    {
+        "avgScore": 1885.6,
+        "coefNbLigneSupp": 21,
+        "coefCasePerdu": 8,
+        "coefCaseManquantes": 12,
+        "coefHauteurRect": 13
+    },
+    {
+        "avgScore": 1746.4,
+        "coefNbLigneSupp": 27,
+        "coefCasePerdu": 7,
+        "coefCaseManquantes": 14,
+        "coefHauteurRect": 9
+    }
+]

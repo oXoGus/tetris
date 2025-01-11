@@ -41,6 +41,24 @@ deuxPtsMat = [
         [0, 0, 0]
 ]
 
+
+
+slashMat = [
+    [0, 0, 1],
+    [0, 1, 0],
+    [0, 1, 0],
+    [0, 1, 0],
+    [1, 0, 0]
+]
+
+aAccentMat = [
+    [0, 0, 0],
+    [0, 1, 1],
+    [1, 0, 1],
+    [1, 0, 1],
+    [0, 1, 1]
+]
+
 # les chiffres de 0 à 9
 tetriFontLstNumber = [
     # '0'
@@ -605,6 +623,12 @@ def tetriTexte(x: float,
         elif lettre == ':':
             lettreMat = deuxPtsMat
         
+        elif lettre == '/':
+            lettreMat = slashMat
+
+        elif lettre == 'à':
+            lettre = aAccentMat
+        
         # si la lettre n'est pas reconnue on la remplace par un espace
         else:
             lettreMat = spMat
@@ -633,17 +657,13 @@ def tailleTetriTexte(
     """renvoie la taille x et y d'un texte"""
     x, y = 0, 0
 
-
-    # on calcule la taille de la police en fonction de la taille de la fenêtre
+   # on calcule la taille de la police en fonction de la taille de la fenêtre
     
     # la taille de la fenêtre ou toutes polices on été bien calibré
-    sizeSquareGridInit = int(0.65*1200/20)
+    sizeSquareGridInit = 1200
 
-    # taille actuel
-    sizeSquareGridActual = int(0.65*largeur_fenetre()/20)
-
-    taille = taille*(sizeSquareGridActual/sizeSquareGridInit)
-
+    taille = taille*(largeur_fenetre()/sizeSquareGridInit)
+    
     # taille de chaque pixel de la lettre
     sizePix = taille//2
 
@@ -669,6 +689,12 @@ def tailleTetriTexte(
 
         elif lettre == ':':
             lettreMat = deuxPtsMat
+
+        elif lettre == '/':
+            lettreMat = slashMat
+
+        elif lettre == 'à':
+            lettre = aAccentMat
         
         # si la lettre n'est pas reconnue on la remplace par un espace
         else:
@@ -707,6 +733,45 @@ def drawTetriLettre(x: float,
             # pixel plein
             if lettreMat[i][j] == 1:
                 rectangle(x + j * sizePix, y + i * sizePix, x + j * sizePix + sizePix, y + i * sizePix + sizePix, couleur, couleur, tag=tag)
+
+
+
+
+def drawTetriFleche(x, y, taille, ori, couleur = "black"):
+    """dessine a la position x, y une flèche vers la droite ou vers la gauche selon l'ori donnée en param"""
+
+
+    
+
+    fleches = {
+        # mat de la flèche vers la droite
+        'right' : [
+            [0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 1, 1, 0],
+            [1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 1, 1, 0],
+            [0, 0, 0, 1, 0, 0],
+        ], 
+        'left' : [
+            [0, 0, 1, 0, 0, 0],
+            [0, 1, 1, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1],
+            [0, 1, 1, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0],
+        ]
+    }
+
+        
+
+    # redessine la matice
+
+    sizePix = taille
+    for i in range(len(fleches[ori])):
+        for j in range(len(fleches[ori][0])):
+            if fleches[ori][i][j] == 1:
+                rectangle(x + j*sizePix, y + i*sizePix, x + j*sizePix + sizePix, y + i*sizePix + sizePix, couleur, couleur)
+
+        
 
 
 if __name__ == "__main__":
