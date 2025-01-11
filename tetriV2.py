@@ -8,28 +8,41 @@ from tetriSaves import *
 from tetri2players import *
 from tetriGenPoly import *
 import subprocess
+import platform 
 
 
 #### constantes et variables globales ####
 
-# on récumpère la resolution de l'écran en executat la commande `xrandr | grep \\* | cut -d' ' -f4`
-# avec la module subprocess
-resolution = subprocess.Popen("xrandr | grep \\* | cut -d' ' -f4", shell=True, stdout=subprocess.PIPE).communicate()[0]
+# si la commande marche bien 
 
-# cela renvoie : b'2560x1600\n'
+if platform.system() == 'Linux':
+    # on récumpère la resolution de l'écran en executat la commande `xrandr | grep \\* | cut -d' ' -f4`
+    # avec la module subprocess
 
-# le b au début signifit que cette chaine est encodé en UTF-8
-# pour le retirer un faut décoder la chaine de caractère  
+    resolution = subprocess.Popen("xrandr | grep \\* | cut -d' ' -f4", shell=True, stdout=subprocess.PIPE).communicate()[0]
 
-# la methode decode a pour argument par défaut encodage UTF-8
-resolution = resolution[:-1].decode()
+    print(resolution)
 
-# on obtient bien 2560x1600
-print(resolution)
+    # cela renvoie : b'2560x1600\n'
 
-largeurScreen = int(resolution.split('x')[0])
+    # le b au début signifit que cette chaine est encodé en UTF-8
+    # pour le retirer un faut décoder la chaine de caractère  
 
-hauteurScreen = int(resolution.split('x')[1])
+    # la methode decode a pour argument par défaut encodage UTF-8
+    resolution = resolution[:-1].decode()
+
+    # on obtient bien 2560x1600
+    print(resolution)
+
+    largeurScreen = int(resolution.split('x')[0])
+
+    hauteurScreen = int(resolution.split('x')[1])
+
+# val par défaut 
+else:
+    largeurScreen = 1920
+
+    hauteurScreen = 1024
 
 largeurFenetre = largeurScreen//2
 

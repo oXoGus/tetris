@@ -19,7 +19,7 @@
 
 
 
-def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
+def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLigneSupp=14, coefCasePerdu=2, coefCaseManquantes=26, coefHauteurRect=19):
     """partie de tetris ou le programme joue"""
     
     # on efface le menu
@@ -82,6 +82,9 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
 
     globalTimer = time.perf_counter()
 
+    # compte le nombre de poly spawn
+    nPoly = 0
+
     while True:
 
 
@@ -128,12 +131,21 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
 
             if isColision(grid, poly, x, y, ori) == True:
                 break
+                
 
-            # copie profonde de la grille 
-            nGrid = list()
-            nGrid = [l[:] for l in grid]
-            # on trouve les meileur coord pour le poly
-            objX, objOri = findBestPolyPlace(nGrid, poly, x, y, ori)
+            # on génere la meilleur pos a partir du poly et du nextPoly 
+            if nPoly%2 == 0:
+                # copie profonde de la grille 
+                nGrid = list()
+                nGrid = [l[:] for l in grid]
+
+                # on trouve les meileur coord pour les 2 poly suivant
+                objX, objOri, objNextX, objNextOri = findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect)
+            
+            # on change 
+            else:
+                objX = objNextX
+                objOri = objNextOri
 
             # on fait apparaitre un pièce aléatoirement 
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
@@ -145,6 +157,7 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
 
             desactivateCounter = 0
 
+            nPoly += 1
 
             # pour le mode pourrissement 
             if varModePourrisement:
@@ -209,7 +222,7 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
     
         # on retire la touche a 'actionner'
         moove = mooveLst.pop(0)
-        print(moove)
+        time.sleep(0.5)
         grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(moove['key'], grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors)
         
 
@@ -258,7 +271,8 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement):
                 #print(key)
 
     # ecran de fin revoie un flag
-    return score
+    if endScreen(score) == 'retry':
+        tetriBot(False, False, False)
 
 
 
@@ -323,6 +337,8 @@ def trainingBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefN
 
     globalTimer = time.perf_counter()
 
+    nPoly = 0
+
     while True:
 
         # si la dernière piece a été déposé 
@@ -365,11 +381,20 @@ def trainingBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefN
             if isColision(grid, poly, x, y, ori) == True:
                 break
 
-            # copie profonde de la grille 
-            nGrid = list()
-            nGrid = [l[:] for l in grid]
-            # on trouve les meileur coord pour le poly
-            objX, objOri = findBestPolyPlace(nGrid, poly, x, y, ori, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect)
+            # on génere la meilleur pos a partir du poly et du nextPoly 
+            if nPoly%2 == 0:
+                # copie profonde de la grille 
+                nGrid = list()
+                nGrid = [l[:] for l in grid]
+
+                # on trouve les meileur coord pour les 2 poly suivant
+                objX, objOri, objNextX, objNextOri = findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect)
+            
+            # on change 
+            else:
+                objX = objNextX
+                objOri = objNextOri
+
 
             # on fait apparaitre un pièce aléatoirement 
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
@@ -381,6 +406,7 @@ def trainingBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefN
 
             desactivateCounter = 0
 
+            nPoly += 1
 
             # pour le mode pourrissement 
             if varModePourrisement:
@@ -433,7 +459,7 @@ def trainingBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefN
     return score
 
 
-def findBestPolyPlace(nGrid, poly, x, y, ori, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect):
+def findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect):
     """renvoie le x et l'ori du poly qui rapporte le plus de points 
     ou si il ne peut pas recup le plus de points on prend ceux qui créer moins de trous
     on prend en param une copie de la grille pour pouvoir faire tout les test
@@ -441,7 +467,7 @@ def findBestPolyPlace(nGrid, poly, x, y, ori, coefNbLigneSupp, coefCasePerdu, co
 
     # iste de toutes les position qui créer le moins de case inaccessible 
     # ou qui supprime une ou plusieurs lignes
-    polyPosLst = getGoodPolyPlace(nGrid, poly, x, y, ori)
+    polyPosLst = getGoodPolyAndNextPolyPlace(nGrid, poly, nextPoly, x, y, ori)
 
     # on attribue un score a chaque grille 
     for polyPos in polyPosLst:
@@ -450,9 +476,9 @@ def findBestPolyPlace(nGrid, poly, x, y, ori, coefNbLigneSupp, coefCasePerdu, co
     bestPosLst = sorted(polyPosLst, key=lambda polyPos: polyPos['score'], reverse=True)
     bestPos = bestPosLst[0]
 
-    return bestPos['x'], bestPos['ori']
+    return bestPos['x0'], bestPos['ori0'], bestPos['x'], bestPos['ori']
 
-def addScoreGrid(polyPos, coefNbLigneSupp = 10, coefCasePerdu=1, coefCaseManquantes=1, coefHauteurRect=1):
+def addScoreGrid(polyPos, coefNbLigneSupp = 14, coefCasePerdu=2, coefCaseManquantes=26, coefHauteurRect=19):
     """attribue un score a partir 
     du nombre de ligne suprimé
     nombre case perdu crées
@@ -482,6 +508,36 @@ def addScoreGrid(polyPos, coefNbLigneSupp = 10, coefCasePerdu=1, coefCaseManquan
 
     polyPos['score'] = score
 
+
+def getGoodPolyAndNextPolyPlace(nGrid, poly, nextPoly, x, y, ori):
+    """géneres tout les pos deux coup a l'avance"""
+    
+
+    # les bonnes pos pour le poly
+    polyPosLst = getGoodPolyPlace(nGrid, poly, x, y, ori)
+
+
+    # nextPoly
+    poly2PosLst = list()
+
+    # pour chaque bonne position 
+    # on genere les bonnes positions du coup suivant 
+    for polyPos in polyPosLst:
+        
+        polyNextPosLst = getGoodPolyPlace(polyPos['nGrid'], nextPoly, x, y, ori)
+
+        for poly2pos in polyNextPosLst:
+
+            # on ajoute le x et l'ori du poly 1
+            poly2pos['x0'] = polyPos['x']
+            poly2pos['ori0'] = polyPos['ori']
+            poly2pos['nGrid'] = [str(l[:]) for l in poly2pos['nGrid']]
+
+
+        # on a juste a changer la grille 
+        poly2PosLst.extend(polyNextPosLst)
+
+    return poly2PosLst
 
 def getGoodPolyPlace(nGrid, poly, x, y, ori):
     """génere la liste de toutes les position qui créer le moins de case inaccessible 
@@ -523,7 +579,7 @@ def getGoodPolyPlace(nGrid, poly, x, y, ori):
                 # on ajoute les info de la bonne position 
                 nGridLst.append(
                     {
-                        'nGrid': [str(l[:]) for l in nGrid if l.count(0) != numXSquare],
+                        'nGrid': [l[:] for l in nGrid],
                         'nbLigneSupp': n,
                         'casePerdu': len(casePerdu),
                         'x' : x,
@@ -719,11 +775,13 @@ def selectNatCoef(nGen, nTest, nGames, coefNbLigneSuppInit, coefCasePerduInit, c
         for test in range(nTest):
             lstScore = []
 
+            minCoefDiff = -1
+            maxCoefDiff = 2
             # on effectue des mutations 
-            coefNbLigneSupp = coefNbLigneSuppParent + random.randrange(-3, 4)
-            coefCasePerdu = coefCasePerduParent + random.randrange(-3, 4)
-            coefCaseManquantes = coefCaseManquantesParent + random.randrange(-3, 4)
-            coefHauteurRect = coefHauteurRectParent + random.randrange(-3, 4)
+            coefNbLigneSupp = coefNbLigneSuppParent + random.randrange(minCoefDiff, maxCoefDiff)
+            coefCasePerdu = coefCasePerduParent + random.randrange(minCoefDiff, maxCoefDiff)
+            coefCaseManquantes = coefCaseManquantesParent + random.randrange(minCoefDiff, maxCoefDiff)
+            coefHauteurRect = coefHauteurRectParent + random.randrange(minCoefDiff, maxCoefDiff)
 
             # pour des même coef 
             # on simule n parties a cause de l'aléatoire des pièces
@@ -733,6 +791,7 @@ def selectNatCoef(nGen, nTest, nGames, coefNbLigneSuppInit, coefCasePerduInit, c
                 gameScore = trainingBot(False, False, False, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect)
 
                 lstScore.append(gameScore)
+                print(gameScore)
 
             coefResult = {   
                 'avgScore': sum(lstScore) / float(len(lstScore)),
@@ -741,7 +800,7 @@ def selectNatCoef(nGen, nTest, nGames, coefNbLigneSuppInit, coefCasePerduInit, c
                 'coefCaseManquantes': coefCaseManquantes, 
                 'coefHauteurRect': coefHauteurRect
             }
-
+            print(coefResult)
             L.append(coefResult)
 
         L = sorted(L, key=lambda test: test['avgScore'], reverse=True)
@@ -821,7 +880,7 @@ if __name__ == '__main__':
     from tetriGenPoly import *
     import subprocess
     import json
-    from tetriV2 import drawGrid, printGrid, isPolyMaxY, drawPiece, isColision, colisionResolve, colisionLeft, colisionRight, colisionBottom, erasePiece, spawnPiece, rotatePiece, drawNextPoly, suppLignes, downLignes, points, pointsEnFonctionDifficulte, drawScore, temps, endScreen, rectangleOmbre, tetriTexteCentre, menuPause, createSave, saveMenu, drawSaveData, loadSave, drawSaveGrid
+    from tetriV2 import drawGrid, printGrid, isPolyMaxY, drawPiece, isColision, colisionResolve, colisionLeft, colisionRight, colisionBottom, erasePiece, spawnPiece, rotatePiece, drawNextPoly, suppLignes, downLignes, points, pointsEnFonctionDifficulte, drawScore, temps, endScreen, rectangleOmbre, tetriTexteCentre, menuPause, createSave, saveMenu, drawSaveData, loadSave, drawSaveGrid, keyPressed
 
     # on récumpère la resolution de l'écran en executat la commande `xrandr | grep \\* | cut -d' ' -f4`
     # avec la module subprocess
@@ -861,4 +920,4 @@ if __name__ == '__main__':
     #tetriBot(False, False, False)
 
 
-    selectNatCoef(nGen=20, nTest=25, nGames=25, coefNbLigneSuppInit=16, coefCasePerduInit=1, coefCaseManquantesInit=23, coefHauteurRectInit=20)
+    selectNatCoef(nGen=20, nTest=25, nGames=7, coefNbLigneSuppInit=14, coefCasePerduInit=3, coefCaseManquantesInit=28, coefHauteurRectInit=20)
