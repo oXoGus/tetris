@@ -133,20 +133,13 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLi
                 break
                 
 
-            # on génere la meilleur pos a partir du poly et du nextPoly 
-            if nPoly%2 == 0:
-                # copie profonde de la grille 
-                nGrid = list()
-                nGrid = [l[:] for l in grid]
+            # copie profonde de la grille 
+            nGrid = list()
+            nGrid = [l[:] for l in grid]
 
-                # on trouve les meileur coord pour les 2 poly suivant
-                objX, objOri, objNextX, objNextOri = findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect)
-            
-            # on change 
-            else:
-                objX = objNextX
-                objOri = objNextOri
-
+            # on trouve les meileur coord pour les 2 poly suivant
+            objX, objOri = findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect)
+        
             # on fait apparaitre un pièce aléatoirement 
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
             grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
@@ -157,7 +150,7 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLi
 
             desactivateCounter = 0
 
-            nPoly += 1
+            #nPoly += 1
 
             # pour le mode pourrissement 
             if varModePourrisement:
@@ -203,10 +196,6 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLi
             # on reset le timer pour déclancher le if dans la prochaine itération
             timer = 0
 
-            
-
-
-        
 
         # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
         if change == 1:
@@ -214,15 +203,11 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLi
 
             change = 0
 
-        
-
-        # on déplace le
-
 
     
         # on retire la touche a 'actionner'
         moove = mooveLst.pop(0)
-        time.sleep(0.5)
+        #time.sleep(0.1)
         grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(moove['key'], grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors)
         
 
@@ -337,8 +322,6 @@ def trainingBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefN
 
     globalTimer = time.perf_counter()
 
-    nPoly = 0
-
     while True:
 
         # si la dernière piece a été déposé 
@@ -381,20 +364,13 @@ def trainingBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefN
             if isColision(grid, poly, x, y, ori) == True:
                 break
 
-            # on génere la meilleur pos a partir du poly et du nextPoly 
-            if nPoly%2 == 0:
-                # copie profonde de la grille 
-                nGrid = list()
-                nGrid = [l[:] for l in grid]
-
-                # on trouve les meileur coord pour les 2 poly suivant
-                objX, objOri, objNextX, objNextOri = findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect)
             
-            # on change 
-            else:
-                objX = objNextX
-                objOri = objNextOri
+            nGrid = list()
+            nGrid = [l[:] for l in grid]
 
+            # on trouve les meileur coord pour les 2 poly suivant
+            objX, objOri = findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect)
+        
 
             # on fait apparaitre un pièce aléatoirement 
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
@@ -406,7 +382,6 @@ def trainingBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefN
 
             desactivateCounter = 0
 
-            nPoly += 1
 
             # pour le mode pourrissement 
             if varModePourrisement:
@@ -476,9 +451,9 @@ def findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp, coefCas
     bestPosLst = sorted(polyPosLst, key=lambda polyPos: polyPos['score'], reverse=True)
     bestPos = bestPosLst[0]
 
-    return bestPos['x0'], bestPos['ori0'], bestPos['x'], bestPos['ori']
+    return bestPos['x'], bestPos['ori']
 
-def addScoreGrid(polyPos, coefNbLigneSupp = 14, coefCasePerdu=2, coefCaseManquantes=26, coefHauteurRect=19):
+def addScoreGrid(polyPos, coefNbLigneSupp = 13, coefCasePerdu=1, coefCaseManquantes=28, coefHauteurRect=20):
     """attribue un score a partir 
     du nombre de ligne suprimé
     nombre case perdu crées
@@ -529,9 +504,8 @@ def getGoodPolyAndNextPolyPlace(nGrid, poly, nextPoly, x, y, ori):
         for poly2pos in polyNextPosLst:
 
             # on ajoute le x et l'ori du poly 1
-            poly2pos['x0'] = polyPos['x']
-            poly2pos['ori0'] = polyPos['ori']
-            poly2pos['nGrid'] = [str(l[:]) for l in poly2pos['nGrid']]
+            poly2pos['x'] = polyPos['x']
+            poly2pos['ori'] = polyPos['ori']
 
 
         # on a juste a changer la grille 
@@ -771,12 +745,43 @@ def selectNatCoef(nGen, nTest, nGames, coefNbLigneSuppInit, coefCasePerduInit, c
         # liste contenant toutes les info pour les coef
         L = list()
 
+
+        # on refait un cas ou il n'y a pas de mutation 
+        # sur les meilleurs gènes
+        # pour ne pas perdre 'regresser' 
+        # si on a a chaque fois des 'mauvaise' mutations 
+        lstScore = []
+
+        coefNbLigneSupp = coefNbLigneSuppParent
+        coefCasePerdu = coefCasePerduParent
+        coefCaseManquantes = coefCaseManquantesParent
+        coefHauteurRect = coefHauteurRectParent
+
+        for _ in range(nGames):
+
+                gameScore = trainingBot(False, False, False, coefNbLigneSupp, coefCasePerdu, coefCaseManquantes, coefHauteurRect)
+
+                lstScore.append(gameScore)
+                print(gameScore)
+
+        coefResult = {   
+            'avgScore': sum(lstScore) / float(len(lstScore)),
+            'coefNbLigneSupp':coefNbLigneSupp, 
+            'coefCasePerdu': coefCasePerdu, 
+            'coefCaseManquantes': coefCaseManquantes, 
+            'coefHauteurRect': coefHauteurRect
+        }
+        print(coefResult)
+        L.append(coefResult)
+
+
         # pour chaque combinaison de coef
-        for test in range(nTest):
+        for test in range(nTest - 1):
             lstScore = []
 
-            minCoefDiff = -1
-            maxCoefDiff = 2
+            minCoefDiff = -100//(gen+1)
+            maxCoefDiff = 100//(gen+1)
+
             # on effectue des mutations 
             coefNbLigneSupp = coefNbLigneSuppParent + random.randrange(minCoefDiff, maxCoefDiff)
             coefCasePerdu = coefCasePerduParent + random.randrange(minCoefDiff, maxCoefDiff)
@@ -809,7 +814,7 @@ def selectNatCoef(nGen, nTest, nGames, coefNbLigneSuppInit, coefCasePerduInit, c
             json.dump(L, f, indent=4)
 
         bestCoef = L[0]
-        print(bestCoef)
+
         # transmission des meilleurs coef pour la gen suivant
         coefNbLigneSuppParent = bestCoef['coefNbLigneSupp']
         coefCasePerduParent = bestCoef['coefCasePerdu']
@@ -917,7 +922,8 @@ if __name__ == '__main__':
     # création de la fenêtre carré 
     #cree_fenetre(largeurFenetre, largeurFenetre)
 
-    #tetriBot(False, False, False)
+    #tetriBot(False, False, False, 14, 3, 29, 21)
 
 
-    selectNatCoef(nGen=20, nTest=25, nGames=7, coefNbLigneSuppInit=14, coefCasePerduInit=3, coefCaseManquantesInit=28, coefHauteurRectInit=20)
+    
+    selectNatCoef(nGen=20, nTest=8, nGames=7, coefNbLigneSuppInit=118, coefCasePerduInit=21, coefCaseManquantesInit=101, coefHauteurRectInit=34)
