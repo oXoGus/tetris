@@ -1,51 +1,177 @@
 [
     {
-        "avgScore": 9677.142857142857,
-        "coefNbLigneSupp": 102,
-        "coefCasePerdu": 5,
-        "coefCaseManquantes": 102,
-        "coefHauteurRect": 50
+        "score": 44220,
+        "coefNbLigneSupp": 90,
+        "coefCasePerdu": 74,
+        "coefCaseManquantes": 152,
+        "coefHauteurRect": 6
     },
     {
-        "avgScore": 9442.857142857143,
-        "coefNbLigneSupp": 133,
-        "coefCasePerdu": 12,
-        "coefCaseManquantes": 73,
-        "coefHauteurRect": 48
+        "score": 30000,
+        "coefNbLigneSupp": 75,
+        "coefCasePerdu": 61,
+        "coefCaseManquantes": 141,
+        "coefHauteurRect": 14
     },
     {
-        "avgScore": 9331.42857142857,
-        "coefNbLigneSupp": 83,
-        "coefCasePerdu": 44,
-        "coefCaseManquantes": 51,
-        "coefHauteurRect": 54
+        "score": 29000,
+        "coefNbLigneSupp": 75,
+        "coefCasePerdu": 65,
+        "coefCaseManquantes": 160,
+        "coefHauteurRect": 16
     },
     {
-        "avgScore": 7268.571428571428,
-        "coefNbLigneSupp": 99,
-        "coefCasePerdu": 17,
-        "coefCaseManquantes": 81,
-        "coefHauteurRect": 75
-    },
-    {
-        "avgScore": 6585.714285714285,
+        "score": 21620,
         "coefNbLigneSupp": 74,
-        "coefCasePerdu": 63,
-        "coefCaseManquantes": 81,
-        "coefHauteurRect": 70
+        "coefCasePerdu": 72,
+        "coefCaseManquantes": 140,
+        "coefHauteurRect": 6
     },
     {
-        "avgScore": 5734.285714285715,
-        "coefNbLigneSupp": 97,
-        "coefCasePerdu": 62,
-        "coefCaseManquantes": 94,
-        "coefHauteurRect": 72
-    },
-    {
-        "avgScore": 5137.142857142857,
-        "coefNbLigneSupp": 114,
+        "score": 20180,
+        "coefNbLigneSupp": 95,
         "coefCasePerdu": 67,
-        "coefCaseManquantes": 100,
-        "coefHauteurRect": 95
+        "coefCaseManquantes": 142,
+        "coefHauteurRect": 1
+    },
+    {
+        "score": 17680,
+        "coefNbLigneSupp": 74,
+        "coefCasePerdu": 58,
+        "coefCaseManquantes": 159,
+        "coefHauteurRect": 21
+    },
+    {
+        "score": 17460,
+        "coefNbLigneSupp": 74,
+        "coefCasePerdu": 89,
+        "coefCaseManquantes": 144,
+        "coefHauteurRect": 10
+    },
+    {
+        "score": 12460,
+        "coefNbLigneSupp": 95,
+        "coefCasePerdu": 79,
+        "coefCaseManquantes": 141,
+        "coefHauteurRect": 6
+    },
+    {
+        "score": 6620,
+        "coefNbLigneSupp": 91,
+        "coefCasePerdu": 84,
+        "coefCaseManquantes": 137,
+        "coefHauteurRect": 8
+    },
+    {
+        "score": 6020,
+        "coefNbLigneSupp": 85,
+        "coefCasePerdu": 71,
+        "coefCaseManquantes": 165,
+        "coefHauteurRect": 20
+    },
+    {
+        "score": 6000,
+        "coefNbLigneSupp": 97,
+        "coefCasePerdu": 68,
+        "coefCaseManquantes": 153,
+        "coefHauteurRect": 17
+    },
+    {
+        "score": 5200,
+        "coefNbLigneSupp": 87,
+        "coefCasePerdu": 87,
+        "coefCaseManquantes": 157,
+        "coefHauteurRect": 16
+    },
+    {
+        "score": 5200,
+        "coefNbLigneSupp": 98,
+        "coefCasePerdu": 71,
+        "coefCaseManquantes": 136,
+        "coefHauteurRect": 11
+    },
+    {
+        "score": 5200,
+        "coefNbLigneSupp": 98,
+        "coefCasePerdu": 75,
+        "coefCaseManquantes": 143,
+        "coefHauteurRect": 16
+    },
+    {
+        "score": 4660,
+        "coefNbLigneSupp": 95,
+        "coefCasePerdu": 77,
+        "coefCaseManquantes": 150,
+        "coefHauteurRect": 7
+    },
+    {
+        "score": 4660,
+        "coefNbLigneSupp": 99,
+        "coefCasePerdu": 85,
+        "coefCaseManquantes": 161,
+        "coefHauteurRect": 8
+    },
+    {
+        "score": 4620,
+        "coefNbLigneSupp": 95,
+        "coefCasePerdu": 57,
+        "coefCaseManquantes": 141,
+        "coefHauteurRect": 9
+    },
+    {
+        "score": 4620,
+        "coefNbLigneSupp": 82,
+        "coefCasePerdu": 58,
+        "coefCaseManquantes": 143,
+        "coefHauteurRect": 8
+    },
+    {
+        "score": 4620,
+        "coefNbLigneSupp": 102,
+        "coefCasePerdu": 71,
+        "coefCaseManquantes": 155,
+        "coefHauteurRect": 10
+    },
+    {
+        "score": 4500,
+        "coefNbLigneSupp": 78,
+        "coefCasePerdu": 82,
+        "coefCaseManquantes": 149,
+        "coefHauteurRect": 19
+    },
+    {
+        "score": 4500,
+        "coefNbLigneSupp": 91,
+        "coefCasePerdu": 79,
+        "coefCaseManquantes": 138,
+        "coefHauteurRect": 16
+    },
+    {
+        "score": 560,
+        "coefNbLigneSupp": 73,
+        "coefCasePerdu": 76,
+        "coefCaseManquantes": 136,
+        "coefHauteurRect": -2
+    },
+    {
+        "score": 440,
+        "coefNbLigneSupp": 95,
+        "coefCasePerdu": 87,
+        "coefCaseManquantes": 146,
+        "coefHauteurRect": -7
+    },
+    {
+        "score": 260,
+        "coefNbLigneSupp": 91,
+        "coefCasePerdu": 72,
+        "coefCaseManquantes": 167,
+        "coefHauteurRect": -7
+    },
+    {
+        "score": 180,
+        "coefNbLigneSupp": 105,
+        "coefCasePerdu": 65,
+        "coefCaseManquantes": 161,
+        "coefHauteurRect": -10
     }
 ]

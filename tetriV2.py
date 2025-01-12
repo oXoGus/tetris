@@ -9,6 +9,7 @@ from tetri2players import *
 from tetriGenPoly import *
 import subprocess
 import platform 
+from tetrIA import *
 
 
 #### constantes et variables globales ####
@@ -85,6 +86,12 @@ def main():
     # variante Mode 2 joueurs 
     varMode2joueurs = False
 
+    # bonus IA
+    bonusIA = False
+
+    # bonus élimination par couleurs
+    bonusElimCoul = False
+
     # création de la fenêtre carré 
     cree_fenetre(largeurFenetre, largeurFenetre)
 
@@ -139,7 +146,12 @@ def main():
         while flag == 'retry':
 
             # on relance une partie avec les memes variantes activés
-            flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement)
+            flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul)
+
+            if flag == 'Quitte':
+                return
+            else:
+                continue
             
 
         # pour le menu
@@ -184,13 +196,13 @@ def main():
 
             # on enregistre son type
             key = type_ev(ev)
-
+            
             # si l'utilisateur veut fermer la fenêtre
             if key == 'Quitte':
-
+                
                 # on ferme la fenre et on sort de la boucle de jeu ce qui revien a arrêter le programme
                 ferme_fenetre()
-                break
+                return
             
             # si la touche est une touche de clavier
             elif key == 'Touche':
@@ -238,9 +250,6 @@ def main():
                         
                         # on charge une partie 
                         else:
-
-                            
-
                             save = flag
 
                             # on supprime la save
@@ -264,10 +273,10 @@ def main():
 
                             # on appel les deux fonction avec la save en param pour récuperer la grille, les couleurs, les poly...
                             if 'varMode2joueurs' in save['varActiv']:
-                                flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save)
+                                flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, save)
 
                             else:
-                                flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save)
+                                flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, save)
 
                             # la fenêtre est deja fermer on ferme le programme
                             if flag == 'Quitte':
@@ -282,7 +291,7 @@ def main():
 
                         # liste contentant les tetriTextes pour les variantes
                         variantes = ["Score en fonction \nde la difficulte", "Polynomios \nArbitraires", "Mode 2 joueurs", "Mode pourrissement"]
-                        descriptionVar = ["Score en fonction de la difficulte", "comming soon", "comming soon", "comming soon"]
+                        descriptionVar = ["Score en fonction de la difficulte", "Polyomino arbitraire", "elimination par couleurs adjacent", "jouer un partie a 2", "des blocks disparaisse", "laissez une IA jouer a votre place"]
                         
                         saisie = 0 
                         
@@ -295,48 +304,60 @@ def main():
                         saisie = 0 
                         
                         # on stoque toues les couleurs selon les saisi possible
-                        colSaissieLst = [["black", "light gray", "light gray", "light gray"], 
-                                         ["light gray", "black", "light gray", "light gray"],
-                                         ["light gray", "light gray", "black", "light gray"],
-                                         ["light gray", "light gray", "light gray", "black"]
+                        colSaissieLst = [["black", "light gray", "light gray", "light gray", "light gray", "light gray"], 
+                                         ["light gray", "black", "light gray", "light gray", "light gray", "light gray"],
+                                         ["light gray", "light gray", "black", "light gray", "light gray", "light gray"],
+                                         ["light gray", "light gray", "light gray", "black", "light gray", "light gray"],
+                                         ["light gray", "light gray", "light gray", "light gray", "black", "light gray"],
+                                         ["light gray", "light gray", "light gray", "light gray", "light gray", "black"],
                                          ]
 
-                        while suivant != 1 : 
+                        while suivant != 1: 
 
 
                             # affichage de la selection des variantes
                             efface_tout()
 
                             # rectangle encatrant tout les choix
-                            rectangleOmbre(largeurFenetre*1/5, hauteurFenetre*1/5 , largeurFenetre*4/5,  hauteurFenetre*4/5, 1*sizeSquareGrid, "white", "black", "gray", 5)
+                            rectangleOmbre(largeurFenetre*1/5, hauteurFenetre*1/6 , largeurFenetre*4/5,  hauteurFenetre*4/5, 1*sizeSquareGrid, "white", "black", "gray", 5)
 
 
                             # tetriTexte explicatif
-                            tetriTexteCentre(largeurFenetre/2, hauteurFenetre*0.25, "choisisez vos variantes", 'black', 14)
-                            tetriTexteCentre(largeurFenetre/2, hauteurFenetre*0.3, "avec les fleches", 'black', 14)
+                            tetriTexteCentre(largeurFenetre/2, hauteurFenetre*0.22, "choisisez vos variantes", 'black', 14)
+                            tetriTexteCentre(largeurFenetre/2, hauteurFenetre*0.27, "avec les fleches", 'black', 14)
 
                             
                             # case 1
                             xCase1 = largeurFenetre*1/5 + 1*sizeSquareGrid
-                            yCase1 = hauteurFenetre/2 - 2*sizeSquareGrid
+                            yCase1 = hauteurFenetre/2 - 3*sizeSquareGrid
                             rectangleOmbre(xCase1, yCase1, xCase1 + sizeSquareGrid, yCase1 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)
                             
                             #case 2
                             xCase2 = largeurFenetre*1/5 + 1*sizeSquareGrid
-                            yCase2 = hauteurFenetre/2 + 2*sizeSquareGrid
+                            yCase2 = hauteurFenetre/2 
                             rectangleOmbre(xCase2, yCase2, xCase2 + sizeSquareGrid, yCase2 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)
 
                             # case 3
-                            xCase3 = largeurFenetre/2 
-                            yCase3 = hauteurFenetre/2 - 2*sizeSquareGrid
-                            rectangleOmbre(xCase3, yCase3, xCase3 + sizeSquareGrid, yCase3 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)                            
-                            
-                            
-                            # case 3
+                            xCase3 = largeurFenetre*1/5 + 1*sizeSquareGrid
+                            yCase3 = hauteurFenetre/2 + 3*sizeSquareGrid
+                            rectangleOmbre(xCase3, yCase3, xCase3 + sizeSquareGrid, yCase3 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)
+
+
+                            # case 4
                             xCase4 = largeurFenetre/2 
-                            yCase4 = hauteurFenetre/2 + 2*sizeSquareGrid
-                            rectangleOmbre(xCase4, yCase4, xCase4 + sizeSquareGrid, yCase4 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)                                                 
+                            yCase4 = hauteurFenetre/2 - 3*sizeSquareGrid
+                            rectangleOmbre(xCase4, yCase4, xCase4 + sizeSquareGrid, yCase4 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)                            
                             
+                            
+                            # case 5
+                            xCase5 = largeurFenetre/2 
+                            yCase5 = hauteurFenetre/2 
+                            rectangleOmbre(xCase5, yCase5, xCase5 + sizeSquareGrid, yCase5 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)                                                 
+                            
+                            # case 6
+                            xCase6 = largeurFenetre/2 
+                            yCase6 = hauteurFenetre/2 + 3*sizeSquareGrid
+                            rectangleOmbre(xCase6, yCase6, xCase6 + sizeSquareGrid, yCase6 + sizeSquareGrid, 1/6*sizeSquareGrid, "white", "black", "gray", 5)                                                 
                             
                                 
                             # tetriTextes des variantes a droite de chaque cases
@@ -352,14 +373,20 @@ def main():
                             tetriTexte(xCase2 + textMarginLeft, yCase2 + 0.70*sizeSquareGrid, "arbitraire", colSaissieLst[saisie][1], 8)
                             
                             # case 3
-                            tetriTexte(xCase3 + textMarginLeft, yCase3 + 0.2*sizeSquareGrid, "Mode 2 joueurs", colSaissieLst[saisie][2], 8)
+                            tetriTexte(xCase3 + textMarginLeft, yCase3, "elimination par", colSaissieLst[saisie][2], 8)
+                            tetriTexte(xCase3 + textMarginLeft, yCase3 + 0.70*sizeSquareGrid, "couleurs", colSaissieLst[saisie][2], 8)
                             
                             # case 4
-                            tetriTexte(xCase4 + textMarginLeft, yCase4, variantes[3], colSaissieLst[saisie][3], 8)
+                            tetriTexte(xCase4 + textMarginLeft, yCase4 + 0.2*sizeSquareGrid, "Mode 2 joueurs", colSaissieLst[saisie][3], 8)
                             
+                            # case 5
+                            tetriTexte(xCase5 + textMarginLeft, yCase5, variantes[3], colSaissieLst[saisie][4], 8)
+
+                            # case 6
+                            tetriTexte(xCase6 + textMarginLeft, yCase6 + 0.2*sizeSquareGrid, "IA", colSaissieLst[saisie][5], 8)
 
                             # tetriTexte de description de la variante
-                            tetriTexteCentre(largeurFenetre*1/2, hauteurFenetre*0.7, descriptionVar[saisie], "black", 10)
+                            tetriTexteCentre(largeurFenetre*1/2, hauteurFenetre*0.73, descriptionVar[saisie], "black", 10)
                             
                             # cases cochés 
                             if varPtsDiffSelect == True : 
@@ -370,14 +397,23 @@ def main():
                             if varPolyArbitraires==True : 
                                 ligne(xCase2, yCase2, xCase2 + sizeSquareGrid, yCase2 + sizeSquareGrid, "black", 5)
                                 ligne(xCase2 + sizeSquareGrid, yCase2, xCase2, yCase2 + sizeSquareGrid, "black", 5)
-                            
-                            if varModePourrisement==True : 
-                                ligne(xCase4, yCase4, xCase4 + sizeSquareGrid, yCase4 + sizeSquareGrid, "black", 5)
-                                ligne(xCase4 + sizeSquareGrid, yCase4, xCase4, yCase4 + sizeSquareGrid, "black", 5)
-                                 
-                            if varMode2joueurs==True :
+
+                            if bonusElimCoul == True:
                                 ligne(xCase3, yCase3, xCase3 + sizeSquareGrid, yCase3 + sizeSquareGrid, "black", 5)
                                 ligne(xCase3 + sizeSquareGrid, yCase3, xCase3, yCase3 + sizeSquareGrid, "black", 5)
+                            
+                            if varMode2joueurs==True :
+                                ligne(xCase4, yCase4, xCase4 + sizeSquareGrid, yCase4 + sizeSquareGrid, "black", 5)
+                                ligne(xCase4 + sizeSquareGrid, yCase4, xCase4, yCase4 + sizeSquareGrid, "black", 5)
+                            
+                            if varModePourrisement==True : 
+                                ligne(xCase5, yCase5, xCase5 + sizeSquareGrid, yCase5 + sizeSquareGrid, "black", 5)
+                                ligne(xCase5 + sizeSquareGrid, yCase5, xCase5, yCase5 + sizeSquareGrid, "black", 5)
+                                 
+                            if bonusIA==True : 
+                                ligne(xCase6, yCase6, xCase6 + sizeSquareGrid, yCase6 + sizeSquareGrid, "black", 5)
+                                ligne(xCase6 + sizeSquareGrid, yCase6, xCase6, yCase6 + sizeSquareGrid, "black", 5)
+                                 
                             
                             tetriTexteCentre(largeurFenetre*1/2, hauteurFenetre*0.9, "appuyez sur espace pour lancer la partie", "black", 10)
 
@@ -410,7 +446,7 @@ def main():
 
                                         # on change saisie
                                         if saisie == 0: 
-                                            saisie = 3
+                                            saisie = 5
                                         else : 
                                             saisie -= 1
 
@@ -418,7 +454,7 @@ def main():
                                     elif key=='Down':
 
                                         # on change la saisie
-                                        if saisie == 3: 
+                                        if saisie == 5: 
                                             saisie = 0 
                                         else : 
                                             saisie += 1
@@ -427,38 +463,37 @@ def main():
                                     elif key=='Return' : 
 
                                         # gestions des cases cochées, on inverse leurs états si la variante est implémanté  
+                                        
                                         if saisie == 0 :    
-                                            if varPtsDiffSelect == True:
-                                                varPtsDiffSelect = False
-                                            else:
-                                                varPtsDiffSelect = True 
+                                            varPtsDiffSelect = not varPtsDiffSelect 
 
-                                        if saisie == 1:
-                                            if varPolyArbitraires == True:
-                                                varPolyArbitraires = False
-                                            else:
-                                                varPolyArbitraires = True
+                                        elif saisie == 1:
 
-                                        if saisie == 2:
-                                            if varMode2joueurs == True:
-                                                varMode2joueurs = False
-                                            else:
-                                                varMode2joueurs = True
+                                            # on inverse l'état 
+                                            varPolyArbitraires = not varPolyArbitraires
+                                        
+                                        elif saisie == 2:
+                                            bonusElimCoul = not bonusElimCoul
                                     
-                                        if saisie == 3:
-                                            if varModePourrisement == True:
-                                                varModePourrisement = False
-                                            else:
-                                                varModePourrisement = True
+
+                                        elif saisie == 3:
+                                            varMode2joueurs = not varMode2joueurs
+
+                                        elif saisie == 4:
+                                            varModePourrisement = not varModePourrisement
+
+                                        elif saisie == 5:
+                                            bonusIA = not bonusIA
+
 
                                     elif key=='space' :
                                         
                                         if varMode2joueurs==True : 
                                         
-                                            flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement)
+                                            flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul)
                                             
                                             while flag == 'retry':
-                                                flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement)
+                                                flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul)
                                         
 
                                             if flag == 'menu':
@@ -473,7 +508,10 @@ def main():
                                             
                                         else : 
                                             #  on démare la partie avec les variantes
-                                            flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement)
+                                            flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul)
+
+                                            if flag == 'Quitte':
+                                                return
 
                                         # la fenêtre est deja fermer on ferme le programme
                                         if flag == 'Quitte':
@@ -494,11 +532,11 @@ def main():
                         if fermer ==  True:
                             break
                     
-                    elif choix==1 : 
+                    elif choix == 2 : 
 
                         # on ferme la fenêtre puis arrête le programme
                         ferme_fenetre() 
-                        break
+                        return
  
                         
 
@@ -508,7 +546,7 @@ def main():
 
 
 
-def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save=None):
+def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, save=None):
     """une partie de tetris
     
     prend en argument les variantes activées
@@ -630,15 +668,49 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save=None):
                 # on choisit aléatoirement la nouvelle pièce 
                 poly = polyLst[randrange(0, len(polyLst))]
 
+                # on change la couleur du poly...
+                col = randrange(1, len(polyLst))
+                for polyRota in poly:
+
+                    for i in range(len(polyRota)):
+                        for j in range(len(polyRota[0])):
+                            
+                            if polyRota[i][j] != 0:
+                                polyRota[i][j] = col
+
                 # on choisit aléatoirement le prochaine pièce
                 nextPoly = polyLst[randrange(0, len(polyLst))]
+
+                # on change la couleur du nextPoly...
+                col = randrange(1, len(polyLst))
+                for polyRota in nextPoly:
+
+                    for i in range(len(polyRota)):
+                        for j in range(len(polyRota[0])):
+                            
+                            if polyRota[i][j] != 0:
+                                polyRota[i][j] = col
+
+
             else : 
-                
+
+                print(x, ori)
+
                 # la pièce suivante devient la pièce active et on génère la pièce suivante 
                 poly = nextPoly
 
                 # on choisit aléatoirement la nouvelle pièce 
                 nextPoly = polyLst[randrange(0, len(polyLst))]
+
+                # on change la couleur du nextPoly...
+                col = randrange(1, len(polyLst))
+                for polyRota in nextPoly:
+
+                    for i in range(len(polyRota)):
+                        for j in range(len(polyRota[0])):
+                            
+                            if polyRota[i][j] != 0:
+                                polyRota[i][j] = col
 
             # on initialise l'oriantation de la pièce a 0
             ori = 0
@@ -656,12 +728,30 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save=None):
             if isColision(grid, poly, x, y, ori) == True:
                 break
 
-
-            # on fait apparaitre un pièce aléatoirement 
-            # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
-            grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
-
             
+            
+                
+
+            if bonusIA:
+
+                 # copie profonde de la grille 
+                nGrid = list()
+                nGrid = [l[:] for l in grid]
+
+                # on trouve les meileur coord pour les 2 poly suivant
+                objX, objOri = findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp=118, coefCasePerdu=21, coefCaseManquantes=101, coefHauteurRect=34)
+            
+                # on fait apparaitre un pièce aléatoirement 
+                # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
+                grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
+
+                mooveLst = genMooveList(x, ori, objX, objOri)
+
+            else:
+                # on fait apparaitre un pièce aléatoirement 
+                # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
+                grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
+
 
             pieceActivated = 1
 
@@ -675,7 +765,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save=None):
                     globalTimer = time.perf_counter()
                     
                     # on affiche le poly supprimé 
-                    drawGrid(grid, nextPoly, score, squareColors)
+                    drawGrid(grid, nextPoly, score, squareColors, niveau=nbLignesSuppTotale//10)
 
 
         # timer pour descendre la pièce de une case toute les une secondes
@@ -712,18 +802,18 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save=None):
             # on reset le timer pour déclancher le if dans la prochaine itération
             timer = 0
 
-            
-
-
-        
-
         # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
         if change == 1:
-            drawGrid(grid, nextPoly, score, squareColors)
+            drawGrid(grid, nextPoly, score, squareColors, niveau=nbLignesSuppTotale//10)
 
             change = 0
 
-        
+        if bonusIA: 
+            # on retire la touche a 'actionner'
+            moove = mooveLst.pop(0)
+            #time.sleep(0.1)
+            grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(moove['key'], grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors, nbLignesSuppTotale)
+            
 
         #### on gère les touches ####
         
@@ -750,8 +840,8 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save=None):
                 key = touche(ev)
 
                 # si la touche est utile pour le jeu
-                if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
-                    grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors)
+                if (key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left') and not bonusIA:
+                    grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors, nbLignesSuppTotale)
             
                 elif key == 'Escape':
                     flag = menuPause()
@@ -769,8 +859,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save=None):
                         ferme_fenetre()
                         
                         return 'Quitte'
-                        
-
+         
             else:
                 pass
                 #print(key)
@@ -779,7 +868,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, save=None):
     return endScreen(score)
 
 
-def drawGrid(grid, nextPoly, score, squareColors):
+def drawGrid(grid, nextPoly, score, squareColors, niveau):
     """
     dessine sur la fennêtre la représentation de la `grid`
 
@@ -795,6 +884,9 @@ def drawGrid(grid, nextPoly, score, squareColors):
 
     # affichage du score
     drawScore(score)
+
+    # affichage du niveau
+    drawLevel(niveau)
 
     yGrid = 0
     xGrid = 0
@@ -864,6 +956,22 @@ def drawGrid(grid, nextPoly, score, squareColors):
                     rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
 
 
+
+
+def drawLevel(niveau):
+
+    # le décalage de chaque coté pour que la ligne du dessous soit un peut plus grande que la taille du tetriTexte
+    xOffset = sizeSquareGrid/4
+    yOffset = sizeSquareGrid/8
+
+    # ligne du dessous a droite de la grille a la 2eme case
+    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 4*sizeSquareGrid , largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte('lvl : ' + str(niveau), 14)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 4*sizeSquareGrid, "black", 7) 
+    
+    # possition du tetriTexte 
+    xPose = largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + xOffset
+    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 3*sizeSquareGrid - yOffset
+    
+    tetriTexte(xPose, yPose , 'lvl : ' + str(niveau), "black", 14)
 
 
 
@@ -1169,7 +1277,7 @@ def rotatePiece(grid, poly, prevX, prevY, x, y, ori, change, maxY):
 
 
 
-def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors):
+def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors, nbLignesSuppTotale=0):
     """prends en argument la touche pressée et appelle differentes fonction selon la touche pressée"""
     
     #debug 
@@ -1206,7 +1314,7 @@ def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActi
         pieceActivated = 0
 
         # on dessine la pièce qui viens de se possé directement sinon elle restait en l'air si la condition de défaite 
-        drawGrid(grid, nextPoly, score, squareColors)
+        drawGrid(grid, nextPoly, score, squareColors, niveau=nbLignesSuppTotale//10)
 
         return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
@@ -1226,12 +1334,12 @@ def drawNextPoly(nextPoly, squareColors):
     
     # ligne du dessus a droite de la grille a la 4eme case et 
     # de logueur la longueur de next poly + une 1 case pour le padding 
-    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid, largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + sizeSquareGrid*len(nextPoly[0][0]) + 1*sizeSquareGrid, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid, "black", 4)
+    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid, largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + sizeSquareGrid*len(nextPoly[0][0]) + 1*sizeSquareGrid, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid, "black", 7)
 
     # on dessine le poly avec sont orientation de base a une case en dessous de la ligne
     # et 1/2 case horizontalement
 
-    y = hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid + 0.5*sizeSquareGrid
+    y = hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid + 0.5*sizeSquareGrid
     x = largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + 0.5*sizeSquareGrid
 
     for i in range(len(nextPoly[0])):
@@ -1346,7 +1454,6 @@ def drawScore(score) :
     xPose = largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + xOffset
     yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + sizeSquareGrid  - yOffset
     
-    # TODO : taille de police en fonction de la taille de la fenêtre
     tetriTexte(xPose, yPose ,str(score), "black", 14)
 
 

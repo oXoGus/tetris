@@ -6,6 +6,7 @@ from tetriGenPoly import *
 from tetriGenPolyArbi import *
 import time
 from tetriPourrissement import *
+from tetrIA import *
 
 yMargin = int(0.075*largeurScreen)
 
@@ -14,7 +15,7 @@ sizeSquareGrid = int(0.73*hauteurScreen/numYSquare)
 largeurFenetre = largeurScreen
 hauteurFenetre = hauteurScreen
 
-def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrissement, save = None):
+def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrissement, bonusIA, bonusElimCoul, save = None):
     """une partie de tertis
     
     prend en argument les variantes activées
@@ -84,7 +85,8 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
     
 
     # intialisation du nombre totale de ligne supprimer pour calculer le niveau de difficulté 
-    nbLignesSuppTotale = 0
+    nbLignesSuppTotaleJ1 = 0
+    nbLignesSuppTotaleJ2 = 0
 
     # on initialise le flag pour détecter si il y a eu une modification sur la grille pour la redessiner qu'une fois
     change = 1
@@ -194,6 +196,12 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                     nextPoly1 = polyLst[randrange(0, len(polyLst))]
                 else : 
                     
+                    #condition de défaite 
+                    if maxY < 4:
+                        joueurLose = joueurOn
+                        break
+
+
                     # la pièce suivante devient la pièce active et on génère la pièce suivante 
                     poly1 = nextPoly1
 
@@ -218,9 +226,24 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                     break
 
 
-                # on fait apparaitre un pièce aléatoirement 
-                # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
-                grid1, poly1, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid1, poly1, ori, change)
+                if bonusIA:
+
+                    # copie profonde de la grille 
+                    nGrid1 = list()
+                    nGrid1 = [l[:] for l in grid1]
+
+                    # on trouve les meileur coord pour les 2 poly suivant
+                    objX, objOri = findBestPolyPlace(nGrid1, poly1, nextPoly1, x, y, ori, coefNbLigneSupp=118, coefCasePerdu=21, coefCaseManquantes=101, coefHauteurRect=34)
+                
+                    # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
+                    grid1, poly1, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid1, poly1, ori, change)
+
+                    mooveLst = genMooveList(x, ori, objX, objOri)
+
+                else:
+                    
+                    # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
+                    grid1, poly1, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid1, poly1, ori, change)
 
                 pieceActivated = 1
 
@@ -234,7 +257,7 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                 timer = time.perf_counter()
             
             # variable de difficulté avec la fonction temps()
-            if time.perf_counter() - timer > temps(nbLignesSuppTotale):
+            if time.perf_counter() - timer > temps(nbLignesSuppTotaleJ1):
                 #print(nbLignesSuppTotale, temps(nbLignesSuppTotale))
                 
                 # gestion du délais pour desactiver la piece
@@ -267,9 +290,16 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
             # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
             if change == 1:
                 
-                updateGridModeDeuxJoueurs(grid1, nextPoly1, score1, squareColors, joueurOn)
+                updateGridModeDeuxJoueurs(grid1, nextPoly1, score1, squareColors, joueurOn, nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
                 change = 0
 
+
+            if bonusIA: 
+                # on retire la touche a 'actionner'
+                moove = mooveLst.pop(0)
+                time.sleep(0.1)
+                grid1, poly1, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressedModeDeuxJoueurs(moove['key'], grid1, grid2, poly1, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly1, score1, score2, squareColors, joueurOn, joueurOff, nbLignesSuppTotaleJ1, nbLignesSuppTotaleJ2)
+            
             
 
             #### on gère les touches ####
@@ -294,15 +324,15 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                     key = touche(ev)
 
                     # si la touche est utile pour le jeu
-                    if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
-                        grid1, poly1, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressedModeDeuxJoueurs(key, grid1, grid2, poly1, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly1, score1, score2, squareColors, joueurOn, joueurOff)
+                    if (key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left') and not bonusIA:
+                        grid1, poly1, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressedModeDeuxJoueurs(key, grid1, grid2, poly1, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly1, score1, score2, squareColors, joueurOn, joueurOff, nbLignesSuppTotaleJ1, nbLignesSuppTotaleJ2)
                 else:
                     pass
                     #print(key)
         
             if pieceActivated==0 : 
 
-                score1, nbLignesSuppTotale, nbLignesSupp = suppLignesModeDeuxJoueurs(grid1, score1, nbLignesSuppTotale, varPtsDiffSelect)
+                score1, nbLignesSuppTotaleJ1, nbLignesSupp = suppLignesModeDeuxJoueurs(grid1, score1, nbLignesSuppTotaleJ1, varPtsDiffSelect)
                 
                 # si des lignes ont été supp
                 if nbLignesSupp != 0 : 
@@ -310,18 +340,18 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                     # on affiche la grille avec la ligne pleinne en moins maintenant 
                     # puisque on sort directement de cette boucle while pour aller 
                     # dans la boucle de l'autre joueur
-                    updateGridModeDeuxJoueurs(grid1, nextPoly1, score1, squareColors, joueurOn)
+                    updateGridModeDeuxJoueurs(grid1, nextPoly1, score1, squareColors, joueurOn, nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
 
                     grid2=ajoutLignesModeDeuxJoueurs(grid2, nbLignesSupp)
                 
                  # pour le mode pourrissement 
                 if varModePourrissement:
-                    if time.perf_counter() - globalTimer1 > temps(nbLignesSuppTotale) * 15:
+                    if time.perf_counter() - globalTimer1 > temps(nbLignesSuppTotaleJ1) * 15:
                         pourrissement(grid1, polyLst)
                         globalTimer1 = time.perf_counter()
                         
                         # on affiche le poly supprimé 
-                        updateGridModeDeuxJoueurs(grid1, nextPoly1, score1, squareColors, joueurOn)
+                        updateGridModeDeuxJoueurs(grid1, nextPoly1, score1, squareColors, joueurOn, nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
 
 
                 mise_a_jour()
@@ -343,24 +373,27 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
 
             # si la dernière piece a été déposé 
             if pieceActivated == 0:
-
+                
                 # si c'est la première pièce de la partie 
                 if nextPoly2 == None:
                     
-                    # on génère les deux poly
+                    # on prend les mêmes pièces pour les deux joueurs 
+                    poly2 = poly1
 
-                    # on choisit aléatoirement la nouvelle pièce 
-                    poly2 = polyLst[randrange(0, len(polyLst))]
-
-                    # on choisit aléatoirement le prochaine pièce
-                    nextPoly2 = polyLst[randrange(0, len(polyLst))]
+                    nextPoly2 = nextPoly1
+                    
                 else : 
+
+                    #condition de défaite 
+                    if maxY < 4:
+                        joueurLose = joueurOn
+                        break
                     
                     # la pièce suivante devient la pièce active et on génère la pièce suivante 
                     poly2 = nextPoly2
 
                     # on choisit aléatoirement la nouvelle pièce 
-                    nextPoly2 = polyLst[randrange(0, len(polyLst))]
+                    nextPoly2 = nextPoly1
 
                 # on initialise l'oriantation de la pièce a 0
                 ori = 0
@@ -380,11 +413,25 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                     break
 
 
-                # on fait apparaitre un pièce aléatoirement 
-                # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
-                grid2, poly2, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid2, poly2, ori, change)
+                if bonusIA:
 
+                    # copie profonde de la grille 
+                    nGrid2 = list()
+                    nGrid2 = [l[:] for l in grid2]
+
+                    # on trouve les meileur coord pour les 2 poly suivant
+                    objX, objOri = findBestPolyPlace(nGrid2, poly2, nextPoly2, x, y, ori, coefNbLigneSupp=118, coefCasePerdu=21, coefCaseManquantes=101, coefHauteurRect=34)
                 
+                    # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
+                    grid2, poly2, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid2, poly2, ori, change)
+
+                    mooveLst = genMooveList(x, ori, objX, objOri)
+
+                else:
+                    
+                    # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
+                    grid2, poly2, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid2, poly2, ori, change)
+
 
                 pieceActivated = 1
 
@@ -398,7 +445,7 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                 timer = time.perf_counter()
             
             # variable de difficulté avec la fonction temps()
-            if time.perf_counter() - timer > temps(nbLignesSuppTotale):
+            if time.perf_counter() - timer > temps(nbLignesSuppTotaleJ2):
                 #print(nbLignesSuppTotale, temps(nbLignesSuppTotale))
                 
                 # gestion du délais pour desactiver la piece
@@ -434,9 +481,16 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
             # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
             if change == 1:
 
-                updateGridModeDeuxJoueurs(grid2, nextPoly2, score2, squareColors, joueurOn)
+                updateGridModeDeuxJoueurs(grid2, nextPoly2, score2, squareColors, joueurOn, nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
                 change = 0
 
+
+            if bonusIA: 
+                # on retire la touche a 'actionner'
+                moove = mooveLst.pop(0)
+                time.sleep(0.1)
+                grid2, poly2, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressedModeDeuxJoueurs(moove['key'], grid2, grid1, poly2, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly2, score2, score1, squareColors, joueurOn, joueurOff, nbLignesSuppTotaleJ1, nbLignesSuppTotaleJ2)
+            
             
 
             #### on gère les touches ####
@@ -461,33 +515,33 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                     key = touche(ev)
 
                     # si la touche est utile pour le jeu
-                    if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
-                        grid2, poly2, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressedModeDeuxJoueurs(key, grid2, grid1, poly2, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly2, score2, score1, squareColors, joueurOn, joueurOff)
+                    if (key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left') and not bonusIA:
+                        grid2, poly2, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressedModeDeuxJoueurs(key, grid2, grid1, poly2, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly2, score2, score1, squareColors, joueurOn, joueurOff, nbLignesSuppTotaleJ1, nbLignesSuppTotaleJ2)
                 else:
                     pass
                     #print(key)
             
             if pieceActivated==0 : 
 
-                score2, nbLignesSuppTotale, nbLignesSupp = suppLignesModeDeuxJoueurs(grid2, score2, nbLignesSuppTotale, varPtsDiffSelect)
+                score2, nbLignesSuppTotaleJ2, nbLignesSupp = suppLignesModeDeuxJoueurs(grid2, score2, nbLignesSuppTotaleJ2, varPtsDiffSelect)
 
                 if nbLignesSupp!=0 : 
 
                     # on affiche la grille avec la ligne pleinne en moins maintenant 
                     # puisque on sort directement de cette boucle while pour aller 
                     # dans la boucle de l'autre joueur
-                    updateGridModeDeuxJoueurs(grid2, nextPoly2, score2, squareColors, joueurOn)
+                    updateGridModeDeuxJoueurs(grid2, nextPoly2, score2, squareColors, joueurOn, nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
 
                     grid1 = ajoutLignesModeDeuxJoueurs(grid1, nbLignesSupp)
                 
                 # pour le mode pourrissement 
                 if varModePourrissement:
-                    if time.perf_counter() - globalTimer2 > temps(nbLignesSuppTotale) * 15:
+                    if time.perf_counter() - globalTimer2 > temps(nbLignesSuppTotaleJ2) * 15:
                         pourrissement(grid2, polyLst)
                         globalTimer2 = time.perf_counter()
                         
                         # on affiche le poly supprimé 
-                        updateGridModeDeuxJoueurs(grid2, nextPoly2, score2, squareColors, joueurOn)
+                        updateGridModeDeuxJoueurs(grid2, nextPoly2, score2, squareColors, joueurOn, nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
                 
                 mise_a_jour()
                 
@@ -505,11 +559,11 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
     # on ré affiche la grille du gagnant en couleurs
     if joueurLose == 'joueur1':
         drawJoueurOffGrid(grid1, nextPoly1, score2, score1, 'joueur2', 'joueur1')
-        updateGridModeDeuxJoueurs(grid2, nextPoly2, score2, squareColors, 'joueur2')
+        updateGridModeDeuxJoueurs(grid2, nextPoly2, score2, squareColors, 'joueur2', nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
 
     else:
         drawJoueurOffGrid(grid2, nextPoly2, score1, score2, 'joueur1', 'joueur2')
-        updateGridModeDeuxJoueurs(grid1, nextPoly1, score1, squareColors, 'joueur1')
+        updateGridModeDeuxJoueurs(grid1, nextPoly1, score1, squareColors, 'joueur1', nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
 
 
     # ecran de fin revoie un flag
@@ -965,7 +1019,7 @@ def drawGrid2(grid2, squareColors):
 
 
 
-def updateGridModeDeuxJoueurs(gridOn, nextPoly, scoreOn, squareColors, joueurOn):
+def updateGridModeDeuxJoueurs(gridOn, nextPoly, scoreOn, squareColors, joueurOn, niveauJ1, niveauJ2):
     """
     dessine sur la fennêtre la représentation de la `grid`
 
@@ -996,6 +1050,10 @@ def updateGridModeDeuxJoueurs(gridOn, nextPoly, scoreOn, squareColors, joueurOn)
 
         drawScoreJoueur1(scoreOn)
 
+        efface('lvlJ1')
+
+        drawLevelJoueur1(niveauJ1)
+
     else : 
 
         # on efface la grille précedente 
@@ -1014,6 +1072,9 @@ def updateGridModeDeuxJoueurs(gridOn, nextPoly, scoreOn, squareColors, joueurOn)
 
         drawScoreJoueur2(scoreOn)
     
+        efface('lvlJ2')
+
+        drawLevelJoueur2(niveauJ2)
     
     
 def drawScoreJoueur1(score) : 
@@ -1025,13 +1086,13 @@ def drawScoreJoueur1(score) :
     yOffset = sizeSquareGrid/8
 
     # ligne du dessous a droite de la grille a la 2eme case
-    ligne(largeurFenetre/4 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 2*sizeSquareGrid , largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte(str(score), 10)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 2*sizeSquareGrid, "black", 7, "scoreJ1") 
+    ligne(largeurFenetre/4 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 2*sizeSquareGrid , largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte(str(score), 8)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 2*sizeSquareGrid, "black", 7, "scoreJ1") 
     
     # possition du tetriTexte 
     xPose = largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + xOffset
-    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + sizeSquareGrid  - yOffset
+    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + sizeSquareGrid  + yOffset
     
-    tetriTexte(xPose, yPose ,str(score), "black", 10, 'scoreJ1')
+    tetriTexte(xPose, yPose ,str(score), "black", 8, 'scoreJ1')
     
 
 def drawScoreJoueur2(score):
@@ -1041,15 +1102,48 @@ def drawScoreJoueur2(score):
     yOffset = sizeSquareGrid/8
 
     # ligne du dessous a droite de la grille a la 2eme case
-    ligne(3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 2*sizeSquareGrid , 3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte(str(score), 10)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 2*sizeSquareGrid, "black", 7, tag = "scoreJ2") 
+    ligne(3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 2*sizeSquareGrid , 3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte(str(score), 8)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 2*sizeSquareGrid, "black", 7, tag = "scoreJ2") 
     
     # possition du tetriTexte 
     xPose = 3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + xOffset
-    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + sizeSquareGrid  - yOffset
+    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + sizeSquareGrid  + yOffset
     
     # TODO : taille de police en fonction de la taille de la fenêtre
-    tetriTexte(xPose, yPose ,str(score), "black", 10, 'scoreJ2')
+    tetriTexte(xPose, yPose ,str(score), "black", 8, 'scoreJ2')
 
+
+def drawLevelJoueur1(niveau) : 
+    """dessine a droite de la grille le score"""
+    
+    ############Affichage Score joueur 1#############################################
+    # le décalage de chaque coté pour que la ligne du dessous soit un peut plus grande que la taille du tetriTexte
+    xOffset = sizeSquareGrid/4
+    yOffset = sizeSquareGrid/8
+
+    # ligne du dessous a droite de la grille a la 2eme case
+    ligne(largeurFenetre/4 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 4*sizeSquareGrid , largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte('lvl : ' + str(niveau), 8)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 4*sizeSquareGrid, "black", 7, "lvlJ1") 
+    
+    # possition du tetriTexte 
+    xPose = largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + xOffset
+    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 3*sizeSquareGrid  + yOffset
+    
+    tetriTexte(xPose, yPose , 'lvl : ' + str(niveau), "black", 8, 'lvlJ1')    
+
+
+def drawLevelJoueur2(niveau):
+
+    # le décalage de chaque coté pour que la ligne du dessous soit un peut plus grande que la taille du tetriTexte
+    xOffset = sizeSquareGrid/4
+    yOffset = sizeSquareGrid/8
+
+    # ligne du dessous a droite de la grille a la 2eme case
+    ligne(3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare  + 4*sizeSquareGrid , 3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte('lvl : ' + str(niveau), 8)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 4*sizeSquareGrid, "black", 7, tag = "lvlJ2") 
+    
+    # possition du tetriTexte 
+    xPose = 3*largeurFenetre/4 + sizeSquareGrid*numXSquare/2 + xOffset
+    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 3*sizeSquareGrid  + yOffset
+    
+    tetriTexte(xPose, yPose ,'lvl : ' + str(niveau), "black", 8, 'lvlJ2')
 
 
 def drawNextPolyJoueur1(nextPoly, squareColors):
@@ -1059,12 +1153,12 @@ def drawNextPolyJoueur1(nextPoly, squareColors):
 
     # ligne du dessus a droite de la grille a la 4eme case et 
     # de logueur la longueur de next poly + une 1 case pour le padding 
-    ligne(largeurFenetre*coeff + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid, largeurFenetre*coeff + sizeSquareGrid*numXSquare/2 + sizeSquareGrid*len(nextPoly[0][0]) + 1*sizeSquareGrid, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid, "black", 8, tag='nextPolyJoueur1')
+    ligne(largeurFenetre*coeff + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid, largeurFenetre*coeff + sizeSquareGrid*numXSquare/2 + sizeSquareGrid*len(nextPoly[0][0]) + 1*sizeSquareGrid, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid, "black", 7, tag='nextPolyJoueur1')
 
     # on dessine le poly avec sont orientation de base a une case en dessous de la ligne
     # et 1/2 case horizontalement
 
-    y = hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid + 0.5*sizeSquareGrid
+    y = hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid + 0.5*sizeSquareGrid
     x = largeurFenetre*coeff + sizeSquareGrid*numXSquare/2 + 0.5*sizeSquareGrid
 
     for i in range(len(nextPoly[0])):
@@ -1086,12 +1180,12 @@ def drawNextPolyJoueur2(nextPoly, squareColors):
     
     # ligne du dessus a droite de la grille a la 4eme case et 
     # de logueur la longueur de next poly + une 1 case pour le padding 
-    ligne(largeurFenetre*coeff + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid, largeurFenetre*coeff + sizeSquareGrid*numXSquare/2 + sizeSquareGrid*len(nextPoly[0][0]) + 1*sizeSquareGrid, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid, "black", 8, tag='nextPolyJoueur2')
+    ligne(largeurFenetre*coeff + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid, largeurFenetre*coeff + sizeSquareGrid*numXSquare/2 + sizeSquareGrid*len(nextPoly[0][0]) + 1*sizeSquareGrid, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid, "black", 7, tag='nextPolyJoueur2')
 
     # on dessine le poly avec sont orientation de base a une case en dessous de la ligne
     # et 1/2 case horizontalement
 
-    y = hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 4*sizeSquareGrid + 0.5*sizeSquareGrid
+    y = hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid + 0.5*sizeSquareGrid
     x = largeurFenetre*coeff + sizeSquareGrid*numXSquare/2 + 0.5*sizeSquareGrid
 
     for i in range(len(nextPoly[0])):
@@ -1104,7 +1198,7 @@ def drawNextPolyJoueur2(nextPoly, squareColors):
                 rectangle(x+j*sizeSquareGrid, y+i*sizeSquareGrid, x+j*sizeSquareGrid + sizeSquareGrid, y+i*sizeSquareGrid + sizeSquareGrid, "black", squareColors[nextPoly[0][i][j]], 3, tag='nextPolyJoueur2')
 
 
-def keyPressedModeDeuxJoueurs(key, gridOn, gridOff, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, scoreOn, scoreOff, squareColors, joueurOn, joueurOff):
+def keyPressedModeDeuxJoueurs(key, gridOn, gridOff, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, scoreOn, scoreOff, squareColors, joueurOn, joueurOff, nbLignesSuppTotaleJ1, nbLignesSuppTotaleJ2):
     """prends en argument la touche pressée et appelle differentes fonction selon la touche pressée"""
     
     #debug 
@@ -1141,7 +1235,7 @@ def keyPressedModeDeuxJoueurs(key, gridOn, gridOff, poly, prevX, prevY, x, y, or
 
 
         # on dessine la pièce qui viens de se possé directement sinon elle restait en l'air si la condition de défaite 
-        updateGridModeDeuxJoueurs(gridOn, nextPoly, scoreOn, squareColors, joueurOn)
+        updateGridModeDeuxJoueurs(gridOn, nextPoly, scoreOn, squareColors, joueurOn, nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
 
         return gridOn, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
 
