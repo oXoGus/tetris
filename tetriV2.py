@@ -694,8 +694,6 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
 
             else : 
 
-                print(x, ori)
-
                 # la pièce suivante devient la pièce active et on génère la pièce suivante 
                 poly = nextPoly
 
@@ -739,7 +737,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
                 nGrid = [l[:] for l in grid]
 
                 # on trouve les meileur coord pour les 2 poly suivant
-                objX, objOri = findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp=118, coefCasePerdu=21, coefCaseManquantes=101, coefHauteurRect=34)
+                objX, objOri = findBestPolyPlace(nGrid, poly, nextPoly, x, y, ori, coefNbLigneSupp=83, coefCasePerdu=19, coefCaseManquantes=165, coefHauteurRect=67)
             
                 # on fait apparaitre un pièce aléatoirement 
                 # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 

@@ -37,7 +37,7 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLi
 
     for i in range(20 + 4):
         grid.append([])
-        for j in range(len(nGrid[0])):
+        for j in range(10):
             grid[i].append(0)
 
 
@@ -143,6 +143,7 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLi
             # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
             grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
 
+            getGoodPolyPlaceV2(nGrid, poly, x, y, ori)
             mooveLst = genMooveList(x, ori, objX, objOri)
 
             pieceActivated = 1
@@ -158,7 +159,7 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLi
                     globalTimer = time.perf_counter()
                     
                     # on affiche le poly supprimé 
-                    drawGrid(grid, nextPoly, score, squareColors)
+                    drawGrid(grid, nextPoly, score, squareColors, nbLignesSuppTotale//10)
 
 
         # timer pour descendre la pièce de une case toute les une secondes
@@ -198,7 +199,7 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLi
 
         # il faut redessiner la grille uniquemnt si elle a changé avec le flag 'change' pour des soucis de performance
         if change == 1:
-            drawGrid(grid, nextPoly, score, squareColors)
+            drawGrid(grid, nextPoly, score, squareColors, nbLignesSuppTotale//10)
 
             change = 0
 
@@ -206,7 +207,7 @@ def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLi
     
         # on retire la touche a 'actionner'
         moove = mooveLst.pop(0)
-        #time.sleep(0.1)
+        time.sleep(0.5)
         grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(moove['key'], grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors)
         
 
@@ -572,7 +573,166 @@ def getGoodPolyPlace(nGrid, poly, x, y, ori):
     
     return nGridLst
 
+def drawPos(nGrid, poly, x, y, ori):
+    """version simplifier de drawPiece"""
 
+    for i in range(len(poly[ori])):
+        for j in range(len(poly[ori][0])):
+
+            # pour ne pas mettre de 0 sur des cases deja remplis
+            if poly[ori][i][j] != 0:
+                nGrid[y + i][x + j] = poly[ori][i][j]
+
+
+def reversePathFinding(nGrid, poly, x, y, ori, objX, objY, objOri):
+    """pathfinding inversé"""
+
+    path = list()
+    xInit = x
+    yInit = y
+
+    # si le poly peux monter 
+    # alors il est accessible
+    nGrid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(nGrid, poly, x, y, x, y-1, ori, 0, y)
+    
+    # si on a bien pu remonter 
+    if y == yInit - 1:
+
+        # on peut y accéder sans path finding
+        path.append('Down')
+        return path
+    
+    for _ in range(100):
+        pass
+        
+        
+def tryLeft(nGrid, poly, prevX, prevY, x, y, ori, change, maxY, path):
+    # on essaye a droite 
+    nGrid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(nGrid, poly, prevX, prevY, x + 1, y, ori, change, maxY)
+    if x == prevX + 1:
+
+        # on ajoute le path si ça a marché 
+        path.append('Left')
+
+    return nGrid, poly, prevX, prevY, x, y, ori, change, maxY
+        
+def tryRight(nGrid, poly, prevX, prevY, x, y, ori, change, maxY, path):
+    # a gauche
+    nGrid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(nGrid, poly, prevX, prevY, x - 1, y, ori, change, maxY)
+    if x == prevX - 1:
+
+        # on ajoute le path si ça a marché 
+        path.append('Right')
+
+    return nGrid, poly, prevX, prevY, x, y, ori, change, maxY
+
+def tryUp(nGrid, poly, prevX, prevY, x, y, ori, change, maxY, path):
+    # en haut
+    nGrid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(nGrid, poly, prevX, prevY, x, y - 1, ori, change, maxY)
+    if y == prevY - 1:
+
+        # on ajoute le path si ça a marché 
+        path.append('Down')
+
+    return nGrid, poly, prevX, prevY, x, y, ori, change, maxY
+
+def tryRota(nGrid, poly, prevX, prevY, x, y, ori, change, maxY, path):
+    # et enfin l'ori
+    erasePiece(nGrid, poly, x, y, ori)
+
+    if ori == 3:
+        ori = 0
+    else:
+        ori += 1    
+
+    nGrid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(nGrid, poly, prevX, prevY, x, y, ori, change, maxY, 1)
+    if y == prevY - 1:
+
+        # on ajoute le path si ça a marché 
+        path.append('Up')
+
+    return nGrid, poly, prevX, prevY, x, y, ori, change, maxY
+
+def getGoodPolyPlaceV2(nGrid, poly, x, y, ori):
+    """Brutforce."""
+    
+    # on stock tout les grilles qui créer le moins de case inaccessible ou qui supprime une ou plusieurs lignes
+    nGridLst = list()
+
+    minNbCasePerdu = 100    
+    
+    xInit = x
+    yInit = y
+    oriInit = ori 
+    
+    # oe génére TOUTES les pos possible
+    for ori in range(4):
+        for y in range(len(nGrid) - len(poly[ori]) + 1):
+            for x in range(len(nGrid[0]) - len(poly[ori][0]) + 1):
+
+                # si la piece n'est pas en colision et que est a son maxY
+                if not isColision(nGrid, poly, x, y, ori) and isPolyMaxY(nGrid, poly, x, y, ori):
+                    
+                    drawPos(nGrid, poly, x, y, ori)
+
+                    # on fait la somme de tout les i des case en partant du bas
+                    # V2 du Hauteur rect
+                    HeightRectV2 = 0
+                    
+                    # nb de pts par case 
+                    pts = 1
+
+                    for i in range(len(nGrid) - 1, -1, -1):
+                        if nGrid[i] == [0]*len(nGrid[0]):
+                            break
+                        for j in range(len(nGrid[0])):
+                            if nGrid[i][j] != 0:
+                                HeightRectV2 += pts
+                            
+                        # on incr le nb de pts 
+                        pts += 1
+
+
+                    # on fait la somme de tout les i des case en partant du bas
+                    # V2 du Hauteur rect
+                    HeightRect = 0
+                    for i in range(len(nGrid) - 1, -1, -1):
+                        if nGrid[i] == [0]*len(nGrid[0]):
+                            break
+                        for j in range(len(nGrid[0])):
+                            if nGrid[i][j] != 0:
+                                HeightRect += 1
+                                break
+
+                    
+                    # on test cette pos
+                    # en prio les lignes supp
+                    n = nbLignesSuppBot(nGrid)
+
+                    casePerdu = nbCasePerdu(nGrid, HeightRect)
+                    
+                    if n or len(casePerdu) <= minNbCasePerdu:
+                        # on stock les infos 
+                        nGridLst.append({
+                            'nGrid' : [str(l[:]) for l in nGrid],
+                            'x': x,
+                            'y': y,
+                            'ori': ori,
+                            'nbLigneSupp': n,
+                            'casePerdu': len(casePerdu),
+                            'caseManquantes': caseUtileLineFull(nGrid, casePerdu),
+                            'HauteurRect': HeightRectV2
+                        })
+
+                    # nouveau min
+                    minNbCasePerdu = len(casePerdu)
+
+                    eraseShadow(nGrid, poly, ori, x, y)
+
+    with open('posV2.json', 'w') as f:
+        json.dump(nGridLst, f, indent=4)
+                
+    return nGridLst
     
 def drawShadow(nGrid, poly, ori, x, y):
 
@@ -724,6 +884,27 @@ def genMooveList(x, ori, objX, objOri):
     return mooveLst
 
     
+def drawNextPoly(nextPoly, squareColors):
+    """dsesine a droite de la grille le poly suivant"""
+    
+    # ligne du dessus a droite de la grille a la 4eme case et 
+    # de logueur la longueur de next poly + une 1 case pour le padding 
+    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid, largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + sizeSquareGrid*len(nextPoly[0][0]) + 1*sizeSquareGrid, hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid, "black", 7)
+
+    # on dessine le poly avec sont orientation de base a une case en dessous de la ligne
+    # et 1/2 case horizontalement
+
+    y = hauteurFenetre - yMargin - numYSquare*sizeSquareGrid + 5.5*sizeSquareGrid + 0.5*sizeSquareGrid
+    x = largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + 0.5*sizeSquareGrid
+
+    for i in range(len(nextPoly[0])):
+        for j in range(len(nextPoly[0][0])):
+            
+            # on affiche que les case remplit pour ne pas avoir de cases blanches
+            if nextPoly[0][i][j] == 0:
+                pass
+            else:
+                rectangle(x+j*sizeSquareGrid, y+i*sizeSquareGrid, x+j*sizeSquareGrid + sizeSquareGrid, y+i*sizeSquareGrid + sizeSquareGrid, "black", squareColors[nextPoly[0][i][j]], 3)
 
 
 
@@ -1184,6 +1365,109 @@ def drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY, rotated = 0):
     return grid, poly, prevX, prevY, x, y, ori, change, maxY
 
 
+def drawGrid(grid, nextPoly, score, squareColors, niveau):
+    """
+    dessine sur la fennêtre la représentation de la `grid`
+
+    `grid` : matrice qui représente la partie elle même
+    `nextPoly` : matice contenant la pochaine pièce à jouer pour la passer en param à la fonction `drawNextPoly()`
+    `score` : variable contenant le score pour la passer en param à la fonction `drawScore()`
+    """
+
+    efface_tout()
+
+    # affichage du poly suivant
+    drawNextPoly(nextPoly, squareColors)
+
+    # affichage du score
+    drawScore(score)
+
+    # affichage du niveau
+    drawLevel(niveau)
+
+    yGrid = 0
+    xGrid = 0
+
+    thickness = 8
+
+    # ligne basse de la grille
+    ligne(largeurFenetre/2 - sizeSquareGrid*numXSquare/2 - thickness//2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + thickness//2, hauteurFenetre - yMargin, "black", thickness)
+
+    #ligne de gauche
+    ligne(largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 - sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
+
+    #ligne de droite
+    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin, largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare, "black", thickness)
+
+
+
+    # on dessine les case vide pour que les épaisseurs des case des case pleines ne soit 'écrasé' par l'épaisseur de la case vide
+    for i in range(len(grid)):
+
+        yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
+        for j in range(len(grid[0])):
+
+             # on enregistre la couleur de la case
+            n = grid[i][j]
+
+            xGrid = largeurFenetre/2 - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+
+            # si on est dans les 4 première ligne
+            if i < 4:
+                # on affiche que les pièce, pas la grille
+                if n == 0:
+                    pass
+            
+            else:
+
+                # on affiche bien que les case vide
+                if n == 0:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "light gray", "white")
+    
+    
+    # on dessine que les cases pleines
+    for i in range(len(grid)):
+
+        yGrid = hauteurFenetre - yMargin - sizeSquareGrid*(numYSquare + 4) + i* sizeSquareGrid
+        for j in range(len(grid[0])):
+
+             # on enregistre la couleur de la case
+            n = grid[i][j]
+
+            xGrid = largeurFenetre/2 - sizeSquareGrid*numXSquare/2 + j*sizeSquareGrid
+
+            # si on est dans les 4 première ligne
+            if i < 4:
+                # on affiche que les pièce, pas la grille
+                if n == 0:
+                    pass
+                else:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
+            
+            else:
+                if n == 0:
+                    pass
+                elif n == -1:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
+                else:
+                    rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
+
+
+def drawLevel(niveau):
+
+    # le décalage de chaque coté pour que la ligne du dessous soit un peut plus grande que la taille du tetriTexte
+    xOffset = sizeSquareGrid/4
+    yOffset = sizeSquareGrid/8
+
+    # ligne du dessous a droite de la grille a la 2eme case
+    ligne(largeurFenetre/2 + sizeSquareGrid*numXSquare/2, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 4*sizeSquareGrid , largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + tailleTetriTexte('lvl : ' + str(niveau), 14)[0] + xOffset + yOffset, hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 4*sizeSquareGrid, "black", 7) 
+    
+    # possition du tetriTexte 
+    xPose = largeurFenetre/2 + sizeSquareGrid*numXSquare/2 + xOffset
+    yPose = hauteurFenetre - yMargin - sizeSquareGrid*numYSquare + 3*sizeSquareGrid - yOffset
+    
+    tetriTexte(xPose, yPose , 'lvl : ' + str(niveau), "black", 14)
+
 
 
 def selectNatCoef(nGen, nTest, nGames, coefNbLigneSuppInit, coefCasePerduInit, coefCaseManquantesInit, coefHauteurRectInit, genPolyF, genColF):
@@ -1196,8 +1480,6 @@ def selectNatCoef(nGen, nTest, nGames, coefNbLigneSuppInit, coefCasePerduInit, c
 
     # coef de départ
     coefNbLigneSuppParent, coefCasePerduParent, coefCaseManquantesParent, coefHauteurRectParent = coefNbLigneSuppInit, coefCasePerduInit, coefCaseManquantesInit, coefHauteurRectInit
-
-  
 
     # pour chaque gen 
     for gen in range(nGen):
@@ -1265,7 +1547,7 @@ def selectNatCoef(nGen, nTest, nGames, coefNbLigneSuppInit, coefCasePerduInit, c
 
         L = sorted(L, key=lambda test: test['score'], reverse=True)
 
-        with open ('gen'+str(gen)+'.json', 'w') as f:
+        with open ('gen'+str(gen+9)+'.json', 'w') as f:
             json.dump(L, f, indent=4)
 
         bestCoef = L[0]
@@ -1278,23 +1560,115 @@ def selectNatCoef(nGen, nTest, nGames, coefNbLigneSuppInit, coefCasePerduInit, c
 
 import random
 import json
+from fltk import *
+from tetriGenPoly import *
+import subprocess
+
+# on récumpère la resolution de l'écran en executat la commande `xrandr | grep \\* | cut -d' ' -f4`
+# avec la module subprocess
+resolution = subprocess.Popen("xrandr | grep \\* | cut -d' ' -f4", shell=True, stdout=subprocess.PIPE).communicate()[0]
+
+
+# cela renvoie : b'2560x1600\n'
+
+# le b au début signifit que cette chaine est encodé en UTF-8
+# pour le retirer un faut décoder la chaine de caractère  
+
+# la methode decode a pour argument par défaut encodage UTF-8
+resolution = resolution[:-1].decode()
+
+# on obtient bien 2560x1600
+print(resolution)
+
+largeurScreen = int(resolution.split('x')[0])
+
+hauteurScreen = int(resolution.split('x')[1])
+
+largeurFenetre = largeurScreen//10
+
+hauteurFenetre = largeurScreen//10
+
+yMargin = int(0.10*largeurFenetre)
+
+# constante
+numYSquare = 20
+numXSquare = 10
+sizeSquareGrid = int(0.73*hauteurFenetre/numYSquare)
+
+
+
+from tetriFont import *
+
+def keyPressed(key, grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors, nbLignesSuppTotale=0):
+    """prends en argument la touche pressée et appelle differentes fonction selon la touche pressée"""
+    
+    #debug 
+    #print(key)
+
+    # pour touner la pièce d'1/4 vers la droite
+    if key == 'Up':
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = rotatePiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+        return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
+
+    # pour déplacer la pièce de une case vers la gauche
+    if key == 'Left':
+        x -= 1
+
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+        return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
+
+
+    # pour déplacer la pièce de une case vers la gauche
+    elif key == 'Right':
+        x += 1
+
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+        return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
+
+    
+    # pour placer intantanément la pièce 
+    elif key == 'space':
+        
+        
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, maxY, ori, change, maxY)
+
+        # on pose la pièce définitivement
+        pieceActivated = 0
+
+        # on dessine la pièce qui viens de se possé directement sinon elle restait en l'air si la condition de défaite 
+        drawGrid(grid, nextPoly, score, squareColors, niveau=nbLignesSuppTotale//10)
+
+        return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
+
+    
+            
+
+    # 'down' pour baisser la pièce plus rapidement 
+    else:
+        y += 1
+
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+        return grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated
+
 
 if __name__ == '__main__':
-    from fltk import *
-    from tetriFont import *
+    
+    
     from tetriGenPolyArbi import *
     from tetriSaves import *
     from tetri2players import *
     from tetriGenPoly import *
-    import subprocess
+    
     
     from tetriV2 import drawGrid, printGrid, isPolyMaxY, drawPiece, isColision, colisionResolve, colisionLeft, colisionRight, colisionBottom, erasePiece, spawnPiece, rotatePiece, drawNextPoly, suppLignes, downLignes, points, pointsEnFonctionDifficulte, drawScore, temps, endScreen, rectangleOmbre, tetriTexteCentre, menuPause, createSave, saveMenu, drawSaveData, loadSave, drawSaveGrid, keyPressed, genPolyominoLst
+
+    import subprocess
 
     # on récumpère la resolution de l'écran en executat la commande `xrandr | grep \\* | cut -d' ' -f4`
     # avec la module subprocess
     resolution = subprocess.Popen("xrandr | grep \\* | cut -d' ' -f4", shell=True, stdout=subprocess.PIPE).communicate()[0]
 
-    
+
     # cela renvoie : b'2560x1600\n'
 
     # le b au début signifit que cette chaine est encodé en UTF-8
@@ -1317,15 +1691,14 @@ if __name__ == '__main__':
     yMargin = int(0.10*largeurFenetre)
 
     # constante
-    
+    numYSquare = 20
     numXSquare = 10
     sizeSquareGrid = int(0.73*hauteurFenetre/numYSquare)
 
-    # moyenne du score 
-    # création de la fenêtre carré 
-    #cree_fenetre(largeurFenetre, largeurFenetre)
-
-    #tetriBot(False, False, False, 118, 21, 101, 34)
+    cree_fenetre(largeurFenetre, hauteurFenetre)  
+    print(largeurFenetre, largeur_fenetre())
+      
+    tetriBot(False, False, False, 118, 21, 101, 34)
 
     
-    selectNatCoef(nGen=20, nTest=25, nGames=10, coefNbLigneSuppInit=118, coefCasePerduInit=21, coefCaseManquantesInit=101, coefHauteurRectInit=34, genPolyF=genPolyominoLst, genColF=genColorRGBLst)
+    #selectNatCoef(nGen=50, nTest=25, nGames=10, coefNbLigneSuppInit=88, coefCasePerduInit=82, coefCaseManquantesInit=153, coefHauteurRectInit=3, genPolyF=genPolyominoLst, genColF=genColorRGBLst)

@@ -1,177 +1,177 @@
 [
     {
-        "score": 28440,
-        "coefNbLigneSupp": 93,
-        "coefCasePerdu": 66,
+        "score": 100000000,
+        "coefNbLigneSupp": 92,
+        "coefCasePerdu": 55,
+        "coefCaseManquantes": 181,
+        "coefHauteurRect": 49
+    },
+    {
+        "score": 93820,
+        "coefNbLigneSupp": 46,
+        "coefCasePerdu": 92,
+        "coefCaseManquantes": 171,
+        "coefHauteurRect": 29
+    },
+    {
+        "score": 92420,
+        "coefNbLigneSupp": 73,
+        "coefCasePerdu": 45,
+        "coefCaseManquantes": 188,
+        "coefHauteurRect": 13
+    },
+    {
+        "score": 78380,
+        "coefNbLigneSupp": 130,
+        "coefCasePerdu": 34,
+        "coefCaseManquantes": 113,
+        "coefHauteurRect": 23
+    },
+    {
+        "score": 69500,
+        "coefNbLigneSupp": 90,
+        "coefCasePerdu": 113,
+        "coefCaseManquantes": 176,
+        "coefHauteurRect": 47
+    },
+    {
+        "score": 56540,
+        "coefNbLigneSupp": 82,
+        "coefCasePerdu": 43,
+        "coefCaseManquantes": 103,
+        "coefHauteurRect": 12
+    },
+    {
+        "score": 54360,
+        "coefNbLigneSupp": 90,
+        "coefCasePerdu": 46,
+        "coefCaseManquantes": 128,
+        "coefHauteurRect": 40
+    },
+    {
+        "score": 6300,
+        "coefNbLigneSupp": 77,
+        "coefCasePerdu": 105,
+        "coefCaseManquantes": 111,
+        "coefHauteurRect": 31
+    },
+    {
+        "score": 5980,
+        "coefNbLigneSupp": 64,
+        "coefCasePerdu": 93,
+        "coefCaseManquantes": 110,
+        "coefHauteurRect": 32
+    },
+    {
+        "score": 3700,
+        "coefNbLigneSupp": 88,
+        "coefCasePerdu": 82,
+        "coefCaseManquantes": 153,
+        "coefHauteurRect": 3
+    },
+    {
+        "score": 3500,
+        "coefNbLigneSupp": 106,
+        "coefCasePerdu": 73,
+        "coefCaseManquantes": 192,
+        "coefHauteurRect": 8
+    },
+    {
+        "score": 3320,
+        "coefNbLigneSupp": 45,
+        "coefCasePerdu": 118,
+        "coefCaseManquantes": 154,
+        "coefHauteurRect": 14
+    },
+    {
+        "score": 3100,
+        "coefNbLigneSupp": 94,
+        "coefCasePerdu": 111,
+        "coefCaseManquantes": 145,
+        "coefHauteurRect": 15
+    },
+    {
+        "score": 2700,
+        "coefNbLigneSupp": 103,
+        "coefCasePerdu": 129,
+        "coefCaseManquantes": 167,
+        "coefHauteurRect": 5
+    },
+    {
+        "score": 2700,
+        "coefNbLigneSupp": 56,
+        "coefCasePerdu": 123,
+        "coefCaseManquantes": 134,
+        "coefHauteurRect": 1
+    },
+    {
+        "score": 200,
+        "coefNbLigneSupp": 74,
+        "coefCasePerdu": 118,
+        "coefCaseManquantes": 119,
+        "coefHauteurRect": -3
+    },
+    {
+        "score": 80,
+        "coefNbLigneSupp": 128,
+        "coefCasePerdu": 129,
+        "coefCaseManquantes": 147,
+        "coefHauteurRect": -15
+    },
+    {
+        "score": 80,
+        "coefNbLigneSupp": 45,
+        "coefCasePerdu": 130,
+        "coefCaseManquantes": 185,
+        "coefHauteurRect": -13
+    },
+    {
+        "score": 80,
+        "coefNbLigneSupp": 119,
+        "coefCasePerdu": 51,
+        "coefCaseManquantes": 199,
+        "coefHauteurRect": -15
+    },
+    {
+        "score": 40,
+        "coefNbLigneSupp": 46,
+        "coefCasePerdu": 102,
         "coefCaseManquantes": 157,
-        "coefHauteurRect": 14
+        "coefHauteurRect": -27
     },
     {
-        "score": 28440,
-        "coefNbLigneSupp": 94,
-        "coefCasePerdu": 66,
-        "coefCaseManquantes": 153,
-        "coefHauteurRect": 16
+        "score": 0,
+        "coefNbLigneSupp": 128,
+        "coefCasePerdu": 36,
+        "coefCaseManquantes": 142,
+        "coefHauteurRect": -44
     },
     {
-        "score": 23820,
-        "coefNbLigneSupp": 102,
-        "coefCasePerdu": 58,
-        "coefCaseManquantes": 150,
-        "coefHauteurRect": 17
-    },
-    {
-        "score": 23820,
-        "coefNbLigneSupp": 100,
-        "coefCasePerdu": 57,
-        "coefCaseManquantes": 156,
-        "coefHauteurRect": 15
-    },
-    {
-        "score": 23200,
-        "coefNbLigneSupp": 98,
-        "coefCasePerdu": 62,
-        "coefCaseManquantes": 155,
-        "coefHauteurRect": 13
-    },
-    {
-        "score": 23200,
-        "coefNbLigneSupp": 98,
-        "coefCasePerdu": 60,
-        "coefCaseManquantes": 153,
-        "coefHauteurRect": 13
-    },
-    {
-        "score": 23200,
-        "coefNbLigneSupp": 100,
-        "coefCasePerdu": 62,
-        "coefCaseManquantes": 156,
-        "coefHauteurRect": 15
-    },
-    {
-        "score": 23200,
-        "coefNbLigneSupp": 93,
-        "coefCasePerdu": 64,
-        "coefCaseManquantes": 158,
-        "coefHauteurRect": 13
-    },
-    {
-        "score": 23200,
-        "coefNbLigneSupp": 99,
-        "coefCasePerdu": 61,
-        "coefCaseManquantes": 153,
-        "coefHauteurRect": 13
-    },
-    {
-        "score": 23200,
-        "coefNbLigneSupp": 94,
-        "coefCasePerdu": 58,
-        "coefCaseManquantes": 152,
-        "coefHauteurRect": 12
-    },
-    {
-        "score": 23200,
-        "coefNbLigneSupp": 95,
-        "coefCasePerdu": 62,
-        "coefCaseManquantes": 159,
-        "coefHauteurRect": 14
-    },
-    {
-        "score": 23200,
-        "coefNbLigneSupp": 100,
-        "coefCasePerdu": 57,
-        "coefCaseManquantes": 152,
-        "coefHauteurRect": 12
-    },
-    {
-        "score": 23200,
-        "coefNbLigneSupp": 99,
-        "coefCasePerdu": 58,
-        "coefCaseManquantes": 155,
-        "coefHauteurRect": 14
-    },
-    {
-        "score": 23200,
-        "coefNbLigneSupp": 100,
-        "coefCasePerdu": 64,
-        "coefCaseManquantes": 156,
-        "coefHauteurRect": 14
-    },
-    {
-        "score": 12480,
-        "coefNbLigneSupp": 95,
-        "coefCasePerdu": 61,
-        "coefCaseManquantes": 151,
-        "coefHauteurRect": 9
-    },
-    {
-        "score": 12480,
-        "coefNbLigneSupp": 95,
-        "coefCasePerdu": 65,
-        "coefCaseManquantes": 153,
-        "coefHauteurRect": 12
-    },
-    {
-        "score": 12480,
-        "coefNbLigneSupp": 94,
-        "coefCasePerdu": 59,
-        "coefCaseManquantes": 153,
-        "coefHauteurRect": 10
-    },
-    {
-        "score": 12480,
-        "coefNbLigneSupp": 93,
-        "coefCasePerdu": 57,
-        "coefCaseManquantes": 155,
-        "coefHauteurRect": 8
-    },
-    {
-        "score": 12480,
-        "coefNbLigneSupp": 95,
-        "coefCasePerdu": 57,
-        "coefCaseManquantes": 156,
-        "coefHauteurRect": 9
-    },
-    {
-        "score": 12480,
+        "score": 0,
         "coefNbLigneSupp": 97,
-        "coefCasePerdu": 61,
-        "coefCaseManquantes": 158,
-        "coefHauteurRect": 11
+        "coefCasePerdu": 32,
+        "coefCaseManquantes": 117,
+        "coefHauteurRect": -36
     },
     {
-        "score": 12480,
-        "coefNbLigneSupp": 97,
-        "coefCasePerdu": 59,
-        "coefCaseManquantes": 159,
-        "coefHauteurRect": 9
+        "score": 0,
+        "coefNbLigneSupp": 56,
+        "coefCasePerdu": 74,
+        "coefCaseManquantes": 183,
+        "coefHauteurRect": -43
     },
     {
-        "score": 12480,
-        "coefNbLigneSupp": 98,
-        "coefCasePerdu": 59,
-        "coefCaseManquantes": 158,
-        "coefHauteurRect": 9
+        "score": 0,
+        "coefNbLigneSupp": 117,
+        "coefCasePerdu": 70,
+        "coefCaseManquantes": 143,
+        "coefHauteurRect": -37
     },
     {
-        "score": 12480,
-        "coefNbLigneSupp": 99,
-        "coefCasePerdu": 63,
-        "coefCaseManquantes": 159,
-        "coefHauteurRect": 11
-    },
-    {
-        "score": 12480,
-        "coefNbLigneSupp": 95,
-        "coefCasePerdu": 58,
-        "coefCaseManquantes": 156,
-        "coefHauteurRect": 11
-    },
-    {
-        "score": 12480,
-        "coefNbLigneSupp": 101,
-        "coefCasePerdu": 62,
-        "coefCaseManquantes": 152,
-        "coefHauteurRect": 8
+        "score": 0,
+        "coefNbLigneSupp": 56,
+        "coefCasePerdu": 83,
+        "coefCaseManquantes": 115,
+        "coefHauteurRect": -39
     }
 ]

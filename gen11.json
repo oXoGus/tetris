@@ -1,177 +1,177 @@
 [
     {
-        "avgScore": 2894.4,
-        "coefNbLigneSupp": 26,
-        "coefCasePerdu": 11,
-        "coefCaseManquantes": 18,
-        "coefHauteurRect": 18
+        "score": 100000000,
+        "coefNbLigneSupp": 80,
+        "coefCasePerdu": 32,
+        "coefCaseManquantes": 161,
+        "coefHauteurRect": 72
     },
     {
-        "avgScore": 2876.8,
-        "coefNbLigneSupp": 24,
-        "coefCasePerdu": 8,
-        "coefCaseManquantes": 14,
-        "coefHauteurRect": 18
+        "score": 100000000,
+        "coefNbLigneSupp": 76,
+        "coefCasePerdu": 45,
+        "coefCaseManquantes": 163,
+        "coefHauteurRect": 73
     },
     {
-        "avgScore": 2655.2,
-        "coefNbLigneSupp": 25,
-        "coefCasePerdu": 8,
-        "coefCaseManquantes": 15,
-        "coefHauteurRect": 19
+        "score": 100000000,
+        "coefNbLigneSupp": 68,
+        "coefCasePerdu": 26,
+        "coefCaseManquantes": 159,
+        "coefHauteurRect": 82
     },
     {
-        "avgScore": 2624.8,
-        "coefNbLigneSupp": 21,
-        "coefCasePerdu": 10,
-        "coefCaseManquantes": 20,
-        "coefHauteurRect": 21
+        "score": 100000000,
+        "coefNbLigneSupp": 79,
+        "coefCasePerdu": 41,
+        "coefCaseManquantes": 169,
+        "coefHauteurRect": 75
     },
     {
-        "avgScore": 2580.8,
-        "coefNbLigneSupp": 27,
-        "coefCasePerdu": 7,
-        "coefCaseManquantes": 14,
-        "coefHauteurRect": 19
+        "score": 100000000,
+        "coefNbLigneSupp": 73,
+        "coefCasePerdu": 31,
+        "coefCaseManquantes": 157,
+        "coefHauteurRect": 75
     },
     {
-        "avgScore": 2508.8,
-        "coefNbLigneSupp": 26,
-        "coefCasePerdu": 10,
-        "coefCaseManquantes": 18,
-        "coefHauteurRect": 20
+        "score": 100000000,
+        "coefNbLigneSupp": 92,
+        "coefCasePerdu": 15,
+        "coefCaseManquantes": 161,
+        "coefHauteurRect": 75
     },
     {
-        "avgScore": 2471.2,
-        "coefNbLigneSupp": 25,
-        "coefCasePerdu": 11,
-        "coefCaseManquantes": 18,
-        "coefHauteurRect": 20
+        "score": 100000000,
+        "coefNbLigneSupp": 65,
+        "coefCasePerdu": 15,
+        "coefCaseManquantes": 145,
+        "coefHauteurRect": 63
     },
     {
-        "avgScore": 2467.2,
-        "coefNbLigneSupp": 24,
-        "coefCasePerdu": 7,
-        "coefCaseManquantes": 16,
-        "coefHauteurRect": 16
+        "score": 100000000,
+        "coefNbLigneSupp": 75,
+        "coefCasePerdu": 36,
+        "coefCaseManquantes": 171,
+        "coefHauteurRect": 84
     },
     {
-        "avgScore": 2448.8,
-        "coefNbLigneSupp": 21,
-        "coefCasePerdu": 6,
-        "coefCaseManquantes": 14,
-        "coefHauteurRect": 16
+        "score": 100000000,
+        "coefNbLigneSupp": 81,
+        "coefCasePerdu": 46,
+        "coefCaseManquantes": 166,
+        "coefHauteurRect": 84
     },
     {
-        "avgScore": 2443.2,
-        "coefNbLigneSupp": 26,
-        "coefCasePerdu": 8,
-        "coefCaseManquantes": 20,
-        "coefHauteurRect": 20
+        "score": 100000000,
+        "coefNbLigneSupp": 83,
+        "coefCasePerdu": 32,
+        "coefCaseManquantes": 146,
+        "coefHauteurRect": 65
     },
     {
-        "avgScore": 2389.6,
-        "coefNbLigneSupp": 21,
-        "coefCasePerdu": 7,
-        "coefCaseManquantes": 18,
-        "coefHauteurRect": 21
+        "score": 100000000,
+        "coefNbLigneSupp": 84,
+        "coefCasePerdu": 39,
+        "coefCaseManquantes": 147,
+        "coefHauteurRect": 69
     },
     {
-        "avgScore": 2380.8,
-        "coefNbLigneSupp": 21,
-        "coefCasePerdu": 8,
-        "coefCaseManquantes": 14,
-        "coefHauteurRect": 17
+        "score": 119780,
+        "coefNbLigneSupp": 86,
+        "coefCasePerdu": 19,
+        "coefCaseManquantes": 153,
+        "coefHauteurRect": 74
     },
     {
-        "avgScore": 2380.8,
-        "coefNbLigneSupp": 21,
-        "coefCasePerdu": 7,
-        "coefCaseManquantes": 18,
-        "coefHauteurRect": 19
+        "score": 118320,
+        "coefNbLigneSupp": 89,
+        "coefCasePerdu": 43,
+        "coefCaseManquantes": 153,
+        "coefHauteurRect": 75
     },
     {
-        "avgScore": 2344.8,
-        "coefNbLigneSupp": 24,
-        "coefCasePerdu": 9,
-        "coefCaseManquantes": 17,
-        "coefHauteurRect": 19
+        "score": 109820,
+        "coefNbLigneSupp": 64,
+        "coefCasePerdu": 40,
+        "coefCaseManquantes": 174,
+        "coefHauteurRect": 68
     },
     {
-        "avgScore": 2341.6,
-        "coefNbLigneSupp": 27,
-        "coefCasePerdu": 12,
-        "coefCaseManquantes": 20,
-        "coefHauteurRect": 22
+        "score": 108560,
+        "coefNbLigneSupp": 93,
+        "coefCasePerdu": 15,
+        "coefCaseManquantes": 149,
+        "coefHauteurRect": 77
     },
     {
-        "avgScore": 2303.2,
-        "coefNbLigneSupp": 26,
-        "coefCasePerdu": 7,
-        "coefCaseManquantes": 14,
-        "coefHauteurRect": 20
+        "score": 77980,
+        "coefNbLigneSupp": 92,
+        "coefCasePerdu": 36,
+        "coefCaseManquantes": 161,
+        "coefHauteurRect": 75
     },
     {
-        "avgScore": 2301.6,
-        "coefNbLigneSupp": 23,
-        "coefCasePerdu": 8,
-        "coefCaseManquantes": 14,
-        "coefHauteurRect": 21
+        "score": 75120,
+        "coefNbLigneSupp": 71,
+        "coefCasePerdu": 40,
+        "coefCaseManquantes": 170,
+        "coefHauteurRect": 56
     },
     {
-        "avgScore": 2297.6,
-        "coefNbLigneSupp": 25,
-        "coefCasePerdu": 9,
-        "coefCaseManquantes": 15,
-        "coefHauteurRect": 17
+        "score": 74000,
+        "coefNbLigneSupp": 73,
+        "coefCasePerdu": 22,
+        "coefCaseManquantes": 170,
+        "coefHauteurRect": 58
     },
     {
-        "avgScore": 2254.4,
-        "coefNbLigneSupp": 21,
-        "coefCasePerdu": 8,
-        "coefCaseManquantes": 19,
-        "coefHauteurRect": 21
+        "score": 58540,
+        "coefNbLigneSupp": 87,
+        "coefCasePerdu": 18,
+        "coefCaseManquantes": 176,
+        "coefHauteurRect": 64
     },
     {
-        "avgScore": 2216.0,
-        "coefNbLigneSupp": 22,
-        "coefCasePerdu": 11,
-        "coefCaseManquantes": 14,
-        "coefHauteurRect": 22
+        "score": 51180,
+        "coefNbLigneSupp": 83,
+        "coefCasePerdu": 37,
+        "coefCaseManquantes": 162,
+        "coefHauteurRect": 83
     },
     {
-        "avgScore": 2149.6,
-        "coefNbLigneSupp": 26,
-        "coefCasePerdu": 12,
-        "coefCaseManquantes": 18,
-        "coefHauteurRect": 17
+        "score": 49520,
+        "coefNbLigneSupp": 76,
+        "coefCasePerdu": 27,
+        "coefCaseManquantes": 167,
+        "coefHauteurRect": 65
     },
     {
-        "avgScore": 2117.6,
-        "coefNbLigneSupp": 23,
-        "coefCasePerdu": 9,
-        "coefCaseManquantes": 15,
-        "coefHauteurRect": 18
+        "score": 28280,
+        "coefNbLigneSupp": 81,
+        "coefCasePerdu": 24,
+        "coefCaseManquantes": 155,
+        "coefHauteurRect": 58
     },
     {
-        "avgScore": 2023.2,
-        "coefNbLigneSupp": 25,
-        "coefCasePerdu": 10,
-        "coefCaseManquantes": 19,
-        "coefHauteurRect": 20
+        "score": 28280,
+        "coefNbLigneSupp": 88,
+        "coefCasePerdu": 20,
+        "coefCaseManquantes": 148,
+        "coefHauteurRect": 56
     },
     {
-        "avgScore": 1965.6,
-        "coefNbLigneSupp": 24,
-        "coefCasePerdu": 7,
-        "coefCaseManquantes": 17,
-        "coefHauteurRect": 20
+        "score": 28280,
+        "coefNbLigneSupp": 80,
+        "coefCasePerdu": 27,
+        "coefCaseManquantes": 171,
+        "coefHauteurRect": 64
     },
     {
-        "avgScore": 1812.8,
-        "coefNbLigneSupp": 21,
-        "coefCasePerdu": 8,
-        "coefCaseManquantes": 20,
-        "coefHauteurRect": 18
+        "score": 27760,
+        "coefNbLigneSupp": 80,
+        "coefCasePerdu": 35,
+        "coefCaseManquantes": 170,
+        "coefHauteurRect": 56
     }
 ]
