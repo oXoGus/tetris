@@ -278,6 +278,11 @@ def main(settings):
                                 varPolyArbitraires = True
                             else:
                                 varPolyArbitraires = False 
+
+                            if 'IA' in save['varActiv']:
+                                bonusIA = True
+                            else:
+                                bonusIA = False
                             
 
                             # on appel les deux fonction avec la save en param pour récuperer la grille, les couleurs, les poly...
@@ -637,7 +642,18 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
         while isPolyMaxY(grid, poly, x, maxY, ori) == False:
             maxY += 1
 
-        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+        if bonusIA:
+
+            # copie profonde de la grille 
+            nGrid = list()
+            nGrid = [l[:] for l in grid]
+
+            # on trouve les meileur coord pour les 2 poly suivant
+            objX, objOri = findBestPolyPlace(nGrid, poly, nextPoly, 4, 1, ori, coefNbLigneSupp=83, coefCasePerdu=19, coefCaseManquantes=165, coefHauteurRect=67)
+            mooveLst = genMooveList(x, ori, objX, objOri)
+
+
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
 
         # la pièce est déja activé
         pieceActivated = 1
@@ -1959,10 +1975,10 @@ def createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPo
             f.write('varModePourrisement ')
         
         if bonusElimCoul:
-            f.write('elimCoul')
+            f.write('elimCoul ')
         
         if bonusIA:
-            f.write('IA')
+            f.write('IA ')
 
         f.write('\n')
 
@@ -2177,18 +2193,6 @@ def drawSaveData(save):
     # pour charger cette save
     tetriTexteCentre(largeurFenetre//2, hauteurFenetre*0.9, "Appuyer sur espace pour charger cette save", taille=12)
 
-
-    # les fleches pour 
-
-    
-
-def loadSave(save):
-    """ charge une partie sauvegardé """
-
-    
-
-def drawPolyUtils(polyLst):
-    """dessine la liste des poly utilisés"""
 
 
 
