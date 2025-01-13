@@ -22,7 +22,7 @@ if platform.system() == 'Linux':
 
     resolution = subprocess.Popen("xrandr | grep \\* | cut -d' ' -f4", shell=True, stdout=subprocess.PIPE).communicate()[0]
 
-    print(resolution)
+    #print(resolution)
 
     # cela renvoie : b'2560x1600\n'
 
@@ -33,7 +33,7 @@ if platform.system() == 'Linux':
     resolution = resolution[:-1].decode()
 
     # on obtient bien 2560x1600
-    print(resolution)
+    #print(resolution)
 
     largeurScreen = int(resolution.split('x')[0])
 
@@ -66,7 +66,7 @@ polyLst = genPolyominoLst(n=4)
 # génération des couleurs pour chaque poly 
 squareColors = genColorRGBLst(len(polyLst))
 
-def main():
+def main(settings):
     # initialisation des varible pour le menu
     fermer = 0
     jouer=["Jouer", "Charger une partie", "Quitter"]
@@ -146,7 +146,7 @@ def main():
         while flag == 'retry':
 
             # on relance une partie avec les memes variantes activés
-            flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul)
+            flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, settings)
 
             if flag == 'Quitte':
                 return
@@ -248,6 +248,9 @@ def main():
                             flag = 'menu'
                             continue
                         
+                        elif flag == 'Quitte':
+                            return 
+                        
                         # on charge une partie 
                         else:
                             save = flag
@@ -271,12 +274,23 @@ def main():
                             else:
                                 varPolyArbitraires = False 
 
+                            if 'elimCouleur' in save['varActiv']:
+                                bonusElimCoul = True
+                            else:
+                                bonusElimCoul = False 
+
+                            if 'IA' in save['varActiv']:
+                                bonusIA = True
+                            else:
+                                bonusIA = False 
+                            
+
                             # on appel les deux fonction avec la save en param pour récuperer la grille, les couleurs, les poly...
                             if 'varMode2joueurs' in save['varActiv']:
-                                flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, save)
+                                flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, settings, save)
 
                             else:
-                                flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, save)
+                                flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, settings, save)
 
                             # la fenêtre est deja fermer on ferme le programme
                             if flag == 'Quitte':
@@ -439,7 +453,7 @@ def main():
                                     
                                     # on enregistre la touche
                                     key=touche(ev)
-                                    print(key)
+                                    #print(key)
                                     
 
                                     if key=='Up' : 
@@ -475,7 +489,6 @@ def main():
                                         elif saisie == 2:
                                             bonusElimCoul = not bonusElimCoul
                                     
-
                                         elif saisie == 3:
                                             varMode2joueurs = not varMode2joueurs
 
@@ -490,10 +503,10 @@ def main():
                                         
                                         if varMode2joueurs==True : 
                                         
-                                            flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul)
+                                            flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, settings)
                                             
                                             while flag == 'retry':
-                                                flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul)
+                                                flag = gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, settings)
                                         
 
                                             if flag == 'menu':
@@ -508,7 +521,7 @@ def main():
                                             
                                         else : 
                                             #  on démare la partie avec les variantes
-                                            flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul)
+                                            flag = game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, settings)
 
                                             if flag == 'Quitte':
                                                 return
@@ -532,6 +545,7 @@ def main():
                         if fermer ==  True:
                             break
                     
+                    # Quitter
                     elif choix == 2 : 
 
                         # on ferme la fenêtre puis arrête le programme
@@ -546,13 +560,13 @@ def main():
 
 
 
-def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, save=None):
+def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bonusElimCoul, settings, save=None):
     """une partie de tetris
     
     prend en argument les variantes activées
     renvoie un flag pour qui sera traité par le menu
     """
-    
+
     # on efface le menu
     efface_tout()
     
@@ -584,9 +598,10 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
             # génération des couleurs pour chaque poly 
             squareColors = genColorRGBLst(len(polyLst))
         else:
+
             # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
             # n =  4 pour le mode de jeu classique 
-            polyLst = genPolyominoLst(n=4)
+            polyLst = genPolyominoLst(n=settings['taillePoly'])
 
             # génération des couleurs pour chaque poly 
             squareColors = genColorRGBLst(len(polyLst))
@@ -627,13 +642,25 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
         while isPolyMaxY(grid, poly, x, maxY, ori) == False:
             maxY += 1
 
-        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
+        if bonusIA:
+
+            # copie profonde de la grille 
+            nGrid = list()
+            nGrid = [l[:] for l in grid]
+
+            # on trouve les meileur coord pour les 2 poly suivant
+            objX, objOri = findBestPolyPlace(nGrid, poly, nextPoly, 4, 1, ori, coefNbLigneSupp=83, coefCasePerdu=19, coefCaseManquantes=165, coefHauteurRect=67)
+            mooveLst = genMooveList(x, ori, objX, objOri)
+
+
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
 
         # la pièce est déja activé
         pieceActivated = 1
 
         desactivateCounter = 0
 
+        
 
 
     # intialisation du nombre totale de ligne supprimer pour calculer le niveau de difficulté 
@@ -693,6 +720,9 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
 
 
             else : 
+
+                if bonusElimCoul:
+                    score=suppcolor(grid, score, poly, ori, x, y, varPtsDiffSelect, nbLignesSuppTotale)
 
                 # la pièce suivante devient la pièce active et on génère la pièce suivante 
                 poly = nextPoly
@@ -758,7 +788,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
 
             # pour le mode pourrissement 
             if varModePourrisement:
-                if time.perf_counter() - globalTimer > temps(nbLignesSuppTotale) * 15:
+                if time.perf_counter() - globalTimer > temps(nbLignesSuppTotale, settings['vInit']) * 15:
                     pourrissement(grid, polyLst)
                     globalTimer = time.perf_counter()
                     
@@ -771,7 +801,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
             timer = time.perf_counter()
         
         # variable de difficulté avec la fonction temps()
-        if time.perf_counter() - timer > temps(nbLignesSuppTotale):
+        if time.perf_counter() - timer > temps(nbLignesSuppTotale, settings['vInit']):
             #print(nbLignesSuppTotale, temps(nbLignesSuppTotale))
             
 
@@ -809,7 +839,10 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
         if bonusIA: 
             # on retire la touche a 'actionner'
             moove = mooveLst.pop(0)
-            #time.sleep(0.1)
+
+            if settings['vIA'] is not None:
+                time.sleep(settings['vIA'])
+
             grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressed(moove['key'], grid, poly, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly, score, squareColors, nbLignesSuppTotale)
             
 
@@ -827,7 +860,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
             if key == 'Quitte':
 
                 # test de sauvegarde automatique
-                createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPoly, varPtsDiffSelect, varPolyArbitraires, varModePourrisement, varMode2joueurs = False)
+                createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPoly, varPtsDiffSelect, varPolyArbitraires, varModePourrisement, varMode2joueurs = False, bonusIA=bonusIA, bonusElimCoul=bonusElimCoul)
                 ferme_fenetre()
 
                 # on met le flag a 'Quitte' pour ne pas refaire le menu
@@ -844,7 +877,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
                 elif key == 'Escape':
                     flag = menuPause()
 
-                    print(flag)
+                    #print(flag)
 
                     if flag == 'reprendre':
 
@@ -853,7 +886,7 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
 
                     # save&quit
                     else:
-                        createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPoly, varPtsDiffSelect, varPolyArbitraires, varModePourrisement, varMode2joueurs = False)
+                        createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPoly, varPtsDiffSelect, varPolyArbitraires, varModePourrisement, varMode2joueurs = False, bonusIA=bonusIA, bonusElimCoul=bonusElimCoul)
                         ferme_fenetre()
                         
                         return 'Quitte'
@@ -1455,7 +1488,7 @@ def drawScore(score) :
     tetriTexte(xPose, yPose ,str(score), "black", 14)
 
 
-def temps(nbLignesSuppTotale):
+def temps(nbLignesSuppTotale, vInit):
     """renvoie le temps d'attente avant que la pièce tombe toute seule"""
     
     # courbe de difficulté linéaire
@@ -1467,12 +1500,12 @@ def temps(nbLignesSuppTotale):
     # on abaisse la difficulté de 0.1 seconde toutes les 10 lignes supprimés
 
     # on empêche que on renvoie un temps négatif
-    if 1 - 0.1*nbLignesSuppTotale > 0:
-        return 1 - 0.1*nbLignesSuppTotale 
+    if vInit - 0.1*nbLignesSuppTotale > 0:
+        return vInit - 0.1*nbLignesSuppTotale 
     else:
 
         # on renvoie le temps minimum
-        return 0.1
+        return 0.05
 
 
 
@@ -1838,7 +1871,7 @@ def menuPause():
     
 
 
-def createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPoly, varPtsDiffSelect, varPolyArbitraires, varModePourrisement, varMode2joueurs):
+def createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPoly, varPtsDiffSelect, varPolyArbitraires, varModePourrisement, varMode2joueurs, bonusIA, bonusElimCoul):
     """sauvegarde une partie avec la grille, les pièces, les couleurs, le score, le poly (x, y, ori) et le nextpoly"""
 
     # on supprime l'ombre de la la pièce active pour ne pas a gérer les -1 sur la grid
@@ -1941,6 +1974,12 @@ def createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPo
 
         if varModePourrisement == True:
             f.write('varModePourrisement ')
+        
+        if bonusElimCoul:
+            f.write('elimCouleur ')
+        
+        if bonusIA:
+            f.write('IA ')
 
         f.write('\n')
 
@@ -1954,7 +1993,7 @@ def saveMenu():
     
     # on récup les données formaté 
     saves = savesDataToDict()
-
+    
     # partie affichage
     efface_tout()
 
@@ -1964,9 +2003,46 @@ def saveMenu():
     
     # aucune save a montrer
     if saves == []:
-        tetriTexteCentre(largeurFenetre//2, hauteurFenetre//2, "aucune sauvegardes a charger")
+        tetriTexteCentre(largeurFenetre//2, hauteurFenetre//2, "aucune sauvegardes a charger", taille=18)
 
         # on attend que le joueur quitte 
+
+        # gestion des touches 
+
+        while True:
+
+            # partie gestions des input 
+        
+            # on met a jour le fenêtre pour récuperer les touches pressées
+            mise_a_jour()
+            
+            # recuperation de la touche 
+            ev=donne_ev() 
+
+            # si une touche a été pressé 
+            if ev is not None : 
+
+                # on enregistre son type
+                key = type_ev(ev)
+
+                # si l'utilisateur veut fermer la fenêtre
+                if key == 'Quitte':
+
+                    # on ferme la fenre et on sort de la boucle de jeu ce qui revien a arrêter le programme
+                    ferme_fenetre()                
+                    return 'Quitte'
+                
+                # si la touche est une touche de clavier
+                elif key == 'Touche':
+                    
+                    # on enregistre la touche
+                    key = touche(ev)
+
+                    # la touche echape
+                    if key == 'Escape':
+                        
+                        return key
+
 
     else:
         
@@ -2210,5 +2286,141 @@ def drawSaveGrid(grid, sizeSquareGrid, squareColors):
                     rectangle(xGrid, yGrid, xGrid + sizeSquareGrid, yGrid + sizeSquareGrid, "black", squareColors[n], 3)
 
 
+def suppcolor (grid, score, poly, ori, x, y, varPtsDiffSelect, nbLignesSuppTotale) :
+    """Supprimer les pieces lorsqu'elles sont de la même couleur et qu'elles ont au mininum deux points de contact"""
+    #on cherche le point de contact à y+len(poly[ori]) soit la fin de 
+    
+    cmpc=0
+    contacts=set()
+    piece=set()
+    sameColor=set()
+    color=0
+    for i in range(len(poly[ori])) : 
+        for j in range(len(poly[ori][i])): 
+
+            # on ne met pas les case vide 
+            if poly[ori][i][j]!=0 : 
+                piece.add((y+i,x+j))
+                color=grid[y+i][x+j]
+
+            # case de meme couleur a proximité
+                for coords in searchGrid(grid, y+i, x+j) : 
+                    contacts.add(coords)
+    
+    nContacte = len(contacts) - len(piece)
+    #print(nContacte, "color", grid[y][x])
+
+    if nContacte >1 and color!=0: 
+
+        sameColor=cases_accessibles(grid, y, x, color, sameColor)
+        
+        for s in sameColor : 
+
+            i=s[0]
+            j=s[1]
+            grid[i][j]=0
+            cmpc+=1
+
+
+    if varPtsDiffSelect == True:
+        return pointsDiffColor(score, cmpc, nbLignesSuppTotale)
+    else:
+        return pointsColor(score, cmpc)
+
+
+def pointsColor (score, cmpc) : 
+    """Lorsque le nombre de lignes supprimées est égal à une valeur, un certain nombre de points est ajouté"""
+    
+    #fonction qui va ajouter les points selon le nombre de lignes supprimées 
+    score+=cmpc*5
+    return score 
+
+def pointsDiffColor(score, cmpc, nbLignesSuppTotale) : 
+    """fonction a utiliser quand la variante des points en fonction du niveau est sélectionner"""
+    
+    # fonction qui va ajouter les points selon le nombre de lignes supprimées 
+    # nbLignesSuppTotale//10 représente la difficulté
+
+    # on commence avec une difficulté de 1 pour ne pas avoir de score = 0
+    difficulty = 1 + int(nbLignesSuppTotale//10/2)
+    score+=cmpc*difficulty
+    return score 
+        
+def searchGrid (grid, i, j) : 
+    lst=set()
+
+    lst.add((i, j))
+
+    # en bas 
+    if i+1<len(grid) and grid[i+1][j]==grid[i][j] :
+        lst.add((i+1, j))
+
+    # en haut
+    if i-1>=0 and grid[i-1][j]==grid[i][j] :
+        lst.add((i-1, j))
+
+    # a droite
+    if j+1<len(grid[i]) and grid[i][j+1]==grid[i][j] :
+        lst.add((i, j+1))
+        
+    # a gauche
+    if j-1>=0 and grid[i][j-1]==grid[i][j] :
+        lst.add((i, j-1))
+        
+    return lst
+    
+def cases_accessibles(M, i, j, color, cases_visitees):
+
+    cases_visitees.add((i, j))
+
+    if j+1<len(M[i]) and M[i][j+1]==color and (i,j+1) not in cases_visitees:
+        cases_accessibles(M, i, j+1, color, cases_visitees)
+        
+    if i+1<len(M) and M[i+1][j]==color and (i+1,j) not in cases_visitees:
+        cases_accessibles(M, i+1, j, color, cases_visitees)
+        
+    if j-1>=0 and j-1<len(M[i]) and M[i][j-1]==color and (i,j-1) not in cases_visitees:
+        cases_accessibles(M, i, j-1, color, cases_visitees)
+        
+    if i-1>=0 and j<len(M[i]) and M[i-1][j]==color and (i-1,j) not in cases_visitees:
+        cases_accessibles(M, i-1, j, color, cases_visitees)
+    return cases_visitees  
+
+
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    # gestion des param 
+    argparser = argparse.ArgumentParser()
+
+    settings = {
+        'vInit': 1,
+        'taillePoly': 4,
+        'vIA': None
+    }
+
+    # on créer les arguments 
+    argparser.add_argument('-vInit')
+    argparser.add_argument('-taillePoly')
+    argparser.add_argument('-vIA')
+
+    arg = argparser.parse_args()
+
+    if arg.vInit is not None:
+        settings['vInit'] = float(arg.vInit)
+
+    if arg.taillePoly is not None:
+        settings['taillePoly'] = int(arg.taillePoly)
+
+    if arg.vIA is not None:
+        settings['vIA'] = float(arg.vIA)
+
+    main(settings)
+
+    
+
+
+
+    
+    
+    

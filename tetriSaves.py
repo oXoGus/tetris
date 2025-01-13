@@ -140,7 +140,7 @@ def savesDataToDict():
         # savegarde des donnée dans la liste des saves
         savesDictLst.append(dicoSave)
 
-    print(savesDictLst[0])
+    #print(savesDictLst[0])
 
     return savesDictLst
 

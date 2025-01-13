@@ -1,5 +1,5 @@
 from fltk import *
-from tetriV2 import numYSquare, numXSquare, largeurScreen, hauteurScreen, polyLst, genColorRGBLst, isColision, isPolyMaxY, spawnPiece, drawPiece, temps, points, rotatePiece, downLignes, pointsEnFonctionDifficulte, rectangleOmbre, drawCurseur, tetriTexteCentre
+from tetriV2 import numYSquare, numXSquare, largeurScreen, hauteurScreen, polyLst, genColorRGBLst, isColision, isPolyMaxY, spawnPiece, drawPiece, temps, points, rotatePiece, downLignes, pointsEnFonctionDifficulte, rectangleOmbre, drawCurseur, tetriTexteCentre, suppcolor
 from tetriGenPolyArbi import *
 from tetriFont import *
 from tetriGenPoly import *
@@ -15,7 +15,7 @@ sizeSquareGrid = int(0.73*hauteurScreen/numYSquare)
 largeurFenetre = largeurScreen
 hauteurFenetre = hauteurScreen
 
-def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrissement, bonusIA, bonusElimCoul, save = None):
+def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrissement, bonusIA, bonusElimCoul, settings, save = None):
     """une partie de tertis
     
     prend en argument les variantes activées
@@ -64,7 +64,7 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
     else:
         # dans une autre liste, a l'index de la piece on insert une autre liste contenant toute les rotation de cette piece
         # n =  4 pour le mode de jeu classique 
-        polyLst = genPolyominoLst(n=4)
+        polyLst = genPolyominoLst(n=settings['taillePoly'])
 
         # génération des couleurs pour chaque poly 
         squareColors = genColorRGBLst(len(polyLst))
@@ -192,21 +192,45 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                     # on choisit aléatoirement la nouvelle pièce 
                     poly1 = polyLst[randrange(0, len(polyLst))]
 
+                    # on change la couleur du poly...
+                    col = randrange(1, len(polyLst))
+                    for polyRota in poly1:
+
+                        for i in range(len(polyRota)):
+                            for j in range(len(polyRota[0])):
+                                
+                                if polyRota[i][j] != 0:
+                                    polyRota[i][j] = col
+
                     # on choisit aléatoirement le prochaine pièce
                     nextPoly1 = polyLst[randrange(0, len(polyLst))]
-                else : 
-                    
-                    #condition de défaite 
-                    if maxY < 4:
-                        joueurLose = joueurOn
-                        break
 
+                    # on change la couleur du poly...
+                    col = randrange(1, len(polyLst))
+                    for polyRota in nextPoly1:
+
+                        for i in range(len(polyRota)):
+                            for j in range(len(polyRota[0])):
+                                
+                                if polyRota[i][j] != 0:
+                                    polyRota[i][j] = col
+                else : 
 
                     # la pièce suivante devient la pièce active et on génère la pièce suivante 
                     poly1 = nextPoly1
 
                     # on choisit aléatoirement la nouvelle pièce 
                     nextPoly1 = polyLst[randrange(0, len(polyLst))]
+
+                    # on change la couleur du poly...
+                    col = randrange(1, len(polyLst))
+                    for polyRota in nextPoly1:
+
+                        for i in range(len(polyRota)):
+                            for j in range(len(polyRota[0])):
+                                
+                                if polyRota[i][j] != 0:
+                                    polyRota[i][j] = col
 
                 # on initialise l'oriantation de la pièce a 0
                 ori = 0
@@ -225,25 +249,9 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                     joueurLose = joueurOn
                     break
 
-
-                if bonusIA:
-
-                    # copie profonde de la grille 
-                    nGrid1 = list()
-                    nGrid1 = [l[:] for l in grid1]
-
-                    # on trouve les meileur coord pour les 2 poly suivant
-                    objX, objOri = findBestPolyPlace(nGrid1, poly1, nextPoly1, x, y, ori, coefNbLigneSupp=118, coefCasePerdu=21, coefCaseManquantes=101, coefHauteurRect=34)
-                
-                    # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
-                    grid1, poly1, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid1, poly1, ori, change)
-
-                    mooveLst = genMooveList(x, ori, objX, objOri)
-
-                else:
                     
-                    # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
-                    grid1, poly1, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid1, poly1, ori, change)
+                # avec la fonction spawnPiece() qui prend en argument le numéro de la piece que l'on génère aléatoirement 
+                grid1, poly1, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid1, poly1, ori, change)
 
                 pieceActivated = 1
 
@@ -257,7 +265,7 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                 timer = time.perf_counter()
             
             # variable de difficulté avec la fonction temps()
-            if time.perf_counter() - timer > temps(nbLignesSuppTotaleJ1):
+            if time.perf_counter() - timer > temps(nbLignesSuppTotaleJ1, settings['vInit']):
                 #print(nbLignesSuppTotale, temps(nbLignesSuppTotale))
                 
                 # gestion du délais pour desactiver la piece
@@ -292,14 +300,6 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                 
                 updateGridModeDeuxJoueurs(grid1, nextPoly1, score1, squareColors, joueurOn, nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
                 change = 0
-
-
-            if bonusIA: 
-                # on retire la touche a 'actionner'
-                moove = mooveLst.pop(0)
-                time.sleep(0.1)
-                grid1, poly1, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressedModeDeuxJoueurs(moove['key'], grid1, grid2, poly1, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly1, score1, score2, squareColors, joueurOn, joueurOff, nbLignesSuppTotaleJ1, nbLignesSuppTotaleJ2)
-            
             
 
             #### on gère les touches ####
@@ -324,7 +324,7 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                     key = touche(ev)
 
                     # si la touche est utile pour le jeu
-                    if (key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left') and not bonusIA:
+                    if key == 'space' or key == 'Up' or key == 'Down' or key == 'Right' or key == 'Left':
                         grid1, poly1, prevX, prevY, x, y, ori, change, maxY, pieceActivated = keyPressedModeDeuxJoueurs(key, grid1, grid2, poly1, prevX, prevY, x, y, ori, change, maxY, pieceActivated, nextPoly1, score1, score2, squareColors, joueurOn, joueurOff, nbLignesSuppTotaleJ1, nbLignesSuppTotaleJ2)
                 else:
                     pass
@@ -332,21 +332,31 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
         
             if pieceActivated==0 : 
 
+                #condition de défaite 
+                if maxY < 4:
+                    joueurLose = joueurOn
+                    break
+
                 score1, nbLignesSuppTotaleJ1, nbLignesSupp = suppLignesModeDeuxJoueurs(grid1, score1, nbLignesSuppTotaleJ1, varPtsDiffSelect)
                 
+                if bonusElimCoul:
+                    score1=suppcolor(grid1, score1, poly1, ori, x, y, varPtsDiffSelect, nbLignesSuppTotaleJ1)
+
+
                 # si des lignes ont été supp
-                if nbLignesSupp != 0 : 
+                if nbLignesSupp>1 : 
 
                     # on affiche la grille avec la ligne pleinne en moins maintenant 
                     # puisque on sort directement de cette boucle while pour aller 
                     # dans la boucle de l'autre joueur
                     updateGridModeDeuxJoueurs(grid1, nextPoly1, score1, squareColors, joueurOn, nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
 
-                    grid2=ajoutLignesModeDeuxJoueurs(grid2, nbLignesSupp)
+                    # n - 1 lignes
+                    grid2=ajoutLignesModeDeuxJoueurs(grid2, nbLignesSupp-1)
                 
                  # pour le mode pourrissement 
                 if varModePourrissement:
-                    if time.perf_counter() - globalTimer1 > temps(nbLignesSuppTotaleJ1) * 15:
+                    if time.perf_counter() - globalTimer1 > temps(nbLignesSuppTotaleJ1, settings['vInit']) * 15:
                         pourrissement(grid1, polyLst)
                         globalTimer1 = time.perf_counter()
                         
@@ -383,11 +393,6 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                     nextPoly2 = nextPoly1
                     
                 else : 
-
-                    #condition de défaite 
-                    if maxY < 4:
-                        joueurLose = joueurOn
-                        break
                     
                     # la pièce suivante devient la pièce active et on génère la pièce suivante 
                     poly2 = nextPoly2
@@ -445,7 +450,7 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
                 timer = time.perf_counter()
             
             # variable de difficulté avec la fonction temps()
-            if time.perf_counter() - timer > temps(nbLignesSuppTotaleJ2):
+            if time.perf_counter() - timer > temps(nbLignesSuppTotaleJ2, settings['vInit']):
                 #print(nbLignesSuppTotale, temps(nbLignesSuppTotale))
                 
                 # gestion du délais pour desactiver la piece
@@ -523,20 +528,29 @@ def gameModeDeuxJoueurs(varPtsDiffSelect, varPolyArbitraires, varModePourrisseme
             
             if pieceActivated==0 : 
 
+                #condition de défaite 
+                if maxY < 4:
+                    joueurLose = joueurOn
+                    break
+
+                if bonusElimCoul:
+                    score2=suppcolor(grid2, score2, poly2, ori, x, y, varPtsDiffSelect, nbLignesSuppTotaleJ2)
+
+
                 score2, nbLignesSuppTotaleJ2, nbLignesSupp = suppLignesModeDeuxJoueurs(grid2, score2, nbLignesSuppTotaleJ2, varPtsDiffSelect)
 
-                if nbLignesSupp!=0 : 
+                if nbLignesSupp>1: 
 
                     # on affiche la grille avec la ligne pleinne en moins maintenant 
                     # puisque on sort directement de cette boucle while pour aller 
                     # dans la boucle de l'autre joueur
                     updateGridModeDeuxJoueurs(grid2, nextPoly2, score2, squareColors, joueurOn, nbLignesSuppTotaleJ1//10, nbLignesSuppTotaleJ2//10)
 
-                    grid1 = ajoutLignesModeDeuxJoueurs(grid1, nbLignesSupp)
+                    grid1 = ajoutLignesModeDeuxJoueurs(grid1, nbLignesSupp-1)
                 
                 # pour le mode pourrissement 
                 if varModePourrissement:
-                    if time.perf_counter() - globalTimer2 > temps(nbLignesSuppTotaleJ2) * 15:
+                    if time.perf_counter() - globalTimer2 > temps(nbLignesSuppTotaleJ2, settings['vInit']) * 15:
                         pourrissement(grid2, polyLst)
                         globalTimer2 = time.perf_counter()
                         

@@ -1098,7 +1098,7 @@ def drawScore(score) :
     tetriTexte(xPose, yPose ,str(score), "black", 14)
 
 
-def temps(nbLignesSuppTotale):
+def temps(nbLignesSuppTotale, vInit):
     """renvoie le temps d'attente avant que la pièce tombe toute seule"""
     
     # courbe de difficulté linéaire
@@ -1110,12 +1110,12 @@ def temps(nbLignesSuppTotale):
     # on abaisse la difficulté de 0.1 seconde toutes les 10 lignes supprimés
 
     # on empêche que on renvoie un temps négatif
-    if 1 - 0.1*nbLignesSuppTotale > 0:
-        return 1 - 0.1*nbLignesSuppTotale 
+    if vInit - 0.1*nbLignesSuppTotale > 0:
+        return vInit - 0.1*nbLignesSuppTotale 
     else:
 
         # on renvoie le temps minimum
-        return 0.1
+        return 0.05
 
 
 def isColision(grid, poly, x, y, ori):
