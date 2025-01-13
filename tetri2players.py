@@ -1,5 +1,5 @@
 from fltk import *
-from tetriV2 import numYSquare, numXSquare, largeurScreen, hauteurScreen, polyLst, genColorRGBLst, isColision, isPolyMaxY, spawnPiece, drawPiece, temps, points, rotatePiece, downLignes, pointsEnFonctionDifficulte, rectangleOmbre, drawCurseur, tetriTexteCentre, suppcolor
+from tetriV3 import numYSquare, numXSquare, largeurScreen, hauteurScreen, polyLst, genColorRGBLst, isColision, isPolyMaxY, spawnPiece, drawPiece, temps, points, rotatePiece, downLignes, pointsEnFonctionDifficulte, rectangleOmbre, drawCurseur, tetriTexteCentre, suppcolor
 from tetriGenPolyArbi import *
 from tetriFont import *
 from tetriGenPoly import *

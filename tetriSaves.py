@@ -195,8 +195,6 @@ def lstToStr(lst):
         
     return s
         
-        
-        
 
 def polyLstToStr(polyLst):
     # on sauvegarde les pièces utilisés

@@ -1,5 +1,5 @@
 from random import randrange
-from tetriV2 import erasePiece
+from tetriV3 import erasePiece
 
 def pourrissement (grid, polyLst) : 
 

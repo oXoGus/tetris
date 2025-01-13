@@ -1,4 +1,4 @@
-from tetriV2 import *
+from tetriV3 import *
 
 
 def tetriBot(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, coefNbLigneSupp=14, coefCasePerdu=2, coefCaseManquantes=26, coefHauteurRect=19):

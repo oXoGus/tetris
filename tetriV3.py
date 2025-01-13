@@ -274,15 +274,10 @@ def main(settings):
                             else:
                                 varPolyArbitraires = False 
 
-                            if 'elimCouleur' in save['varActiv']:
-                                bonusElimCoul = True
+                            if 'elimCoul' in save['varActiv']:
+                                varPolyArbitraires = True
                             else:
-                                bonusElimCoul = False 
-
-                            if 'IA' in save['varActiv']:
-                                bonusIA = True
-                            else:
-                                bonusIA = False 
+                                varPolyArbitraires = False 
                             
 
                             # on appel les deux fonction avec la save en param pour récuperer la grille, les couleurs, les poly...
@@ -304,8 +299,8 @@ def main(settings):
                     elif choix==0 :
 
                         # liste contentant les tetriTextes pour les variantes
-                        variantes = ["Score en fonction \nde la difficulte", "Polynomios \nArbitraires", "Mode 2 joueurs", "Mode pourrissement"]
-                        descriptionVar = ["Score en fonction de la difficulte", "Polyomino arbitraire", "elimination par couleurs adjacent", "jouer un partie a 2", "des blocks disparaisse", "laissez une IA jouer a votre place"]
+                        variantes = ["Score en fonction \nde la difficulte", "Polyominos \nArbitraires", "Mode 2 joueurs", "Mode pourrissement"]
+                        descriptionVar = ["Score en fonction de la difficulte", "Polyominos arbitraires", "elimination par couleurs adjacentes", "jouer un partie a 2", "des blocks disparaisse", "laissez une IA jouer a votre place"]
                         
                         saisie = 0 
                         
@@ -642,25 +637,13 @@ def game(varPtsDiffSelect, varPolyArbitraires, varModePourrisement, bonusIA, bon
         while isPolyMaxY(grid, poly, x, maxY, ori) == False:
             maxY += 1
 
-        if bonusIA:
-
-            # copie profonde de la grille 
-            nGrid = list()
-            nGrid = [l[:] for l in grid]
-
-            # on trouve les meileur coord pour les 2 poly suivant
-            objX, objOri = findBestPolyPlace(nGrid, poly, nextPoly, 4, 1, ori, coefNbLigneSupp=83, coefCasePerdu=19, coefCaseManquantes=165, coefHauteurRect=67)
-            mooveLst = genMooveList(x, ori, objX, objOri)
-
-
-        grid, poly, prevX, prevY, x, y, ori, change, maxY = spawnPiece(grid, poly, ori, change)
+        grid, poly, prevX, prevY, x, y, ori, change, maxY = drawPiece(grid, poly, prevX, prevY, x, y, ori, change, maxY)
 
         # la pièce est déja activé
         pieceActivated = 1
 
         desactivateCounter = 0
 
-        
 
 
     # intialisation du nombre totale de ligne supprimer pour calculer le niveau de difficulté 
@@ -1976,10 +1959,10 @@ def createSave(polyLst, score, poly, x, y, maxY, ori, grid, squareColors, nextPo
             f.write('varModePourrisement ')
         
         if bonusElimCoul:
-            f.write('elimCouleur ')
+            f.write('elimCoul')
         
         if bonusIA:
-            f.write('IA ')
+            f.write('IA')
 
         f.write('\n')
 

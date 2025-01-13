@@ -800,7 +800,7 @@ def selectNatCoef(nGen, nTest, nGames, coefNbLigneSuppInit, coefCasePerduInit, c
 
 if __name__ == '__main__':
 
-    from tetriV2 import *
+    from tetriV3 import *
 
     # on récumpère la resolution de l'écran en executat la commande `xrandr | grep \\* | cut -d' ' -f4`
     # avec la module subprocess
